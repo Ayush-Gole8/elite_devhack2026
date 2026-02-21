@@ -1,26 +1,216 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@custom-variant dark (&:is(.dark *));
 
+/* ─────────── Tailwind theme token mapping ─────────── */
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+
+  --shadow-2xs: var(--shadow-2xs);
+  --shadow-xs: var(--shadow-xs);
+  --shadow-sm: var(--shadow-sm);
+  --shadow: var(--shadow);
+  --shadow-md: var(--shadow-md);
+  --shadow-lg: var(--shadow-lg);
+  --shadow-xl: var(--shadow-xl);
+  --shadow-2xl: var(--shadow-2xl);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* ─────────── Light mode (fallback) ─────────── */
+:root {
+  --radius: 0.625rem;
+
+  --background: rgb(250 250 250);
+  --foreground: rgb(9 9 11);
+  --card: rgb(255 255 255);
+  --card-foreground: rgb(9 9 11);
+  --popover: rgb(255 255 255);
+  --popover-foreground: rgb(9 9 11);
+  --primary: rgb(16 185 129);
+  --primary-foreground: rgb(255 255 255);
+  --secondary: rgb(228 228 231);
+  --secondary-foreground: rgb(9 9 11);
+  --muted: rgb(244 244 245);
+  --muted-foreground: rgb(113 113 122);
+  --accent: rgb(228 228 231);
+  --accent-foreground: rgb(9 9 11);
+  --destructive: rgb(239 68 68);
+  --border: rgb(228 228 231);
+  --input: rgb(228 228 231);
+  --ring: rgb(16 185 129);
+  --chart-1: rgb(16 185 129);
+  --chart-2: rgb(99 102 241);
+  --chart-3: rgb(245 158 11);
+  --chart-4: rgb(239 68 68);
+  --chart-5: rgb(168 85 247);
+  --sidebar: rgb(244 244 245);
+  --sidebar-foreground: rgb(9 9 11);
+  --sidebar-primary: rgb(16 185 129);
+  --sidebar-primary-foreground: rgb(255 255 255);
+  --sidebar-accent: rgb(228 228 231);
+  --sidebar-accent-foreground: rgb(9 9 11);
+  --sidebar-border: rgb(228 228 231);
+  --sidebar-ring: rgb(16 185 129);
+
+  --shadow-2xs: 0px 1px 2.5px 0px rgb(0 0 0 / 0.04);
+  --shadow-xs: 0px 1px 2.5px 0px rgb(0 0 0 / 0.04);
+  --shadow-sm: 0px 1px 2.5px 0px rgb(0 0 0 / 0.07), 0px 1px 2px -1px rgb(0 0 0 / 0.07);
+  --shadow: 0px 1px 2.5px 0px rgb(0 0 0 / 0.07), 0px 1px 2px -1px rgb(0 0 0 / 0.07);
+  --shadow-md: 0px 1px 2.5px 0px rgb(0 0 0 / 0.07), 0px 2px 4px -1px rgb(0 0 0 / 0.07);
+  --shadow-lg: 0px 1px 2.5px 0px rgb(0 0 0 / 0.07), 0px 4px 6px -1px rgb(0 0 0 / 0.07);
+  --shadow-xl: 0px 1px 2.5px 0px rgb(0 0 0 / 0.07), 0px 8px 10px -1px rgb(0 0 0 / 0.07);
+  --shadow-2xl: 0px 1px 2.5px 0px rgb(0 0 0 / 0.12);
+}
+
+/* ─────────── Dark mode (landing page uses this) ─────────── */
+.dark {
+  --background: rgb(9 9 11);
+  --foreground: rgb(228 228 231);
+  --card: rgb(18 18 23);
+  --card-foreground: rgb(228 228 231);
+  --popover: rgb(18 18 23);
+  --popover-foreground: rgb(228 228 231);
+  --primary: rgb(16 185 129);
+  --primary-foreground: rgb(255 255 255);
+  --secondary: rgb(28 28 35);
+  --secondary-foreground: rgb(228 228 231);
+  --muted: rgb(28 28 35);
+  --muted-foreground: rgb(113 113 122);
+  --accent: rgb(28 28 35);
+  --accent-foreground: rgb(228 228 231);
+  --destructive: rgb(239 68 68);
+  --border: rgb(255 255 255 / 0.08);
+  --input: rgb(255 255 255 / 0.10);
+  --ring: rgb(16 185 129);
+  --chart-1: rgb(52 211 153);
+  --chart-2: rgb(99 102 241);
+  --chart-3: rgb(245 158 11);
+  --chart-4: rgb(239 68 68);
+  --chart-5: rgb(168 85 247);
+  --sidebar: rgb(18 18 23);
+  --sidebar-foreground: rgb(228 228 231);
+  --sidebar-primary: rgb(16 185 129);
+  --sidebar-primary-foreground: rgb(9 9 11);
+  --sidebar-accent: rgb(28 28 35);
+  --sidebar-accent-foreground: rgb(228 228 231);
+  --sidebar-border: rgb(255 255 255 / 0.08);
+  --sidebar-ring: rgb(16 185 129);
+
+  --shadow-2xs: 0px 1px 2px 0px rgb(0 0 0 / 0.3);
+  --shadow-xs: 0px 1px 2px 0px rgb(0 0 0 / 0.3);
+  --shadow-sm: 0px 1px 2px 0px rgb(0 0 0 / 0.3), 0px 1px 2px -1px rgb(0 0 0 / 0.3);
+  --shadow: 0px 1px 2px 0px rgb(0 0 0 / 0.3), 0px 1px 2px -1px rgb(0 0 0 / 0.3);
+  --shadow-md: 0px 1px 2px 0px rgb(0 0 0 / 0.3), 0px 2px 4px -1px rgb(0 0 0 / 0.3);
+  --shadow-lg: 0px 1px 2px 0px rgb(0 0 0 / 0.3), 0px 4px 6px -1px rgb(0 0 0 / 0.3);
+  --shadow-xl: 0px 1px 2px 0px rgb(0 0 0 / 0.3), 0px 8px 10px -1px rgb(0 0 0 / 0.3);
+  --shadow-2xl: 0px 1px 2px 0px rgb(0 0 0 / 0.5);
+}
+
+/* ─────────── Base resets ─────────── */
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* ─────────── Landing page surface palette ─────────── */
+/*
+  Elevation stack (dark):
+    bg-bg-base            #0a0c16  ← page base / hero
+    bg-bg-surface         #10131f  ← alternate sections (Stats, Journey, Footer)
+    bg-bg-surface-elevated #171b2d  ← raised cards / contest panel
+*/
+.bg-bg-base            { background-color: #09090b; }
+.bg-bg-surface         { background-color: #111113; }
+.bg-bg-surface-elevated { background-color: #18181b; }
+
+/* ─────────── Glass utilities ─────────── */
+.glass-card {
+  background: rgba(18, 18, 23, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.glass-nav {
+  background: rgba(9, 9, 11, 0.88);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+/* ─────────── Glow helpers ─────────── */
+.soft-glow-emerald {
+  box-shadow:
+    0 0 0 1px rgba(52, 211, 153, 0.12),
+    0 8px 32px -8px rgba(52, 211, 153, 0.18);
+}
+
+.soft-glow-primary {
+  box-shadow:
+    0 0 0 1px rgba(16, 185, 129, 0.15),
+    0 8px 32px -8px rgba(16, 185, 129, 0.20);
+}
+
+/* ─────────── Legacy button helpers (still referenced by Hero) ─────────── */
+.btn-emerald {
+  background: linear-gradient(135deg, #10b981, #065f46);
+  color: #fff;
+  transition: opacity .15s ease;
+}
+.btn-emerald:hover { opacity: 0.9; }
+
+.btn-secondary {
+  background: rgba(255, 255, 255, 0.05);
+  color: #cbd5e1;
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  transition: background .15s ease;
+}
+.btn-secondary:hover { background: rgba(255, 255, 255, 0.09); }
+
+/* ─────────── Code watermark ─────────── */
+.code-watermark {
+  color: rgba(148, 163, 184, 0.08);  /* slate-400 @ 8% */
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }

@@ -11,7 +11,7 @@ import Footer from "./components/Footer";
 
 export default function Landing() {
   return (
-    <div className="bg-black text-white">
+    <div className="bg-background text-foreground">
       <Navbar />
       <main className="pt-20">
         <Hero />

@@ -2,6 +2,7 @@
 
 import { Clock } from "lucide-react";
 import { useEffect, useState } from "react";
+import Link from "next/link";
 
 export default function Contest() {
   const [time, setTime] = useState({ hours: 2, minutes: 14, seconds: 55 });
@@ -32,8 +33,8 @@ export default function Contest() {
   const formatTime = (num: number) => String(num).padStart(2, "0");
 
   return (
-    <section className="w-full max-w-[1440px] mx-auto px-8 py-32">
-      <div className="relative glass-card bg-gradient-to-br from-bg-surface-elevated to-bg-surface rounded-[40px] p-12 md:p-20 overflow-hidden text-center flex flex-col items-center">
+    <section className="w-full max-w-360 mx-auto px-8 py-32">
+      <div className="relative glass-card bg-linear-to-br from-bg-surface-elevated to-bg-surface rounded-[40px] p-12 md:p-20 overflow-hidden text-center flex flex-col items-center">
         <div
           className="absolute inset-0 opacity-5 pointer-events-none"
           style={{
@@ -65,9 +66,12 @@ export default function Contest() {
             {formatTime(time.seconds)}
           </div>
 
-          <button className="bg-amber-500 hover:bg-amber-400 text-black font-black text-xl py-6 px-16 rounded-2xl transition-all shadow-2xl animate-pulse-amber active:scale-95">
+          <Link
+            href="/contests"
+            className="bg-amber-500 hover:bg-amber-400 text-black font-black text-xl py-6 px-16 rounded-2xl transition-all shadow-2xl animate-pulse-amber active:scale-95"
+          >
             Join Contest Now
-          </button>
+          </Link>
 
           <p className="text-slate-500 text-sm max-w-md">
             Top 3 winners get exclusive pro membership, verified badges, and
