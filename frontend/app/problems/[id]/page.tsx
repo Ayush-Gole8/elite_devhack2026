@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, use } from "react";
 import { useAuth } from "@/context/AuthContext";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { problemAPI, submissionAPI } from "@/lib/api";
@@ -29,6 +29,7 @@ import {
   Trophy,
   Terminal,
   AlertCircle,
+  Zap,
 } from "lucide-react";
 
 const Editor = dynamic(() => import("@monaco-editor/react"), { ssr: false });
@@ -98,6 +99,8 @@ export default function ProblemDetailPage({
   const { id } = use(params);
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const contestId = searchParams.get('contestId');
 
   const [problem, setProblem] = useState<Problem | null>(null);
   const [loading, setLoading] = useState(true);
@@ -224,14 +227,34 @@ export default function ProblemDetailPage({
     }
     try {
       setSubmitting(true);
+      
+      // Prepare submission data
+      const submissionData: any = {
+        problemId: id,
+        source_code: code,
+        language_id: parseInt(language, 10),
+      };
+      
+      // Add contestId if in contest mode
+      if (contestId) {
+        submissionData.contestId = contestId;
+      }
+      
       const response = await submissionAPI.submitSolution(
-        id,
-        code,
-        parseInt(language, 10),
+        submissionData.problemId,
+        submissionData.source_code,
+        submissionData.language_id,
+        submissionData.contestId
       );
       const data = response.data || response;
       setSubmission(data);
-      toast.success("Submission received! Evaluating…");
+      
+      if (contestId) {
+        toast.success("Submission received! Check contest leaderboard for your rank");
+      } else {
+        toast.success("Submission received! Evaluating…");
+      }
+      
       startPolling(data._id, id);
     } catch (err) {
       const e = err as ApiError;
@@ -436,6 +459,28 @@ export default function ProblemDetailPage({
           )}
         </div>
       </header>
+
+      {/* Contest Mode Banner */}
+      {contestId && (
+        <div className="bg-linear-to-r from-purple-600/20 to-pink-600/20 border-b border-purple-500/30 px-6 py-3 shrink-0">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-2 h-2 bg-purple-500 rounded-full animate-pulse"></div>
+              <Trophy className="w-5 h-5 text-purple-400" />
+              <span className="text-sm font-semibold text-purple-300">Contest Mode Active</span>
+            </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-purple-400 hover:text-purple-300 hover:bg-purple-500/10 h-7"
+              onClick={() => router.push(`/contests/${contestId}`)}
+            >
+              View Contest
+              <Zap className="w-3.5 h-3.5 ml-1.5" />
+            </Button>
+          </div>
+        </div>
+      )}
 
       {/* ── Split Panel ── */}
       <div className="flex flex-1 min-h-0">

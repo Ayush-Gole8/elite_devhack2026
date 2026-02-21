@@ -8,7 +8,8 @@
     "dev": "nodemon server.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "seed": "node scripts/seedProblems.js ../data/problems --no-archive",
-    "seed:overwrite": "node scripts/seedProblems.js ../data/problems --no-archive --allow-overwrite"
+    "seed:overwrite": "node scripts/seedProblems.js ../data/problems --no-archive --allow-overwrite",
+    "seed:contests": "node scripts/seedContests.js"
   },
   "keywords": [
     "coding",
@@ -26,6 +27,8 @@
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.2.1",
     "sanitize-html": "^2.13.1",
+    "socket.io": "^4.8.3",
+    "socket.io-client": "^4.8.3",
     "vm2": "^3.10.5"
   },
   "devDependencies": {

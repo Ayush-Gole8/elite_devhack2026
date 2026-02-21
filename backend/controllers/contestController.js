@@ -144,6 +144,23 @@ const registerForContest = async (req, res) => {
       });
     }
 
+    // Check if contest has ended
+    const now = new Date();
+    if (contest.endTime < now) {
+      return res.status(400).json({
+        success: false,
+        message: 'Cannot register for a contest that has already ended',
+      });
+    }
+
+    // Check if contest is ongoing
+    if (contest.startTime <= now) {
+      return res.status(400).json({
+        success: false,
+        message: 'Cannot register for a contest that is already ongoing',
+      });
+    }
+
     // Check if already registered
     const alreadyRegistered = contest.participants.some(
       p => p.user.toString() === req.user

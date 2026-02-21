@@ -1,5 +1,7 @@
 require('dotenv').config();
 const express = require('express');
+const http = require('http');
+const { Server } = require('socket.io');
 const cors = require('cors');
 const connectDB = require('./config/db');
 const errorHandler = require('./middleware/errorHandler');
@@ -13,6 +15,19 @@ const contestRoutes = require('./routes/contestRoutes');
 
 // Initialize express app
 const app = express();
+const server = http.createServer(app);
+
+// Initialize Socket.io with CORS
+const io = new Server(server, {
+  cors: {
+    origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+    methods: ['GET', 'POST'],
+    credentials: true,
+  },
+});
+
+// Make io accessible to routes
+app.set('io', io);
 
 // Connect to database
 connectDB();
@@ -49,12 +64,35 @@ app.use((req, res) => {
 // Error handler middleware (should be last)
 app.use(errorHandler);
 
+// Socket.io connection handling
+io.on('connection', (socket) => {
+  console.log('Client connected:', socket.id);
+
+  // Join contest room
+  socket.on('joinContest', (contestId) => {
+    socket.join(`contest_${contestId}`);
+    console.log(`Socket ${socket.id} joined contest room: contest_${contestId}`);
+  });
+
+  // Leave contest room
+  socket.on('leaveContest', (contestId) => {
+    socket.leave(`contest_${contestId}`);
+    console.log(`Socket ${socket.id} left contest room: contest_${contestId}`);
+  });
+
+  // Disconnection
+  socket.on('disconnect', () => {
+    console.log('Client disconnected:', socket.id);
+  });
+});
+
 // Start server
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
   console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
+  console.log(`WebSocket server ready for connections`);
 });
 
-module.exports = app;
+module.exports = { app, io, server };

@@ -249,7 +249,7 @@ export default function DashboardPage() {
 
         {/* Action Cards */}
         <div className="grid gap-6 md:grid-cols-3 mb-8">
-          <div className="bg-gradient-to-br from-green-600 to-green-700 rounded-[14px] shadow-lg p-6 cursor-pointer hover:scale-105 transition-transform"
+          <div className="bg-linear-to-br from-green-600 to-green-700 rounded-[14px] shadow-lg p-6 cursor-pointer hover:scale-105 transition-transform"
                onClick={() => router.push('/problems')}>
             <Code className="w-10 h-10 text-white mb-4" />
             <h3 className="text-xl font-bold text-white mb-2">Browse Problems</h3>
@@ -262,7 +262,7 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          <div className="bg-gradient-to-br from-purple-600 to-purple-700 rounded-[14px] shadow-lg p-6 cursor-pointer hover:scale-105 transition-transform"
+          <div className="bg-linear-to-br from-purple-600 to-purple-700 rounded-[14px] shadow-lg p-6 cursor-pointer hover:scale-105 transition-transform"
                onClick={() => router.push('/contests')}>
             <Trophy className="w-10 h-10 text-white mb-4" />
             <h3 className="text-xl font-bold text-white mb-2">Join Contests</h3>
@@ -275,7 +275,7 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          <div className="bg-gradient-to-br from-blue-600 to-blue-700 rounded-[14px] shadow-lg p-6 cursor-pointer hover:scale-105 transition-transform"
+          <div className="bg-linear-to-br from-blue-600 to-blue-700 rounded-[14px] shadow-lg p-6 cursor-pointer hover:scale-105 transition-transform"
                onClick={() => router.push(`/profile/${user._id}`)}>
             <Users className="w-10 h-10 text-white mb-4" />
             <h3 className="text-xl font-bold text-white mb-2">Your Profile</h3>
