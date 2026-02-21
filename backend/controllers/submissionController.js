@@ -2,6 +2,7 @@ const Submission = require('../models/Submission');
 const Problem = require('../models/Problem');
 const ProblemTests = require('../models/ProblemTests');
 const User = require('../models/User');
+const Contest = require('../models/Contest');
 const { runCode } = require('../services/judgeService');
 
 /**
@@ -30,7 +31,7 @@ async function loadJudgeTests(problem) {
 // @access  Private
 const submitSolution = async (req, res) => {
   try {
-    const { problemId, source_code, language_id } = req.body;
+    const { problemId, source_code, language_id, contestId } = req.body;
 
     // Validate required fields
     if (!problemId || !source_code || !language_id) {
@@ -158,6 +159,7 @@ const submitSolution = async (req, res) => {
       error: errorMessage,
       // Store up to 5 failed test results (never expose hidden test I/O for accepted)
       testResults: status === 'Accepted' ? [] : testResults.slice(0, 5),
+      contestId: contestId || null, // Add contestId if provided
     });
 
     // Update problem submission counters
@@ -175,6 +177,57 @@ const submitSolution = async (req, res) => {
         user.solvedProblems.push(problemId);
         user.solvedCount = user.solvedProblems.length;
         await user.save();
+      }
+
+     // Update contest score if this is a contest submission
+      if (contestId) {
+        const contest = await Contest.findById(contestId);
+        
+        if (contest) {
+          // Find participant
+          const participantIndex = contest.participants.findIndex(
+            p => p.user.toString() === req.user
+          );
+          
+          if (participantIndex !== -1) {
+            const participant = contest.participants[participantIndex];
+            
+            // Check if this problem was already solved by this user in this contest
+            const alreadySolved = participant.submissions?.some(
+              sub => sub.toString() === problemId
+            );
+            
+            if (!alreadySolved) {
+              // Add 100 points for solving a new problem
+              participant.score = (participant.score || 0) + 100;
+              
+              // Add submission to participant's submissions array
+              if (!participant.submissions) {
+                participant.submissions = [];
+              }
+              participant.submissions.push(submission._id);
+              
+              // Recalculate ranks
+              contest.participants.sort((a, b) => (b.score || 0) - (a.score || 0));
+              contest.participants.forEach((p, idx) => {
+                p.rank = idx + 1;
+              });
+              
+              await contest.save();
+              
+              // Emit socket event for real-time leaderboard update
+              const io = req.app.get('io');
+              if (io) {
+                // Populate participants for the socket event
+                const populatedContest = await Contest.findById(contestId)
+                  .populate('participants.user', 'name username profilePhoto');
+                
+                io.to(`contest_${contestId}`).emit('leaderboardUpdate', populatedContest.participants);
+                console.log(`Emitted leaderboard update for contest: ${contestId}`);
+              }
+            }
+          }
+        }
       }
     }
 

@@ -214,16 +214,16 @@ export default function ProfilePage() {
 
   return (
     <div className="min-h-screen bg-[#0f0f0f] p-4 md:p-6">
-      <div className="max-w-[1400px] mx-auto flex flex-col lg:flex-row gap-6 animate-fade-in">
+      <div className="max-w-350 mx-auto flex flex-col lg:flex-row gap-6 animate-fade-in">
         {/* LEFT SIDEBAR - Fixed 300px on desktop, full width on mobile */}
-        <div className="w-full lg:w-[300px] flex-shrink-0 space-y-5 stagger-animation">
+        <div className="w-full lg:w-75 shrink-0 space-y-5 stagger-animation">
           {/* Profile Header Card */}
           <div className="bg-[#1e1e1e] rounded-[14px] border border-[#2a2a2a] shadow-lg p-5 hover-lift">
             <div className="flex flex-col items-center">
               <img
                 src={profile.profilePhoto || `https://ui-avatars.com/api/?name=${profile.name}&background=2ecc71&color=fff&size=200`}
                 alt={profile.name}
-                className="w-[100px] h-[100px] rounded-full border-4 border-[#2a2a2a] mb-4"
+                className="w-25 h-25 rounded-full border-4 border-[#2a2a2a] mb-4"
               />
               <h2 className="text-xl font-bold text-white mb-1">
                 {profile.username || profile.name}
@@ -257,20 +257,20 @@ export default function ProfilePage() {
           <div className="bg-[#1e1e1e] rounded-[14px] border border-[#2a2a2a] shadow-lg p-5 space-y-3 hover-lift">
             {profile.education && (
               <div className="flex items-center gap-3 text-sm text-gray-300 hover:text-white transition-colors cursor-pointer">
-                <Building2 className="w-[18px] h-[18px] text-gray-400" />
+                <Building2 className="w-4.5 h-4.5 text-gray-400" />
                 <span>{profile.education}</span>
               </div>
             )}
             
             {profile.experience && (
               <div className="flex items-center gap-3 text-sm text-gray-300 hover:text-white transition-colors cursor-pointer">
-                <Target className="w-[18px] h-[18px] text-gray-400" />
+                <Target className="w-4.5 h-4.5 text-gray-400" />
                 <span>{profile.experience}</span>
               </div>
             )}
 
             <div className="flex items-center gap-3 text-sm text-gray-300 hover:text-white transition-colors cursor-pointer">
-              <Calendar className="w-[18px] h-[18px] text-gray-400" />
+              <Calendar className="w-4.5 h-4.5 text-gray-400" />
               <span>Joined {formatDate(profile.createdAt)}</span>
             </div>
 
@@ -281,7 +281,7 @@ export default function ProfilePage() {
                 rel="noopener noreferrer"
                 className="flex items-center gap-3 text-sm text-gray-300 hover:text-white transition-colors"
               >
-                <Github className="w-[18px] h-[18px] text-gray-400" />
+                <Github className="w-4.5 h-4.5 text-gray-400" />
                 <span>GitHub Profile</span>
               </a>
             )}
@@ -293,7 +293,7 @@ export default function ProfilePage() {
                 rel="noopener noreferrer"
                 className="flex items-center gap-3 text-sm text-gray-300 hover:text-white transition-colors"
               >
-                <Linkedin className="w-[18px] h-[18px] text-gray-400" />
+                <Linkedin className="w-4.5 h-4.5 text-gray-400" />
                 <span>LinkedIn</span>
               </a>
             )}
@@ -305,7 +305,7 @@ export default function ProfilePage() {
                 rel="noopener noreferrer"
                 className="flex items-center gap-3 text-sm text-gray-300 hover:text-white transition-colors"
               >
-                <Globe className="w-[18px] h-[18px] text-gray-400" />
+                <Globe className="w-4.5 h-4.5 text-gray-400" />
                 <span>Portfolio</span>
               </a>
             )}
@@ -317,7 +317,7 @@ export default function ProfilePage() {
                 rel="noopener noreferrer"
                 className="flex items-center gap-3 text-sm text-gray-300 hover:text-white transition-colors"
               >
-                <Twitter className="w-[18px] h-[18px] text-gray-400" />
+                <Twitter className="w-4.5 h-4.5 text-gray-400" />
                 <span>Twitter</span>
               </a>
             )}

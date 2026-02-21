@@ -24,6 +24,7 @@ import {
   Frown,
   BarChart3,
   Target,
+  Swords,
 } from 'lucide-react';
 
 interface Problem {
@@ -174,6 +175,10 @@ export default function ProblemsPage() {
             <Button variant="ghost" size="sm" onClick={() => router.push('/dashboard')} className="rounded-xl">
               <LayoutDashboard className="h-4 w-4" />
               <span className="hidden sm:inline">Dashboard</span>
+            </Button>
+            <Button variant="ghost" size="sm" onClick={() => router.push('/contests')} className="rounded-xl">
+              <Swords className="h-4 w-4" />
+              <span className="hidden sm:inline">Contests</span>
             </Button>
             <Button variant="ghost" size="sm" onClick={() => router.push('/leaderboard')} className="rounded-xl">
               <Trophy className="h-4 w-4" />
