@@ -1,105 +1,106 @@
 {
-  "problem": "Codeforces 2189B - The Curse of the Frog",
-  "testcases": [
+  "slug": "cf-2189-B",
+  "title": "The Curse of the Frog",
+  "test_cases": [
     {
-      "input": "1\n1 1\n1 3 3",
+      "input": "1\n1 10\n10 3 5",
       "output": "0",
-      "comment": "Sample-like: simple jump of 1, no rollback needed"
+      "is_sample": false
     },
     {
-      "input": "1\n1 7\n4 2 5",
-      "output": "1",
-      "comment": "From sample, needs 1 rollback"
-    },
-    {
-      "input": "1\n1 4\n2 2 4",
-      "output": "-1",
-      "comment": "From sample, impossible"
-    },
-    {
-      "input": "1\n4 8\n12 1 11\n10 1 4\n1 1 3\n1 2 5",
-      "output": "2",
-      "comment": "From sample explanation, 2 rollbacks"
-    },
-    {
-      "input": "1\n1 1000000000000000000\n1000000 4 654321",
-      "output": "298892990032",
-      "comment": "From sample, very large x"
-    },
-    {
-      "input": "1\n2 10\n2 2 1\n1 3 1",
-      "output": "3",
-      "comment": "From sample explanation style"
-    },
-    {
-      "input": "1\n1 0\n5 2 3",
-      "output": "0",
-      "comment": "Already at 0 (though x≥1 in constraints, edge thinking)"
-    },
-    {
-      "input": "1\n1 5\n3 1 10",
-      "output": "-1",
-      "comment": "Rollback bigger than jump → cannot progress"
-    },
-    {
-      "input": "1\n3 100\n5 2 1\n7 3 2\n10 4 3",
-      "output": "12",
-      "comment": "Medium value, multiple jump types"
-    },
-    {
-      "input": "1\n1 1000000\n1 1 1",
-      "output": "999999",
-      "comment": "Every jump rolls back 1, very costly"
-    },
-    {
-      "input": "1\n2 15\n10 2 3\n6 3 1",
-      "output": "2",
-      "comment": "Mixed free/rollback jumps"
-    },
-    {
-      "input": "1\n1 1\n1000000 1000000 1",
-      "output": "0",
-      "comment": "Large free quota, easily reaches"
-    },
-    {
-      "input": "1\n1 999999999999999999\n1 2 1",
-      "output": "499999999999999999",
-      "comment": "Very large rollback count"
-    },
-    {
-      "input": "1\n3 20\n4 1 5\n5 2 2\n8 3 1",
-      "output": "3",
-      "comment": "Needs careful greedy choice"
-    },
-    {
-      "input": "1\n1 3\n1 1000000 1000000",
-      "output": "-1",
-      "comment": "Rollback >> jump → stuck"
-    },
-    {
-      "input": "1\n2 50\n20 3 4\n15 2 5",
-      "output": "5",
-      "comment": "Balanced case"
-    },
-    {
-      "input": "1\n5 30\n3 2 1\n4 3 2\n5 4 1\n6 2 3\n10 5 2",
+      "input": "1\n1 30\n5 2 3",
       "output": "4",
-      "comment": "Many types, small x"
+      "is_sample": false
     },
     {
-      "input": "1\n1 1000000000000\n1000000 1000000 500000",
-      "output": "499999500000",
-      "comment": "Large x + large rollback"
+      "input": "1\n1 15\n3 2 8",
+      "output": "-1",
+      "is_sample": false
     },
     {
-      "input": "1\n2 1\n1 1 1\n100 100 100",
+      "input": "1\n3 20\n4 3 10\n5 2 1\n3 4 2",
       "output": "0",
-      "comment": "Can reach with free jump"
+      "is_sample": false
     },
     {
-      "input": "1\n3 1234567890123\n1000000 5 300000\n500000 4 100000\n2000000 10 600000",
-      "output": "617283",
-      "comment": "Big x, realistic large answer"
+      "input": "1\n2 50\n4 3 5\n6 2 3",
+      "output": "4",
+      "is_sample": false
+    },
+    {
+      "input": "1\n2 20\n8 1 3\n5 1 2",
+      "output": "4",
+      "is_sample": false
+    },
+    {
+      "input": "1\n1 1000000000000000\n1000 5 100",
+      "output": "204081632653",
+      "is_sample": false
+    },
+    {
+      "input": "1\n3 25\n2 1 5\n3 2 7\n5 3 4",
+      "output": "2",
+      "is_sample": false
+    },
+    {
+      "input": "1\n2 8\n5 3 20\n3 4 15",
+      "output": "0",
+      "is_sample": false
+    },
+    {
+      "input": "1\n1 12\n4 4 100",
+      "output": "0",
+      "is_sample": false
+    },
+    {
+      "input": "1\n3 100\n7 2 2\n4 3 5\n10 1 9",
+      "output": "8",
+      "is_sample": false
+    },
+    {
+      "input": "1\n1 5\n3 1 3",
+      "output": "-1",
+      "is_sample": false
+    },
+    {
+      "input": "1\n1 200\n3 2 1",
+      "output": "40",
+      "is_sample": false
+    },
+    {
+      "input": "1\n1 11\n5 2 2",
+      "output": "1",
+      "is_sample": false
+    },
+    {
+      "input": "1\n2 10\n3 1 5\n2 1 4",
+      "output": "-1",
+      "is_sample": false
+    },
+    {
+      "input": "1\n4 60\n3 2 1\n7 3 5\n5 4 10\n2 5 3",
+      "output": "2",
+      "is_sample": false
+    },
+    {
+      "input": "1\n1 1\n1 5 10",
+      "output": "0",
+      "is_sample": false
+    },
+    {
+      "input": "1\n1 1000000000000000000\n1000000 2 1",
+      "output": "500000250000",
+      "is_sample": false
+    },
+    {
+      "input": "1\n2 15\n4 2 3\n3 3 10",
+      "output": "1",
+      "is_sample": false
+    },
+    {
+      "input": "1\n1 50\n10 1 3",
+      "output": "8",
+      "is_sample": false
     }
   ]
 }

@@ -1,0 +1,24 @@
+{
+  "title": "DBMB and the Array",
+  "slug": "dbmb-and-the-array",
+  "difficulty": "Easy",
+  "tags": [
+    "implementation",
+    "math",
+    "greedy"
+  ],
+  "time_limit_ms": 1000,
+  "memory_limit_kb": 256000,
+  "description": "DBMB had a birthday yesterday. He was gifted an array a of n elements and a number x. But there is one problem: he only likes arrays where the sum of the elements equals s. To make the array appealing to him, you can perform the following operation any number of times:\n\nChoose an index i (1≤i≤n) and add x to the number ai.\n\nFor example, if he was given the array [1,2,3,5] and x=2, you can choose index 3 and get the array [1,2,5,5]. Your task is to determine whether the array can appeal to DBMB after any number of operations.",
+  "input_format": "Each test consists of several test cases. The first line contains a single integer t (1≤t≤1000) — the number of test cases. The following describes the test cases.\n\nThe first line of each test case contains three integers n, s, x (1≤n,x≤10, 1≤s≤100).\n\nThe second line of each test case contains n integers a1,a2,…,an (1≤ai≤10) — the elements of the array gifted to DBMB.",
+  "output_format": "For each test case, output \"YES\" if the array can appeal to DBMB. Otherwise, output \"NO\". You can output each letter in any case (lowercase or uppercase).",
+  "constraints": "1≤t≤1000, 1≤n,x≤10, 1≤s≤100, 1≤ai≤10",
+  "test_cases": [
+    {
+      "input": "6\n3 3 5\n1 1 1\n3 8 2\n1 2 3\n4 7 2\n1 1 1 1\n3 15 1\n2 4 10\n2 100 5\n4 6\n5 12 1\n1 2 2 3 2\n",
+      "output": "YES\nYES\nNO\nNO\nYES\nYES\n",
+      "is_sample": true,
+      "explanation": "See problem statement examples: apply adding x to chosen elements any number of times to reach sum s."
+    }
+  ]
+}
