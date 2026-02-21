@@ -57,10 +57,10 @@ export const userAPI = {
 
 export const problemAPI = {
   /**
-   * Get all problems
+   * Get all problems with optional filters
    */
-  getProblems: async () => {
-    const response = await axiosInstance.get('/problems');
+  getProblems: async (filters?: { difficulty?: string; tags?: string; search?: string }) => {
+    const response = await axiosInstance.get('/problems', { params: filters });
     return response.data;
   },
 
@@ -105,8 +105,8 @@ export const submissionAPI = {
   /**
    * Submit a solution (protected)
    */
-  submitSolution: async (data: any) => {
-    const response = await axiosInstance.post('/submissions', data);
+  submitSolution: async (problemId: string, code: string, language: string) => {
+    const response = await axiosInstance.post('/submissions', { problemId, code, language });
     return response.data;
   },
 

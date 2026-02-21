@@ -58,7 +58,7 @@ const getContest = async (req, res) => {
 // @access  Private/Admin
 const createContest = async (req, res) => {
   try {
-    req.body.createdBy = req.user.id;
+    req.body.createdBy = req.user;
 
     const contest = await Contest.create(req.body);
 
@@ -146,7 +146,7 @@ const registerForContest = async (req, res) => {
 
     // Check if already registered
     const alreadyRegistered = contest.participants.some(
-      p => p.user.toString() === req.user.id
+      p => p.user.toString() === req.user
     );
 
     if (alreadyRegistered) {
@@ -157,7 +157,7 @@ const registerForContest = async (req, res) => {
     }
 
     contest.participants.push({
-      user: req.user.id,
+      user: req.user,
       score: 0,
     });
 

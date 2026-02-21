@@ -48,7 +48,7 @@ export default function OnboardingPage() {
       setLoading(true);
       
       // User ID from auth context
-      const userId = user._id || user.id;
+      const userId = user._id;
       
       // Parse skills from comma-separated string
       const skillsArray = formData.skills

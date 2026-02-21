@@ -18,7 +18,8 @@ const submissionSchema = new mongoose.Schema({
   language: {
     type: String,
     required: true,
-    enum: ['javascript', 'python', 'java', 'cpp', 'c'],
+    enum: ['javascript'], // Temporarily JavaScript-only until Piston whitelist or Judge0 configured
+    default: 'javascript',
   },
   status: {
     type: String,
@@ -42,6 +43,13 @@ const submissionSchema = new mongoose.Schema({
   error: {
     type: String,
   },
+  testResults: [{
+    passed: Boolean,
+    input: String,
+    expected: String,
+    actual: String,
+    error: String,
+  }],
   submittedAt: {
     type: Date,
     default: Date.now,

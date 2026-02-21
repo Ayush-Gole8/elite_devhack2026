@@ -1,22 +1,32 @@
 const Submission = require('../models/Submission');
 const Problem = require('../models/Problem');
 const User = require('../models/User');
+const { executeCode, getSupportedLanguages } = require('../services/executionService');
 
 // @desc    Submit solution
 // @route   POST /api/submissions
 // @access  Private
 const submitSolution = async (req, res) => {
   try {
-    const { problemId, code, language } = req.body;
+    const { problemId, code, language = 'javascript' } = req.body;
 
-    if (!problemId || !code || !language) {
+    if (!problemId || !code) {
       return res.status(400).json({
         success: false,
-        message: 'Please provide problem ID, code, and language',
+        message: 'Please provide problem ID and code',
       });
     }
 
-    // Check if problem exists
+    // Validate language
+    const validLanguages = getSupportedLanguages();
+    if (!validLanguages.includes(language)) {
+      return res.status(400).json({
+        success: false,
+        message: `Unsupported language. Supported languages: ${validLanguages.join(', ')}`,
+      });
+    }
+
+    // Fetch problem with test cases
     const problem = await Problem.findById(problemId);
 
     if (!problem) {
@@ -26,49 +36,106 @@ const submitSolution = async (req, res) => {
       });
     }
 
-    // Create submission
+    // Create submission with Pending status
     const submission = await Submission.create({
-      user: req.user.id,
+      user: req.user,
       problem: problemId,
       code,
       language,
-      totalTestCases: problem.testCases.length,
+      status: 'Pending',
     });
 
-    // TODO: Run code against test cases (implement code execution logic)
-    // For now, we'll simulate the evaluation
-    const evaluation = await evaluateSubmission(submission, problem);
+    // Get all test cases (visible + hidden)
+    const allTestCases = [
+      ...problem.visibleTests,
+      ...problem.hiddenTests,
+    ];
+
+    if (allTestCases.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'No test cases found for this problem',
+      });
+    }
+
+    // Execute code against each test case
+    let status = 'Accepted';
+    let passedCount = 0;
+    const testResults = [];
+    let errorMessage = null;
+
+    for (const testCase of allTestCases) {
+      const result = await executeCode(language, code, testCase.input);
+
+      // Check for runtime errors
+      if (result.stderr && result.stderr.trim() !== '') {
+        status = 'Runtime Error';
+        errorMessage = result.stderr.substring(0, 500); // Limit error message length
+        
+        testResults.push({
+          passed: false,
+          input: testCase.input.substring(0, 100),
+          expected: testCase.output.substring(0, 100),
+          actual: result.stdout.substring(0, 100),
+          error: result.stderr.substring(0, 200),
+        });
+        
+        break; // Stop on first runtime error
+      }
+
+      // Compare outputs
+      const actualOutput = result.stdout.trim();
+      const expectedOutput = testCase.output.trim();
+      const passed = actualOutput === expectedOutput;
+
+      testResults.push({
+        passed,
+        input: testCase.input.substring(0, 100),
+        expected: expectedOutput.substring(0, 100),
+        actual: actualOutput.substring(0, 100),
+        error: null,
+      });
+
+      if (passed) {
+        passedCount++;
+      } else {
+        status = 'Wrong Answer';
+      }
+    }
 
     // Update submission with results
-    submission.status = evaluation.status;
-    submission.testCasesPassed = evaluation.testCasesPassed;
-    submission.executionTime = evaluation.executionTime;
-    submission.memoryUsed = evaluation.memoryUsed;
-    submission.error = evaluation.error;
+    submission.status = status;
+    submission.testCasesPassed = passedCount;
+    submission.totalTestCases = allTestCases.length;
+    submission.error = errorMessage;
+    submission.testResults = testResults.slice(0, 5); // Store first 5 results
     await submission.save();
 
-    // Update problem statistics
-    problem.totalSubmissions += 1;
-    if (evaluation.status === 'Accepted') {
-      problem.acceptedSubmissions += 1;
-    }
-    await problem.save();
-
-    // Update user's solved problems if accepted
-    if (evaluation.status === 'Accepted') {
-      const user = await User.findById(req.user.id);
-      if (!user.solvedProblems.includes(problemId)) {
+    // If accepted, update user's solved count
+    if (status === 'Accepted') {
+      const user = await User.findById(req.user);
+      
+      if (user && !user.solvedProblems.includes(problemId)) {
         user.solvedProblems.push(problemId);
-        user.rating += 10; // Simple rating increase
+        user.solvedCount = user.solvedProblems.length;
         await user.save();
       }
     }
 
+    // Populate the submission before returning
+    const populatedSubmission = await Submission.findById(submission._id)
+      .populate('user', 'name username')
+      .populate('problem', 'title difficulty');
+
+    // Return submission with results
     res.status(201).json({
       success: true,
-      data: submission,
+      data: populatedSubmission,
+      message: status === 'Accepted' ? 'All test cases passed!' : 'Submission evaluated',
     });
+    
   } catch (error) {
+    console.error('Submit solution error:', error);
     res.status(500).json({
       success: false,
       message: error.message,
@@ -125,10 +192,25 @@ const getProblemSubmissions = async (req, res) => {
 // @access  Private
 const getSubmission = async (req, res) => {
   try {
+    console.log('=== GET SUBMISSION DEBUG ===');
+    console.log('Submission ID:', req.params.id);
+    console.log('Request User ID:', req.user);
+    console.log('Request User Type:', typeof req.user);
+    
+    // Validate MongoDB ObjectId format
+    if (!req.params.id.match(/^[0-9a-fA-F]{24}$/)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid submission ID format',
+      });
+    }
+    
     const submission = await Submission.findById(req.params.id)
       .populate('user', 'name username')
       .populate('problem', 'title difficulty');
 
+    console.log('Submission found:', !!submission);
+    
     if (!submission) {
       return res.status(404).json({
         success: false,
@@ -136,8 +218,26 @@ const getSubmission = async (req, res) => {
       });
     }
 
-    // Only owner or admin can view
-    if (submission.user._id.toString() !== req.user.id && req.user.role !== 'admin') {
+    console.log('Submission.user:', submission.user);
+    console.log('Submission.user type:', typeof submission.user);
+    console.log('Submission.user._id:', submission.user?._id);
+    console.log('Submission.user._id type:', typeof submission.user?._id);
+
+    // Get the user ID from submission
+    let submissionUserId;
+    if (submission.user?._id) {
+      submissionUserId = submission.user._id.toString();
+    } else if (submission.user) {
+      submissionUserId = submission.user.toString();
+    }
+    
+    console.log('Submission User ID (extracted):', submissionUserId);
+    console.log('Match:', submissionUserId === req.user);
+    console.log('=== END DEBUG ===\n');
+    
+    // Only owner can view
+    if (submissionUserId && submissionUserId !== req.user) {
+      console.log('Authorization failed: User mismatch');
       return res.status(403).json({
         success: false,
         message: 'Not authorized to view this submission',
@@ -149,32 +249,13 @@ const getSubmission = async (req, res) => {
       data: submission,
     });
   } catch (error) {
+    console.error('Get submission error:', error);
+    console.error('Stack:', error.stack);
     res.status(500).json({
       success: false,
       message: error.message,
     });
   }
-};
-
-// Helper function to evaluate submission
-const evaluateSubmission = async (submission, problem) => {
-  // This is a placeholder implementation
-  // In a real application, you would:
-  // 1. Set up a sandboxed environment
-  // 2. Run the code against test cases
-  // 3. Check time and memory limits
-  // 4. Return the results
-
-  // Simulate evaluation
-  const passed = Math.random() > 0.3; // 70% pass rate for simulation
-
-  return {
-    status: passed ? 'Accepted' : 'Wrong Answer',
-    testCasesPassed: passed ? problem.testCases.length : Math.floor(Math.random() * problem.testCases.length),
-    executionTime: Math.floor(Math.random() * 1000) + 100, // 100-1100ms
-    memoryUsed: Math.floor(Math.random() * 50) + 10, // 10-60MB
-    error: passed ? null : 'Expected output does not match actual output',
-  };
 };
 
 module.exports = {

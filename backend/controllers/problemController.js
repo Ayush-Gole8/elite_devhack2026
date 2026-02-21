@@ -56,14 +56,13 @@ const getProblem = async (req, res) => {
       });
     }
 
-    // Don't send hidden test cases to non-admins
-    if (!req.user || req.user.role !== 'admin') {
-      problem.testCases = [];
-    }
+    // Don't send hidden test cases to users
+    const problemData = problem.toObject();
+    problemData.hiddenTests = [];
 
     res.status(200).json({
       success: true,
-      data: problem,
+      data: problemData,
     });
   } catch (error) {
     res.status(500).json({
@@ -78,7 +77,7 @@ const getProblem = async (req, res) => {
 // @access  Private/Admin
 const createProblem = async (req, res) => {
   try {
-    req.body.createdBy = req.user.id;
+    req.body.createdBy = req.user;
 
     // Create slug from title
     req.body.slug = req.body.title

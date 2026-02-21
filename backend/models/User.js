@@ -58,6 +58,14 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: '',
   },
+  solvedCount: {
+    type: Number,
+    default: 0,
+  },
+  solvedProblems: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Problem',
+  }],
 }, {
   timestamps: true,
 });
