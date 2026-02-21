@@ -1,0 +1,22 @@
+{
+  "title": "DBMB and the Array",
+  "slug": "cf-2193-A",
+  "difficulty": "Easy",
+  "tags": [
+    "brute force",
+    "math"
+  ],
+  "time_limit_ms": 2000,
+  "memory_limit_kb": 256000,
+  "description": "DBMB had a birthday yesterday. He was gifted an array \n𝑎\n𝑎\n of \n𝑛\n𝑛\n elements and a number \n𝑥\n𝑥\n. But there is one problem: he only likes arrays where the sum of the elements equals \n𝑠\n𝑠\n. To make the array appealing to him, you can perform the following operation any number of times:\n\nChoose an index \n𝑖\n𝑖\n (\n1≤𝑖≤𝑛\n1\n≤\n𝑖\n≤\n𝑛\n) and add \n𝑥\n𝑥\n to the number \n𝑎\n𝑖\n𝑎\n𝑖\n.\nFor example, if he was given the array \n[1,2,3,5]\n[\n1\n,\n2\n,\n3\n,\n5\n]\n and \n𝑥=2\n𝑥\n=\n2\n, you can choose index \n3\n3\n and get the array \n[1,2,5,5]\n[\n1\n,\n2\n,\n5\n,\n5\n]\n. Your task is to determine whether the array can appeal to DBMB after any number of operations.",
+  "input_format": "Input\n\nEach test consists of several test cases. The first line contains a single integer \n𝑡\n𝑡\n (\n1≤𝑡≤1000\n1\n≤\n𝑡\n≤\n1000\n) — the number of test cases. The following describes the test cases.\n\nThe first line of each test case contains three integers \n𝑛\n𝑛\n, \n𝑠\n𝑠\n, \n𝑥\n𝑥\n (\n1≤𝑛,𝑥≤10\n1\n≤\n𝑛\n,\n𝑥\n≤\n10\n, \n1≤𝑠≤100\n1\n≤\n𝑠\n≤\n100\n).\n\nThe second line of each test case contains \n𝑛\n𝑛\n integers \n𝑎\n1\n,\n𝑎\n2\n,…\n𝑎\n𝑛\n𝑎\n1\n,\n𝑎\n2\n,\n…\n𝑎\n𝑛\n (\n1≤\n𝑎\n𝑖\n≤10\n1\n≤\n𝑎\n𝑖\n≤\n10\n) — the elements of the array gifted to DBMB.",
+  "output_format": "Output\n\nFor each test case, output \"YES\" if the array can appeal to DBMB. Otherwise, output \"NO\".\n\nYou can output each letter in any case (lowercase or uppercase). For example, the strings \"yEs\", \"yes\", \"Yes\", and \"YES\" will be accepted as a positive answer.",
+  "constraints": "Note\n\nIn the second test case, \n𝑎=[1,2,3]\n𝑎\n=\n[\n1\n,\n2\n,\n3\n]\n, applying the operation on \n𝑎\n2\n𝑎\n2\n gives us \n𝑎=[1,4,3]\n𝑎\n=\n[\n1\n,\n4\n,\n3\n]\n. The sum of the array equals \n𝑠\n𝑠\n.",
+  "test_cases": [
+    {
+      "input": "6\n3 3 5\n1 1 1\n3 8 2\n1 2 3\n4 7 2\n1 1 1 1\n3 15 1\n2 4 10\n2 100 5\n4 6\n5 12 1\n1 2 2 3 2",
+      "output": "YES\nYES\nNO\nNO\nYES\nYES",
+      "is_sample": true
+    }
+  ]
+}

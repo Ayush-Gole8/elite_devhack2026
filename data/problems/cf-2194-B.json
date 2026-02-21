@@ -1,0 +1,23 @@
+{
+  "title": "Offshores",
+  "slug": "cf-2194-B",
+  "difficulty": "Easy",
+  "tags": [
+    "greedy",
+    "implementation",
+    "math"
+  ],
+  "time_limit_ms": 2000,
+  "memory_limit_kb": 256000,
+  "description": "Mark loves money very much, and he keeps most of it in the bank. He stores his money in \n𝑛\n𝑛\n different banks. In the \n𝑖\n𝑖\n-th bank, he has \n𝑎\n𝑖\n𝑎\n𝑖\n rubles.\n\nOne day, Mark decided to gather all his money in one bank, so he will be transferring money from one bank account to another. All interbank transfers are arranged the same way: he can transfer only \n𝑥\n𝑥\n rubles in one transfer, and considering all fees, \n𝑦\n𝑦\n rubles will be credited to the other account (since banks want to make a profit, it holds that \n𝑦≤𝑥\n𝑦\n≤\n𝑥\n).\n\nIt is possible that Mark will not be able to transfer all his money to one bank, but he wants to find the maximum number of rubles that can end up in any bank.",
+  "input_format": "Input\n\nEach test contains multiple test cases. The first line contains the number of test cases \n𝑡\n𝑡\n (\n1≤𝑡≤\n10\n4\n1\n≤\n𝑡\n≤\n10\n4\n). The description of the test cases follows.\n\nThe first line of each test case contains three integers \n𝑛\n𝑛\n, \n𝑥\n𝑥\n, and \n𝑦\n𝑦\n (\n2≤𝑛≤2⋅\n10\n5\n2\n≤\n𝑛\n≤\n2\n⋅\n10\n5\n, \n1≤𝑦≤𝑥≤\n10\n9\n1\n≤\n𝑦\n≤\n𝑥\n≤\n10\n9\n) — the number of banks, the transfer amount, and the credited amount.\n\nThe second line of each test case contains \n𝑛\n𝑛\n integers \n𝑎\n1\n,\n𝑎\n2\n,…,\n𝑎\n𝑛\n𝑎\n1\n,\n𝑎\n2\n,\n…\n,\n𝑎\n𝑛\n (\n1≤\n𝑎\n𝑖\n≤\n10\n9\n1\n≤\n𝑎\n𝑖\n≤\n10\n9\n) — the initial amount of rubles in each bank.\n\nIt is guaranteed that the sum of the values of \n𝑛\n𝑛\n across all test cases does not exceed \n2⋅\n10\n5\n2\n⋅\n10\n5\n.",
+  "output_format": "Output\n\nFor each test case, output a single number — the maximum number of rubles that can be obtained in any bank.",
+  "constraints": "Note\n\nIn the first test case, the optimal sequence of transfers may look as follows:\n1→4,1→4,4→3,4→3,4→3,3→2,3→2,3→2,3→2.\n1\n→\n4\n,\n1\n→\n4\n,\n4\n→\n3\n,\n4\n→\n3\n,\n4\n→\n3\n,\n3\n→\n2\n,\n3\n→\n2\n,\n3\n→\n2\n,\n3\n→\n2.\nLet's show the changes in sums after each step:\n(10,9,8,7)\n(\n10\n,\n9\n,\n8\n,\n7\n)\n−\n→\n−\n−\n1→4\n(5,9,8,11)\n−\n→\n−\n−\n1→4\n(0,9,8,15)\n→\n1\n→\n4\n(\n5\n,\n9\n,\n8\n,\n11\n)\n→\n1\n→\n4\n(\n0\n,\n9\n,\n8\n,\n15\n)\n−\n→\n−\n−\n4→3\n(0,9,12,10)\n−\n→\n−\n−\n4→3\n(0,9,16,5)\n−\n→\n−\n−\n4→3\n(0,9,20,0)\n→\n4\n→\n3\n(\n0\n,\n9\n,\n12\n,\n10\n)\n→\n4\n→\n3\n(\n0\n,\n9\n,\n16\n,\n5\n)\n→\n4\n→\n3\n(\n0\n,\n9\n,\n20\n,\n0\n)\n−\n→\n−\n−\n3→2\n(0,13,15,0)\n−\n→\n−\n−\n3→2\n(0,17,10,0)\n−\n→\n−\n−\n3→2\n(0,21,5,0)\n−\n→\n−\n−\n3→2\n(0,25,0,0).\n→\n3\n→\n2\n(\n0\n,\n13\n,\n15\n,\n0\n)\n→\n3\n→\n2\n(\n0\n,\n17\n,\n10\n,\n0\n)\n→\n3\n→\n2\n(\n0\n,\n21\n,\n5\n,\n0\n)\n→\n3\n→\n2\n(\n0\n,\n25\n,\n0\n,\n0\n)\n.\n\nAs a result, in one bank (specifically the second one), it is possible to obtain \n25\n25\n rubles, and this value is the answer for this test case.\n\nIn the third test case, it is possible to transfer one ruble from the first bank to the second bank \n1000\n1000\n times and obtain \n2000\n2000\n rubles in the second bank.",
+  "test_cases": [
+    {
+      "input": "6\n4 5 4\n10 9 8 7\n5 13 11\n47 52 64 13 91\n2 1 1\n1000 1000\n3 15 14\n34 43 52\n6 7 6\n15 17 14 15 12 16\n2 15 10\n45 44",
+      "output": "25\n229\n2000\n113\n72\n74",
+      "is_sample": true
+    }
+  ]
+}

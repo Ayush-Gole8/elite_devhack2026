@@ -1,0 +1,27 @@
+{
+  "title": "Zhora the Vacuum Cleaner",
+  "slug": "cf-2189-F",
+  "difficulty": "Hard",
+  "tags": [
+    "data structures",
+    "dfs and similar",
+    "dp",
+    "greedy",
+    "implementation",
+    "sortings",
+    "trees"
+  ],
+  "time_limit_ms": 2000,
+  "memory_limit_kb": 256000,
+  "description": "Once upon a time, Zhora the Vacuum Cleaner found a big container with nuts that is represented by a tree with \n𝑛\n𝑛\n vertices. Initially, in the \n𝑖\n𝑖\n-th vertex, there are \n𝑎\n𝑖\n𝑎\n𝑖\n nuts. What Zhora the Vacuum Cleaner likes most is eating nuts, so he decided to eat all the nuts.\n\nTo save electricity, the vacuum cleaner can rearrange the nuts in the container beforehand. Zhora can choose a vertex \n𝑣\n𝑣\n of the tree, and for every vertex \n𝑢≠𝑣\n𝑢\n≠\n𝑣\n, in non-increasing order of the length of path \n𝑢𝑣\n𝑢\n𝑣\n, if \n𝑢\n𝑢\n contains at least one nut, one nut from \n𝑢\n𝑢\n moves into the closest vertex to \n𝑣\n𝑣\n among \n𝑢\n𝑢\n's adjacent vertices. This operation requires \n𝑝\n𝑝\n electricity units.\n\nAfter performing several such operations (possibly none), Zhora the Vacuum Cleaner eats all the nuts from every vertex, spending \n𝑞\n𝑞\n electricity units per every vertex that contains nuts.\n\nWhat is the minimum amount of electricity units required to eat all the nuts?",
+  "input_format": "Input\n\nEach test contains multiple test cases. The first line contains the number of test cases \n𝑡\n𝑡\n (\n1≤𝑡≤\n10\n4\n1\n≤\n𝑡\n≤\n10\n4\n). The description of the test cases follows.\n\nThe first line of each test case contains three integers \n𝑛\n𝑛\n, \n𝑝\n𝑝\n, and \n𝑞\n𝑞\n (\n2≤𝑛≤\n10\n5\n2\n≤\n𝑛\n≤\n10\n5\n, \n0≤𝑝,𝑞≤\n10\n6\n0\n≤\n𝑝\n,\n𝑞\n≤\n10\n6\n) — the number of vertices in the container's tree and the required amounts of electricity for operations of types 1 and 2, respectively.\n\nThe second line of each test case contains \n𝑛\n𝑛\n integers \n𝑎\n1\n,\n𝑎\n2\n,…,\n𝑎\n𝑛\n𝑎\n1\n,\n𝑎\n2\n,\n…\n,\n𝑎\n𝑛\n (\n0≤\n𝑎\n𝑖\n≤\n10\n6\n0\n≤\n𝑎\n𝑖\n≤\n10\n6\n) — the quantities of nuts in the vertices.\n\nEach of the next \n𝑛−1\n𝑛\n−\n1\n lines of each test case contains two integers \n𝑢\n𝑢\n and \n𝑣\n𝑣\n (\n1≤𝑢,𝑣≤𝑛,𝑢≠𝑣\n1\n≤\n𝑢\n,\n𝑣\n≤\n𝑛\n,\n𝑢\n≠\n𝑣\n), representing an undirected tree edge from vertex \n𝑢\n𝑢\n to vertex \n𝑣\n𝑣\n. It is guaranteed that the given edges form a tree.\n\nIt is guaranteed that the sum of \n𝑛\n𝑛\n over all test cases does not exceed \n10\n5\n10\n5\n.",
+  "output_format": "Output\n\nFor each test case, output the minimum amount of electricity units required to eat all the nuts.",
+  "constraints": "Note\n\nIn the first test case, it is best to apply the movement operation to vertex \n2\n2\n, and then eat all the \n4\n4\n nuts from vertex \n2\n2\n, spending \n1+1=2\n1\n+\n1\n=\n2\n electricity units in total.\n\nIn the second test case, it is best to apply the movement operation twice to vertex \n3\n3\n, and then eat all the \n5\n5\n nuts from vertex \n3\n3\n, spending \n1+1+100=102\n1\n+\n1\n+\n100\n=\n102\n electricity units in total.\n\nIn the third test case, it is best just to eat all the nuts from vertices \n1,2,4,5\n1\n,\n2\n,\n4\n,\n5\n, spending \n10+10+10+10=40\n10\n+\n10\n+\n10\n+\n10\n=\n40\n electricity units.\n\nIn the fourth test case, it is best to apply the movement operation twice to vertex \n2\n2\n, and then eat all the nuts from vertex \n2\n2\n, spending \n6\n6\n electricity units in total.",
+  "test_cases": [
+    {
+      "input": "6\n4 1 1\n1 1 1 1\n1 2\n2 3\n2 4\n5 1 100\n1 1 1 1 1\n1 2\n2 3\n3 4\n4 5\n5 9 10\n4 8 0 8 4\n1 3\n2 3\n3 4\n3 5\n4 1 4\n0 3 1 1\n2 1\n3 1\n4 3\n5 21 93\n0 0 64 4 87\n2 1\n3 1\n4 3\n5 1\n4 5 8\n2 3 0 8\n4 3\n2 3\n3 1",
+      "output": "2\n102\n40\n6\n270\n24",
+      "is_sample": true
+    }
+  ]
+}

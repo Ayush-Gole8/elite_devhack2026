@@ -1,0 +1,22 @@
+{
+  "title": "Game with a Fraction",
+  "slug": "cf-2196-A",
+  "difficulty": "Easy",
+  "tags": [
+    "games",
+    "math"
+  ],
+  "time_limit_ms": 2000,
+  "memory_limit_kb": 256000,
+  "description": "Alice and Bob have two integers \n𝑝\n𝑝\n and \n𝑞\n𝑞\n, and they are playing a game with these numbers. The players take turns, with Alice going first. On their turn, a player can do one of two actions:\n\ndecrease \n𝑝\n𝑝\n by one (this action is possible if \n𝑝>0\n𝑝\n>\n0\n);\ndecrease \n𝑞\n𝑞\n by one (this action is possible if \n𝑞>1\n𝑞\n>\n1\n).\n\nThe game ends when \n𝑝=0\n𝑝\n=\n0\n and \n𝑞=1\n𝑞\n=\n1\n.\n\nBob wins if at any point during the game the fraction \n𝑝\n𝑞\n𝑝\n𝑞\n is equal to in value the fraction \n2\n3\n2\n3\n. Otherwise, Alice wins.\n\nGiven the initial values of \n𝑝\n𝑝\n and \n𝑞\n𝑞\n, determine the winner of the game if both players play optimally.",
+  "input_format": "Input\n\nEach test contains multiple test cases. The first line contains the number of test cases \n𝑡\n𝑡\n (\n1≤𝑡≤\n10\n4\n1\n≤\n𝑡\n≤\n10\n4\n). The description of the test cases follows.\n\nEach input case consists of a single line containing two integers \n𝑝\n𝑝\n and \n𝑞\n𝑞\n (\n1≤𝑝,𝑞≤\n10\n18\n1\n≤\n𝑝\n,\n𝑞\n≤\n10\n18\n).",
+  "output_format": "Output\n\nFor each input case, output:\n\n\"Alice\" if Alice wins;\n\"Bob\" if Bob wins.",
+  "constraints": "Note\n\nIn the first input case, the fraction is already equal to \n2\n3\n2\n3\n by value, so Bob wins.\n\nIn the second input case, one possible sequence of the game is as follows:\n\ninitially \n𝑝=10,𝑞=14\n𝑝\n=\n10\n,\n𝑞\n=\n14\n;\nafter Alice's turn \n𝑝=9,𝑞=14\n𝑝\n=\n9\n,\n𝑞\n=\n14\n;\nafter Bob's turn \n𝑝=9,𝑞=13\n𝑝\n=\n9\n,\n𝑞\n=\n13\n;\nafter Alice's turn \n𝑝=9,𝑞=12\n𝑝\n=\n9\n,\n𝑞\n=\n12\n;\nafter Bob's turn \n𝑝=8,𝑞=12\n𝑝\n=\n8\n,\n𝑞\n=\n12\n.\n\nBob wins, as \n8\n12\n8\n12\n is equal to \n2\n3\n2\n3\n. It can be shown that in this example, with optimal play from both players, Bob always wins.\n\nFor the third input case, Alice's optimal strategy will be to decrease \n𝑞\n𝑞\n as long as possible. In this case, the game will end in favor of Alice regardless of Bob's actions.",
+  "test_cases": [
+    {
+      "input": "6\n4 6\n10 14\n15 15\n7 12\n7000000000000000 10487275715782582\n1000000000000000000 1000000000000000000",
+      "output": "Bob\nBob\nAlice\nAlice\nBob\nAlice",
+      "is_sample": true
+    }
+  ]
+}

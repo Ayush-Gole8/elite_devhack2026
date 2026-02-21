@@ -1,0 +1,23 @@
+{
+  "title": "The Curse of the Frog",
+  "slug": "cf-2189-B",
+  "difficulty": "Easy",
+  "tags": [
+    "constructive algorithms",
+    "greedy",
+    "math"
+  ],
+  "time_limit_ms": 2000,
+  "memory_limit_kb": 256000,
+  "description": "On an infinite number line, at point \n0\n0\n, sits a frog. After many years of meditation, the frog has mastered \n𝑛\n𝑛\n unique types of magical jumps. The \n𝑖\n𝑖\n-th type of jump allows it to jump forward by no more than \n𝑎\n𝑖\n𝑎\n𝑖\n units. In other words, if it was at integer point \n𝑘\n𝑘\n, after the jump it can land at any integer point from \n𝑘\n𝑘\n to \n𝑘+\n𝑎\n𝑖\n𝑘\n+\n𝑎\n𝑖\n.\n\nBut magic always comes with a price; it has been cursed. Before each \n𝑏\n𝑖\n𝑏\n𝑖\n-th attempt (before \n𝑏\n𝑖\n𝑏\n𝑖\n-th, \n2\n𝑏\n𝑖\n2\n𝑏\n𝑖\n-th, \n3\n𝑏\n𝑖\n3\n𝑏\n𝑖\n-th etc. attempt among the jumps of type \n𝑖\n𝑖\n) to use the \n𝑖\n𝑖\n-th type of jump, the frog rolls back \n𝑐\n𝑖\n𝑐\n𝑖\n units! In other words, if it was at point \n𝑘\n𝑘\n, it will first find itself at point \n𝑘−\n𝑐\n𝑖\n𝑘\n−\n𝑐\n𝑖\n, and after the jump, it can land at any integer point from \n𝑘−\n𝑐\n𝑖\n𝑘\n−\n𝑐\n𝑖\n to \n𝑘−\n𝑐\n𝑖\n+\n𝑎\n𝑖\n𝑘\n−\n𝑐\n𝑖\n+\n𝑎\n𝑖\n.\n\nThe frog's goal is to reach the point with the number \n𝑥\n𝑥\n, using jumps while minimizing the number of rollbacks. Help the frog — find the minimum number of rollbacks it will have to endure on its way to the goal, or determine that it cannot reach point \n𝑥\n𝑥\n.",
+  "input_format": "Input\n\nEach test contains multiple test cases. The first line contains the number of test cases \n𝑡\n𝑡\n (\n1≤𝑡≤\n10\n4\n1\n≤\n𝑡\n≤\n10\n4\n). The description of the test cases follows.\n\nIn the first line of each test case, there are \n2\n2\n integers \n𝑛\n𝑛\n and \n𝑥\n𝑥\n (\n1≤𝑛≤\n10\n5\n1\n≤\n𝑛\n≤\n10\n5\n, \n1≤𝑥≤\n10\n18\n1\n≤\n𝑥\n≤\n10\n18\n) — the number of types of jumps the frog can make and its final target.\n\nIn the following \n𝑛\n𝑛\n lines, the description of the jump types is provided; the \n𝑖\n𝑖\n-th line contains \n3\n3\n integers \n𝑎\n𝑖\n𝑎\n𝑖\n, \n𝑏\n𝑖\n𝑏\n𝑖\n, and \n𝑐\n𝑖\n𝑐\n𝑖\n (\n1≤\n𝑎\n𝑖\n,\n𝑏\n𝑖\n,\n𝑐\n𝑖\n≤\n10\n6\n1\n≤\n𝑎\n𝑖\n,\n𝑏\n𝑖\n,\n𝑐\n𝑖\n≤\n10\n6\n).\n\nIt is guaranteed that the sum of \n𝑛\n𝑛\n across all test cases does not exceed \n10\n5\n10\n5\n.",
+  "output_format": "Output\n\nFor each test case, if the frog can reach point \n𝑥\n𝑥\n, find the smallest number of rollbacks it must endure to do so. If it cannot reach point \n𝑥\n𝑥\n, output \n−1\n−\n1\n.",
+  "constraints": "Note\n\nIn the first test case, the frog can jump forward by \n1\n1\n unit and will end up at point \n1\n1\n. Thus, the answer is \n0\n0\n.\n\nIn the third test case, it can be shown that the frog cannot reach point \n4\n4\n.\n\nIn the fourth test case, the frog can reach point \n8\n8\n, for example, as follows: jump using the \n1\n1\n-st type by \n12\n12\n, jump using the \n4\n4\n-th type by \n1\n1\n, and jump using the \n2\n2\n-nd type by \n10\n10\n. Then it will sequentially be at the following points \n0→(rollback)−11→1→2→(rollback)−2→8\n0\n→\n(rollback)\n−\n11\n→\n1\n→\n2\n→\n(rollback)\n−\n2\n→\n8\n.\n\nIn the sixth test case, the frog can reach point \n10\n10\n, for example, as follows: jump \n6\n6\n times by \n2\n2\n and \n1\n1\n time by \n1\n1\n. Then it will sequentially be at the following points \n0→2→(rollback)1→3→5→(rollback)4→6→8→(rollback)7→9→10\n0\n→\n2\n→\n(rollback)\n1\n→\n3\n→\n5\n→\n(rollback)\n4\n→\n6\n→\n8\n→\n(rollback)\n7\n→\n9\n→\n10\n.",
+  "test_cases": [
+    {
+      "input": "6\n1 1\n3 3 3\n1 7\n4 2 5\n2 4\n1 2 3\n2 2 4\n5 8\n12 1 11\n10 1 4\n1 1 3\n1 2 5\n2 1 7\n1 1000000000000000000\n1000000 4 654321\n1 10\n2 2 1",
+      "output": "0\n1\n-1\n2\n298892990032\n3",
+      "is_sample": true
+    }
+  ]
+}

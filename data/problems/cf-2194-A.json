@@ -1,0 +1,22 @@
+{
+  "title": "Lawn Mower",
+  "slug": "cf-2194-A",
+  "difficulty": "Easy",
+  "tags": [
+    "greedy",
+    "math"
+  ],
+  "time_limit_ms": 2000,
+  "memory_limit_kb": 256000,
+  "description": "The exit from the summer cottage is fenced with a fence consisting of \n𝑛\n𝑛\n boards, each \n1\n1\n meter wide. To the left and right of the exit are the fences of other plots. Some of the boards of the fence want to be removed for the construction of a bathhouse (possibly all or none), while there is an automatic lawn mower on the plot that is \n𝑤\n𝑤\n meters wide and must not leave the plot through a hole in the fence.\n\nThe lawn mower will be able to exit the plot if there are at least \n𝑤\n𝑤\n consecutive removed boards among the numbers of the removed boards. Determine the maximum number of boards that can be removed from the fence.",
+  "input_format": "Input\n\nEach test contains multiple test cases. The first line contains the number of test cases \n𝑡\n𝑡\n (\n1≤𝑡≤\n10\n4\n1\n≤\n𝑡\n≤\n10\n4\n). The description of the test cases follows.\n\nThe only line of each test case contains two integers \n𝑛\n𝑛\n and \n𝑤\n𝑤\n (\n1≤𝑛≤\n10\n9\n1\n≤\n𝑛\n≤\n10\n9\n, \n1≤𝑤≤\n10\n9\n1\n≤\n𝑤\n≤\n10\n9\n) — the number of boards in the fence and the width of the lawnmower in meters, respectively.",
+  "output_format": "Output\n\nFor each test case, output a single number — the maximum number of boards that can be removed from the fence.",
+  "constraints": "Note\n\nIn the first test case, the fence consists of \n9\n9\n boards.\n\nYou can remove \n6\n6\n boards and leave only the boards numbered \n2\n2\n, \n5\n5\n, and \n8\n8\n. Then the lawn mower will not be able to leave the boundaries of the territory.\n\nIn the second test case, you can remove \n10\n10\n boards, a possible arrangement is shown below.",
+  "test_cases": [
+    {
+      "input": "5\n9 3\n13 4\n15 14\n20 1\n1000 42",
+      "output": "6\n10\n14\n0\n977",
+      "is_sample": true
+    }
+  ]
+}

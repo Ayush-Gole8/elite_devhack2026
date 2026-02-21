@@ -1,0 +1,23 @@
+{
+  "title": "Another Problem about Beautiful Pairs",
+  "slug": "cf-2196-B",
+  "difficulty": "Easy",
+  "tags": [
+    "brute force",
+    "math",
+    "two pointers"
+  ],
+  "time_limit_ms": 2000,
+  "memory_limit_kb": 256000,
+  "description": "In the array \n𝑎\n𝑎\n, we call a pair of indices \n𝑖\n𝑖\n, \n𝑗\n𝑗\n beautiful if the following condition holds:\n\n𝑎\n𝑖\n⋅\n𝑎\n𝑗\n=𝑗−𝑖\n𝑎\n𝑖\n⋅\n𝑎\n𝑗\n=\n𝑗\n−\n𝑖\n.\n\nCount the number of beautiful pairs in the array \n𝑎\n𝑎\n.",
+  "input_format": "Input\n\nEach test contains multiple test cases. The first line contains the number of test cases \n𝑡\n𝑡\n (\n1≤𝑡≤\n10\n4\n1\n≤\n𝑡\n≤\n10\n4\n). The description of the test cases follows.\n\nThe first line of each test case contains a single integer \n𝑛\n𝑛\n (\n2≤𝑛≤2⋅\n10\n5\n2\n≤\n𝑛\n≤\n2\n⋅\n10\n5\n).\n\nThe second line of each test case contains \n𝑛\n𝑛\n integers \n𝑎\n𝑖\n𝑎\n𝑖\n (\n1≤\n𝑎\n𝑖\n≤\n10\n9\n1\n≤\n𝑎\n𝑖\n≤\n10\n9\n).\n\nAdditional constraints on the input:\n\nThe sum of \n𝑛\n𝑛\n across all test cases does not exceed \n2⋅\n10\n5\n2\n⋅\n10\n5\n.",
+  "output_format": "Output\n\nFor each test case, output a single integer — the answer to the problem.",
+  "constraints": "Note\n\nIn the first example, there are \n3\n3\n beautiful pairs: (\n1,2\n1\n,\n2\n), (\n1,3\n1\n,\n3\n), and (\n1,5\n1\n,\n5\n).\n\nIn the second example, there are \n7\n7\n beautiful pairs: (\n1,3\n1\n,\n3\n), (\n1,5\n1\n,\n5\n), (\n2,4\n2\n,\n4\n), (\n2,6\n2\n,\n6\n), (\n3,4\n3\n,\n4\n), (\n3,5\n3\n,\n5\n), and (\n4,6\n4\n,\n6\n).",
+  "test_cases": [
+    {
+      "input": "4\n5\n1 1 2 100 4\n6\n2 2 1 1 2 2\n10\n1 1 2 3 4 1 1 7 3 9\n2\n1000000000 1000000000",
+      "output": "3\n7\n10\n0",
+      "is_sample": true
+    }
+  ]
+}

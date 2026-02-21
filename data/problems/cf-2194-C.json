@@ -1,0 +1,25 @@
+{
+  "title": "Secret message",
+  "slug": "cf-2194-C",
+  "difficulty": "Easy",
+  "tags": [
+    "bitmasks",
+    "brute force",
+    "dp",
+    "math",
+    "number theory"
+  ],
+  "time_limit_ms": 2000,
+  "memory_limit_kb": 256000,
+  "description": "Bob, the genius spy, has intercepted an encrypted message. He assumes that it contains secret information and is actively engaged in deciphering it.\n\nThe note, which has fallen into the hands of the spy, consists of \n𝑘\n𝑘\n strips, each of length \n𝑛\n𝑛\n and containing strict lowercase Latin letters. With extensive experience in deciphering such documents, Bob guessed that the message he is interested in (the deciphering of the note) is also a string of length \n𝑛\n𝑛\n, and the \n𝑖\n𝑖\n-th letter of this message corresponds to the \n𝑖\n𝑖\n-th letter of one of the strips.\n\nAccording to Bob, the informativity of a string \n𝑠\n𝑠\n is defined as the minimum positive integer \n𝑑\n𝑑\n such that a string \n𝑡\n𝑡\n of length \n𝑑\n𝑑\n exists, and \n𝑠\n𝑠\n can be formed by repeating \n𝑡\n𝑡\n several times. For example, the informativity of the string \"aaaa\" is 1, the informativity of the string \"abab\" is 2, and the informativity of the string \"abcd\" is 4.\n\nBob assumes that the note's author, to ensure reliable transmission of information, repeated the data in the message several times. Therefore, he believes that a more plausible decryption of the note would have the smallest possible informativity.\n\nHelp the spy: find the message that represents the decryption of the note and has the minimum possible informativity.",
+  "input_format": "Input\n\nEach test contains multiple test cases. The first line contains the number of test cases \n𝑡\n𝑡\n (\n1≤𝑡≤\n10\n4\n1\n≤\n𝑡\n≤\n10\n4\n). The description of the test cases follows.\n\nIn the first line of each test case, there are numbers \n𝑛\n𝑛\n and \n𝑘\n𝑘\n (\n2≤𝑛,𝑘≤50000,4≤𝑛⋅𝑘≤\n10\n5\n2\n≤\n𝑛\n,\n𝑘\n≤\n50\n000\n,\n4\n≤\n𝑛\n⋅\n𝑘\n≤\n10\n5\n) — the length of the strips of paper and the number of strips.\n\nIn each of the following \n𝑘\n𝑘\n lines of each test case, there is a sequence of \n𝑛\n𝑛\n lowercase Latin letters — the next strip.\n\nIt is guaranteed that the sum \n𝑛⋅𝑘\n𝑛\n⋅\n𝑘\n across all test cases does not exceed \n10\n5\n10\n5",
+  "output_format": "Output\n\nFor each test case, output a string of length \n𝑛\n𝑛\n — the decryption of the note, which has the minimal possible informativity. If there are multiple suitable answers, any of them may be output.",
+  "constraints": "Note\n\nIn the first test case, the minimum possible informativity is \n1\n1\n:\n\nabc\n\nbaa\n\nIn the second test case, the minimum possible informativity is \n3\n3\n:\n\niiinnnfff\n\nnnfiffinn",
+  "test_cases": [
+    {
+      "input": "3\n3 2\nabc\nbaa\n9 2\niiinnnfff\nnnfiffinn\n4 2\nacbd\nbdac",
+      "output": "aaa\ninfinfinf\nacac",
+      "is_sample": true
+    }
+  ]
+}

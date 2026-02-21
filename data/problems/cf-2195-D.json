@@ -1,0 +1,21 @@
+{
+  "title": "Absolute Cinema",
+  "slug": "cf-2195-D",
+  "difficulty": "Easy",
+  "tags": [
+    "math"
+  ],
+  "time_limit_ms": 2000,
+  "memory_limit_kb": 256000,
+  "description": "There is a hidden sequence \n𝑎\n1\n,\n𝑎\n2\n,…,\n𝑎\n𝑛\n𝑎\n1\n,\n𝑎\n2\n,\n…\n,\n𝑎\n𝑛\n of \n𝑛\n𝑛\n integers (\n𝑛≥2\n𝑛\n≥\n2\n). It is guaranteed that \n|\n𝑎\n𝑖\n|≤1000\n|\n𝑎\n𝑖\n|\n≤\n1000\n for all \n1≤𝑖≤𝑛\n1\n≤\n𝑖\n≤\n𝑛\n.\n\nLet's define a function \n𝑓(𝑥)\n𝑓\n(\n𝑥\n)\n as follows:\n\n𝑓(𝑥)=\n∑\n𝑖=1\n𝑛\n𝑎\n𝑖\n⋅|𝑖−𝑥|\n𝑓\n(\n𝑥\n)\n=\n∑\n𝑖\n=\n1\n𝑛\n𝑎\n𝑖\n⋅\n|\n𝑖\n−\n𝑥\n|\n\nGiven \n𝑛\n𝑛\n values \n𝑓(1),𝑓(2),…,𝑓(𝑛)\n𝑓\n(\n1\n)\n,\n𝑓\n(\n2\n)\n,\n…\n,\n𝑓\n(\n𝑛\n)\n, please determine the values of \n𝑎\n1\n,\n𝑎\n2\n,…,\n𝑎\n𝑛\n𝑎\n1\n,\n𝑎\n2\n,\n…\n,\n𝑎\n𝑛\n.\n\nIt is guaranteed that the values \n𝑎\n1\n,\n𝑎\n2\n,…,\n𝑎\n𝑛\n𝑎\n1\n,\n𝑎\n2\n,\n…\n,\n𝑎\n𝑛\n can be determined uniquely.",
+  "input_format": "Input\n\nEach test contains multiple test cases. The first line contains the number of test cases \n𝑡\n𝑡\n (\n1≤𝑡≤\n10\n4\n1\n≤\n𝑡\n≤\n10\n4\n). The description of the test cases follows.\n\nThe first line of each test case contains a single integer \n𝑛\n𝑛\n (\n2≤𝑛≤300000\n2\n≤\n𝑛\n≤\n300\n000\n).\n\nThe second line of each test case contains \n𝑛\n𝑛\n integers \n𝑓(1),𝑓(2),…,𝑓(𝑛)\n𝑓\n(\n1\n)\n,\n𝑓\n(\n2\n)\n,\n…\n,\n𝑓\n(\n𝑛\n)\n (\n−\n10\n14\n≤𝑓(𝑖)≤\n10\n14\n−\n10\n14\n≤\n𝑓\n(\n𝑖\n)\n≤\n10\n14\n).\n\nIt is guaranteed that the sum of \n𝑛\n𝑛\n over all test cases does not exceed \n300000\n300\n000\n.",
+  "output_format": "Output\n\nFor each test case, output \n𝑛\n𝑛\n integers \n𝑎\n1\n,\n𝑎\n2\n,…,\n𝑎\n𝑛\n𝑎\n1\n,\n𝑎\n2\n,\n…\n,\n𝑎\n𝑛\n on a separate line (\n|\n𝑎\n𝑖\n|≤1000\n|\n𝑎\n𝑖\n|\n≤\n1000\n).\n\nIt is guaranteed that the values \n𝑎\n1\n,\n𝑎\n2\n,…,\n𝑎\n𝑛\n𝑎\n1\n,\n𝑎\n2\n,\n…\n,\n𝑎\n𝑛\n can be determined uniquely.",
+  "constraints": "Note\n\nIn the first test case, the hidden sequence is \n𝑎=[1,4,2,3]\n𝑎\n=\n[\n1\n,\n4\n,\n2\n,\n3\n]\n.\n\nThe values \n𝑓(1),𝑓(2),…,𝑓(𝑛)\n𝑓\n(\n1\n)\n,\n𝑓\n(\n2\n)\n,\n…\n,\n𝑓\n(\n𝑛\n)\n are as follows:\n\n𝑓(1)=1⋅|1−1|+4⋅|2−1|+2⋅|3−1|+3⋅|4−1|=0+4+4+9=17\n𝑓\n(\n1\n)\n=\n1\n⋅\n|\n1\n−\n1\n|\n+\n4\n⋅\n|\n2\n−\n1\n|\n+\n2\n⋅\n|\n3\n−\n1\n|\n+\n3\n⋅\n|\n4\n−\n1\n|\n=\n0\n+\n4\n+\n4\n+\n9\n=\n17\n;\n𝑓(2)=1⋅|1−2|+4⋅|2−2|+2⋅|3−2|+3⋅|4−2|=1+0+2+6=9\n𝑓\n(\n2\n)\n=\n1\n⋅\n|\n1\n−\n2\n|\n+\n4\n⋅\n|\n2\n−\n2\n|\n+\n2\n⋅\n|\n3\n−\n2\n|\n+\n3\n⋅\n|\n4\n−\n2\n|\n=\n1\n+\n0\n+\n2\n+\n6\n=\n9\n;\n𝑓(3)=1⋅|1−3|+4⋅|2−3|+2⋅|3−3|+3⋅|4−3|=2+4+0+3=9\n𝑓\n(\n3\n)\n=\n1\n⋅\n|\n1\n−\n3\n|\n+\n4\n⋅\n|\n2\n−\n3\n|\n+\n2\n⋅\n|\n3\n−\n3\n|\n+\n3\n⋅\n|\n4\n−\n3\n|\n=\n2\n+\n4\n+\n0\n+\n3\n=\n9\n;\n𝑓(4)=1⋅|1−4|+4⋅|2−4|+2⋅|3−4|+3⋅|4−4|=3+8+2+0=13\n𝑓\n(\n4\n)\n=\n1\n⋅\n|\n1\n−\n4\n|\n+\n4\n⋅\n|\n2\n−\n4\n|\n+\n2\n⋅\n|\n3\n−\n4\n|\n+\n3\n⋅\n|\n4\n−\n4\n|\n=\n3\n+\n8\n+\n2\n+\n0\n=\n13\n.",
+  "test_cases": [
+    {
+      "input": "4\n4\n17 9 9 13\n6\n-37 -32 -15 4 27 42\n5\n-26 -32 -24 -4 2\n2\n420 -69",
+      "output": "1 4 2 3\n3 6 1 2 -4 -7\n-6 7 6 -7 -6\n-69 420",
+      "is_sample": true
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "title": "Product Queries",
+  "slug": "cf-2193-E",
+  "difficulty": "Medium",
+  "tags": [
+    "dp",
+    "math",
+    "number theory",
+    "shortest paths"
+  ],
+  "time_limit_ms": 2000,
+  "memory_limit_kb": 256000,
+  "description": "Today, Sabyrzhan was called to the board with an array \n𝑎\n𝑎\n of length \n𝑛\n𝑛\n and was assigned an officer's task — to answer \n𝑛\n𝑛\n questions.\n\nIn the \n𝑖\n𝑖\n-th question, it is required to determine the minimum number of elements from the array that need to be selected from the board (it is allowed to use the same element multiple times) so that their product is exactly equal to \n𝑖\n𝑖\n, or to report that it is impossible to achieve such a product.\n\nNote that at least one element must be selected.",
+  "input_format": "Input\n\nEach test consists of several test cases. The first line contains one integer \n𝑡\n𝑡\n (\n1≤𝑡≤\n10\n4\n1\n≤\n𝑡\n≤\n10\n4\n) — the number of test cases. The description of the test cases follows.\n\nThe first line of each test case contains one integer \n𝑛\n𝑛\n (\n1≤𝑛≤3⋅\n10\n5\n1\n≤\n𝑛\n≤\n3\n⋅\n10\n5\n).\n\nThe second line of each test case contains \n𝑛\n𝑛\n integers \n𝑎\n1\n,\n𝑎\n2\n,…,\n𝑎\n𝑛\n𝑎\n1\n,\n𝑎\n2\n,\n…\n,\n𝑎\n𝑛\n (\n1≤\n𝑎\n𝑖\n≤𝑛\n1\n≤\n𝑎\n𝑖\n≤\n𝑛\n).\n\nIt is guaranteed that the sum of the values of \n𝑛\n𝑛\n across all test cases does not exceed \n3⋅\n10\n5\n3\n⋅\n10\n5\n.",
+  "output_format": "Output\n\nFor the \n𝑖\n𝑖\n-th question, output one integer — the minimum number of elements from the array required to obtain a product equal to \n𝑖\n𝑖\n, or \n−1\n−\n1\n if it is impossible to achieve such a product.",
+  "constraints": "Note\n\nConsider the first test case. The products can be obtained as follows:\n\n1\n1\n cannot be obtained.\n2\n2\n can be obtained by selecting \n𝑎\n2\n𝑎\n2\n.\n3\n3\n can be obtained by selecting \n𝑎\n1\n𝑎\n1\n.\n4\n4\n can be obtained by selecting \n𝑎\n2\n𝑎\n2\n twice.\n5\n5\n cannot be obtained.\n6\n6\n can be obtained by selecting \n𝑎\n7\n𝑎\n7\n.\n7\n7\n can be obtained by selecting \n𝑎\n5\n𝑎\n5\n.\n8\n8\n can be obtained by selecting \n𝑎\n2\n𝑎\n2\n three times.",
+  "test_cases": [
+    {
+      "input": "6\n8\n3 2 2 3 7 3 6 7\n5\n1 2 3 4 5\n3\n1 1 1\n10\n2 1 2 1 3 5 5 7 7 7\n4\n1 1 2 2\n1\n1",
+      "output": "-1 1 1 2 -1 1 1 3\n1 1 1 1 1\n1 -1 -1\n1 1 1 2 1 2 1 3 2 2\n1 1 -1 2\n1",
+      "is_sample": true
+    }
+  ]
+}

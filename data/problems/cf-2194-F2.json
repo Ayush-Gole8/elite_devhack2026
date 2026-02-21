@@ -1,0 +1,26 @@
+{
+  "title": "Again Trees... (hard version)",
+  "slug": "cf-2194-F2",
+  "difficulty": "Easy",
+  "tags": [
+    "bitmasks",
+    "data structures",
+    "dfs and similar",
+    "dp",
+    "fft",
+    "trees"
+  ],
+  "time_limit_ms": 2000,
+  "memory_limit_kb": 256000,
+  "description": "This is the hard version of the problem. The difference between the versions is that in this version, \n𝑘≤10\n𝑘\n≤\n10\n. You can hack only if you solved all versions of this problem.\n\nGiven a tree consisting of \n𝑛\n𝑛\n vertices. Each vertex has a non-negative integer \n𝑎\n𝑣\n𝑎\n𝑣\n written on it. You are also given \n𝑘\n𝑘\n distinct non-negative integers \n𝑏\n1\n,…,\n𝑏\n𝑘\n𝑏\n1\n,\n…\n,\n𝑏\n𝑘\n.\n\nWe will call a set of edges beautiful if, after removing these edges from the tree, the tree splits into connected components, where in each component the bitwise XOR of all the numbers \n𝑎\n𝑣\n𝑎\n𝑣\n in that component belongs to the set \n𝑏\n𝑏\n.\n\nYou need to count the number of beautiful sets of edges in the tree modulo \n10\n9\n+7\n10\n9\n+\n7\n.",
+  "input_format": "Input\n\nEach test contains multiple test cases. The first line contains the number of test cases \n𝑡\n𝑡\n (\n1≤𝑡≤500\n1\n≤\n𝑡\n≤\n500\n). The description of the test cases follows.\n\nThe first line of each dataset contains two integers \n𝑛\n𝑛\n and \n𝑘\n𝑘\n (\n2≤𝑛≤\n10\n5\n2\n≤\n𝑛\n≤\n10\n5\n, \n1≤𝑘≤10\n1\n≤\n𝑘\n≤\n10\n) — the number of vertices in the tree and the size of the set \n𝑏\n𝑏\n.\n\nThe next \n𝑛−1\n𝑛\n−\n1\n lines describe the edges of the tree. The \n𝑖\n𝑖\n-th line contains two integers \n𝑣\n𝑖\n𝑣\n𝑖\n and \n𝑢\n𝑖\n𝑢\n𝑖\n (\n1≤\n𝑣\n𝑖\n,\n𝑢\n𝑖\n≤𝑛\n1\n≤\n𝑣\n𝑖\n,\n𝑢\n𝑖\n≤\n𝑛\n) — the numbers of the vertices connected by the \n𝑖\n𝑖\n-th edge.\n\nThe next line contains \n𝑛\n𝑛\n integers \n𝑎\n1\n,\n𝑎\n2\n,…,\n𝑎\n𝑛\n𝑎\n1\n,\n𝑎\n2\n,\n…\n,\n𝑎\n𝑛\n (\n0≤\n𝑎\n𝑖\n<\n2\n30\n0\n≤\n𝑎\n𝑖\n<\n2\n30\n) — the values written on the vertices.\n\nThe following line contains \n𝑘\n𝑘\n distinct integers \n𝑏\n1\n,\n𝑏\n2\n,…,\n𝑏\n𝑘\n𝑏\n1\n,\n𝑏\n2\n,\n…\n,\n𝑏\n𝑘\n (\n0≤\n𝑏\n𝑖\n<\n2\n30\n0\n≤\n𝑏\n𝑖\n<\n2\n30\n) — the elements of the set \n𝑏\n𝑏\n.\n\nIt is guaranteed that the sum of \n𝑛\n𝑛\n across all datasets does not exceed \n10\n5\n10\n5\n.",
+  "output_format": "Output\n\nFor each test dataset, output a single integer — the answer to the problem.",
+  "constraints": "Note\n\nIllustration for the first test dataset. In it, you can remove the edge between vertices \n1\n1\n and \n2\n2\n. Then the bitwise XOR in the component consisting of vertices \n2\n2\n and \n5\n5\n is \n𝑎\n2\n⊕\n𝑎\n5\n=2⊕3=1\n𝑎\n2\n⊕\n𝑎\n5\n=\n2\n⊕\n3\n=\n1\n. The bitwise XOR in the component with vertices \n1\n1\n, \n3\n3\n, and \n4\n4\n is \n𝑎\n1\n⊕\n𝑎\n3\n⊕\n𝑎\n4\n=0⊕2⊕3=1\n𝑎\n1\n⊕\n𝑎\n3\n⊕\n𝑎\n4\n=\n0\n⊕\n2\n⊕\n3\n=\n1\n. The second beautiful set is the one consisting of the edge connecting vertices \n1\n1\n and \n3\n3\n.\n\nIn the third test dataset, the beautiful sets will be (an edge is denoted by the pair of vertices it connects) \n[(1,2)],[(1,3)],[(2,5)],[(3,4)]\n[\n(\n1\n,\n2\n)\n]\n,\n[\n(\n1\n,\n3\n)\n]\n,\n[\n(\n2\n,\n5\n)\n]\n,\n[\n(\n3\n,\n4\n)\n]\n. Note that the first and third samples differ only in the set \n𝑏\n𝑏\n.\n\nIn the fourth test dataset, the beautiful sets will be \n[(1,2)],[(3,4)],[(1,2),(2,3),(3,4)]\n[\n(\n1\n,\n2\n)\n]\n,\n[\n(\n3\n,\n4\n)\n]\n,\n[\n(\n1\n,\n2\n)\n,\n(\n2\n,\n3\n)\n,\n(\n3\n,\n4\n)\n]\n.",
+  "test_cases": [
+    {
+      "input": "4\n5 1\n1 2\n1 3\n3 4\n2 5\n0 2 2 3 3\n1\n5 1\n4 5\n1 2\n3 1\n3 5\n0 0 2 0 2\n0\n5 2\n1 2\n1 3\n3 4\n2 5\n0 2 2 3 3\n1 3\n4 1\n1 2\n2 3\n3 4\n1 1 1 1\n1",
+      "output": "2\n8\n4\n3",
+      "is_sample": true
+    }
+  ]
+}

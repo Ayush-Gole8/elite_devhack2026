@@ -1,0 +1,26 @@
+{
+  "title": "Double Bracket Sequence",
+  "slug": "cf-2196-D",
+  "difficulty": "Easy",
+  "tags": [
+    "data structures",
+    "dp",
+    "expression parsing",
+    "flows",
+    "greedy",
+    "strings"
+  ],
+  "time_limit_ms": 2000,
+  "memory_limit_kb": 256000,
+  "description": "Given a string \n𝑠\n𝑠\n of even length, consisting of the characters \"(\", \")\", \"[\" and \"]\", which are brackets of two types (round and square).\n\nWe call a string \n𝑡\n𝑡\n beautiful if it satisfies two conditions simultaneously:\n\nThe subsequence of all round brackets forms a correct bracket sequence\n∗\n∗\n;\nThe subsequence of all square brackets forms a correct bracket sequence.\n\nFor example, the string \"[(][)[]]()\" is beautiful, as the subsequence of all round brackets in it \"()()\" forms a correct bracket sequence and the subsequence of all square brackets in it \"[][[]]\" forms a correct bracket sequence.\n\nYou would like to turn \n𝑠\n𝑠\n into any beautiful string; for this, you can change the characters: in one operation, you can choose a position \n𝑖\n𝑖\n, such that \n1≤𝑖≤𝑛\n1\n≤\n𝑖\n≤\n𝑛\n and change the character \n𝑠\n𝑖\n𝑠\n𝑖\n to any round or square bracket.\n\nWhat is the minimum number of operations required to transform \n𝑠\n𝑠\n into any beautiful string?\n\n∗\n∗\nA bracket sequence is called correct if by inserting the symbols \"+\" and \"1\" into it, one can obtain a valid mathematical expression. For example, the sequences \"(())()\", \"[]\" and \"(()(()))\" are correct, while \")(\", \"[[]\" and \"(()))(\" are not.",
+  "input_format": "Input\n\nEach test contains multiple test cases. The first line contains the number of test cases \n𝑡\n𝑡\n (\n1≤𝑡≤\n10\n4\n1\n≤\n𝑡\n≤\n10\n4\n). The description of the test cases follows.\n\nThe first line of each test case contains one integer \n𝑛\n𝑛\n (\n2≤𝑛≤2⋅\n10\n5\n2\n≤\n𝑛\n≤\n2\n⋅\n10\n5\n) — the length of the string \n𝑠\n𝑠\n. It is guaranteed that \n𝑛\n𝑛\n is even.\n\nThe second line of each test case contains a string \n𝑠\n𝑠\n of length \n𝑛\n𝑛\n, consisting only of the characters \"(\", \")\", \"[\" and \"]\".\n\nIt is guaranteed that the sum of \n𝑛\n𝑛\n across all test cases does not exceed \n2⋅\n10\n5\n2\n⋅\n10\n5",
+  "output_format": "Output\n\nFor each test case, output a single integer — the answer to the problem.",
+  "constraints": "Note\n\nIn the first test case, from \n𝑠\n𝑠\n you can obtain \"[]\" by changing the second character.\n\nIn the second test case, from \n𝑠\n𝑠\n, in \n2\n2\n operations, you can obtain \"[][]\", by changing the characters at positions \n2\n2\n and \n4\n4\n.\n\nIn the third test case, from \n𝑠\n𝑠\n, in \n2\n2\n operations, you can obtain \"()[]\", by changing the characters at positions \n1\n1\n and \n4\n4\n.\n\nIn the fourth test case, \n𝑠\n𝑠\n is already beautiful, as it can be divided into the subsequences \"()\" and \"[]\".",
+  "test_cases": [
+    {
+      "input": "5\n2\n[)\n4\n[)[(\n4\n))[[\n4\n([)]\n6\n[)]](]",
+      "output": "1\n2\n2\n0\n2",
+      "is_sample": true
+    }
+  ]
+}

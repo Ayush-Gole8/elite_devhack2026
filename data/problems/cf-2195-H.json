@@ -1,0 +1,24 @@
+{
+  "title": "Codeforces Heuristic Contest 001",
+  "slug": "cf-2195-H",
+  "difficulty": "Easy",
+  "tags": [
+    "brute force",
+    "constructive algorithms",
+    "geometry",
+    "implementation"
+  ],
+  "time_limit_ms": 2000,
+  "memory_limit_kb": 256000,
+  "description": "There is a grid of \n3𝑛×3𝑛\n3\n𝑛\n×\n3\n𝑛\n points, consisting of all integer points \n(𝑥,𝑦)\n(\n𝑥\n,\n𝑦\n)\n such that \n1≤𝑥,𝑦≤3𝑛\n1\n≤\n𝑥\n,\n𝑦\n≤\n3\n𝑛\n.\n\nFind a largest set of triangles satisfying the following conditions:\n\nEach triangle has its vertices on exactly three points on the grid.\nEach triangle has an area of exactly \n1\n2\n1\n2\n. Note that they do not have to be right triangles.\nNo two triangles share a common intersection point, including their vertices.\n\nIf there exist multiple largest such sets of triangles, you may output any of them.",
+  "input_format": "Input\n\nEach test contains multiple test cases. The first line contains the number of test cases \n𝑡\n𝑡\n (\n1≤𝑡≤30\n1\n≤\n𝑡\n≤\n30\n). The description of the test cases follows.\n\nThe only line of each test case contains a single integer \n𝑛\n𝑛\n (\n1≤𝑛≤166\n1\n≤\n𝑛\n≤\n166\n).\n\nIt is guaranteed that the sum of \n𝑛\n2\n𝑛\n2\n over all test cases does not exceed \n166\n2\n166\n2\n.",
+  "output_format": "Output\n\nOutput the maximum size \n𝑚\n𝑚\n of the set of triangles on one line (\n0≤𝑚≤3\n𝑛\n2\n0\n≤\n𝑚\n≤\n3\n𝑛\n2\n).\n\nThen, output \n𝑚\n𝑚\n lines in the following format:\n\n𝑥\n𝑖,1\n𝑦\n𝑖,1\n𝑥\n𝑖,2\n𝑦\n𝑖,2\n𝑥\n𝑖,3\n𝑦\n𝑖,3\n𝑥\n𝑖\n,\n1\n𝑦\n𝑖\n,\n1\n𝑥\n𝑖\n,\n2\n𝑦\n𝑖\n,\n2\n𝑥\n𝑖\n,\n3\n𝑦\n𝑖\n,\n3\n: The vertices of the \n𝑖\n𝑖\n-th triangle are \n(\n𝑥\n𝑖,1\n,\n𝑦\n𝑖,1\n)\n(\n𝑥\n𝑖\n,\n1\n,\n𝑦\n𝑖\n,\n1\n)\n, \n(\n𝑥\n𝑖,2\n,\n𝑦\n𝑖,2\n)\n(\n𝑥\n𝑖\n,\n2\n,\n𝑦\n𝑖\n,\n2\n)\n, \n(\n𝑥\n𝑖,3\n,\n𝑦\n𝑖,3\n)\n(\n𝑥\n𝑖\n,\n3\n,\n𝑦\n𝑖\n,\n3\n)\n.\n\nYou may output the vertices of one triangle in any order (clockwise or counterclockwise).\n\nYour output will be accepted if it satisfies all conditions and the maximum size given is correct.",
+  "constraints": "Note\n\nIn the first test case, the example output has \n2\n2\n triangles as shown in the following image:\n\nIn the second test case, the example output has \n12\n12\n triangles as shown in the image on the left:\n\n\t\n\nAs the triangles are not required to be right triangles, the set of triangles shown in the image on the right will also be considered valid.",
+  "test_cases": [
+    {
+      "input": "2\n1\n2",
+      "output": "2\n1 1 1 2 2 1\n2 3 3 2 3 3\n12\n1 1 1 2 2 1\n2 2 3 2 3 1\n1 3 1 4 2 3\n2 4 3 4 3 3\n1 5 1 6 2 5\n2 6 3 6 3 5\n4 1 4 2 5 1\n5 2 6 2 6 1\n4 3 4 4 5 3\n5 4 6 4 6 3\n4 5 4 6 5 5\n5 6 6 6 6 5",
+      "is_sample": true
+    }
+  ]
+}
