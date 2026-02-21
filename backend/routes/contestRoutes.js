@@ -7,15 +7,15 @@ const {
   deleteContest,
   registerForContest,
 } = require('../controllers/contestController');
-const { protect, admin } = require('../middleware/auth');
+const { protect } = require('../middleware/authMiddleware');
 
 const router = express.Router();
 
 router.get('/', getContests);
 router.get('/:id', getContest);
-router.post('/', protect, admin, createContest);
-router.put('/:id', protect, admin, updateContest);
-router.delete('/:id', protect, admin, deleteContest);
+router.post('/', protect, createContest);
+router.put('/:id', protect, updateContest);
+router.delete('/:id', protect, deleteContest);
 router.post('/:id/register', protect, registerForContest);
 
 module.exports = router;

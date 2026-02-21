@@ -6,14 +6,14 @@ const {
   updateProblem,
   deleteProblem,
 } = require('../controllers/problemController');
-const { protect, admin } = require('../middleware/auth');
+const { protect } = require('../middleware/authMiddleware');
 
 const router = express.Router();
 
 router.get('/', getProblems);
 router.get('/:id', getProblem);
-router.post('/', protect, admin, createProblem);
-router.put('/:id', protect, admin, updateProblem);
-router.delete('/:id', protect, admin, deleteProblem);
+router.post('/', protect, createProblem);
+router.put('/:id', protect, updateProblem);
+router.delete('/:id', protect, deleteProblem);
 
 module.exports = router;

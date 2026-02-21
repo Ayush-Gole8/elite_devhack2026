@@ -5,7 +5,7 @@ const User = require('../models/User');
 // @access  Private/Admin
 const getUsers = async (req, res) => {
   try {
-    const users = await User.find().select('-password');
+    const users = await User.find();
 
     res.status(200).json({
       success: true,
@@ -25,9 +25,7 @@ const getUsers = async (req, res) => {
 // @access  Public
 const getUser = async (req, res) => {
   try {
-    const user = await User.findById(req.params.id)
-      .populate('solvedProblems', 'title difficulty points')
-      .select('-password');
+    const user = await User.findById(req.params.id);
 
     if (!user) {
       return res.status(404).json({
@@ -53,21 +51,35 @@ const getUser = async (req, res) => {
 // @access  Private
 const updateUser = async (req, res) => {
   try {
-    // Can only update your own profile unless admin
-    if (req.params.id !== req.user.id.toString() && req.user.role !== 'admin') {
+    console.log('Update user - params.id:', req.params.id);
+    console.log('Update user - req.user:', req.user);
+    
+    // Can only update your own profile
+    if (req.params.id !== req.user) {
       return res.status(403).json({
         success: false,
         message: 'Not authorized to update this profile',
       });
     }
 
-    const { name, bio, skills, profilePicture } = req.body;
+    const { name, username, social, skills, experience, education, isOnboarded, profilePhoto } = req.body;
+
+    // Build update object with only provided fields
+    const updateFields = {};
+    if (name !== undefined) updateFields.name = name;
+    if (username !== undefined) updateFields.username = username;
+    if (social !== undefined) updateFields.social = social;
+    if (skills !== undefined) updateFields.skills = skills;
+    if (experience !== undefined) updateFields.experience = experience;
+    if (education !== undefined) updateFields.education = education;
+    if (isOnboarded !== undefined) updateFields.isOnboarded = isOnboarded;
+    if (profilePhoto !== undefined) updateFields.profilePhoto = profilePhoto;
 
     const user = await User.findByIdAndUpdate(
       req.params.id,
-      { name, bio, skills, profilePicture },
+      updateFields,
       { new: true, runValidators: true }
-    ).select('-password');
+    );
 
     if (!user) {
       return res.status(404).json({
@@ -81,6 +93,7 @@ const updateUser = async (req, res) => {
       data: user,
     });
   } catch (error) {
+    console.error('Update user error:', error);
     res.status(500).json({
       success: false,
       message: error.message,
@@ -120,9 +133,9 @@ const deleteUser = async (req, res) => {
 const getLeaderboard = async (req, res) => {
   try {
     const users = await User.find()
-      .sort({ rating: -1 })
+      .sort({ createdAt: -1 })
       .limit(100)
-      .select('name username rating solvedProblems profilePicture');
+      .select('name username email profilePhoto');
 
     res.status(200).json({
       success: true,
