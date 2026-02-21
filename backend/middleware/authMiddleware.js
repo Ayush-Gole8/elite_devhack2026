@@ -31,4 +31,22 @@ const protect = async (req, res, next) => {
   }
 };
 
-module.exports = { protect };
+/**
+ * Optional auth — sets req.user if a valid Bearer token is present,
+ * but never blocks the request if there is no token or it is invalid.
+ */
+const optionalProtect = (req, res, next) => {
+  try {
+    const auth = req.headers.authorization;
+    if (auth && auth.startsWith('Bearer ')) {
+      const token = auth.split(' ')[1];
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      req.user = decoded.id;
+    }
+  } catch {
+    // ignore invalid / expired tokens — just proceed as unauthenticated
+  }
+  next();
+};
+
+module.exports = { protect, optionalProtect };

@@ -8,15 +8,23 @@
   ],
   "time_limit_ms": 2000,
   "memory_limit_kb": 256000,
-  "description": "You are given 𝑛 positive integers 𝑎 1, 𝑎 2,…, 𝑎 𝑛 𝑎 1, 𝑎 2, …, 𝑎 𝑛.\n\nPlease determine if it is possible to select any number of elements in 𝑎 \n, so that their product is 67. \nNote that you may not select zero elements, as the product of zero elements is not defined in this problem.",
-  "input_format": "Input\n\nEach test contains multiple test cases. The first line contains the number of test cases 𝑡 (1 ≤ 𝑡 ≤ 10 4 1 ≤ 𝑡 ≤ 10 4\n). The description of the test cases follows.\n\nThe first line of each test case contains a single integer 𝑛 (1 ≤ 𝑛 ≤ 5 1 ≤ 𝑛 ≤ 5).\n\nThe second line of each test case contains 𝑛 positive integers 𝑎 1, 𝑎 2,…, 𝑎 𝑛 𝑎 1, 𝑎 2, …, 𝑎 𝑛 (1 ≤ 𝑎 𝑖 ≤ 67 1 ≤ 𝑎 𝑖 ≤ 67\n).",
-  "output_format": "Output\n\nIf it is possible to select elements so that their product is 67 \n, output \"YES\" on one line. Otherwise, output \"NO\" on one line.\n\nYou can output the answer in any case. For example, the strings \"yEs\", \"yes\", and \"Yes\" will also be recognized as positive responses.",
-  "constraints": "Note\n\nIn the first test case, you can select 𝑎 1 𝑎 1 and 𝑎 5 𝑎 5 to get 𝑎 1 ⋅ 𝑎 5 =1⋅67=67 𝑎 1 ⋅ 𝑎 5 = 1 ⋅ 67 = 67.\n\nIn the second test case, it is impossible to select any number of elements so that their product is 67 \n.",
+  "description": "You are given 𝑛 positive integers 𝑎1,𝑎2,…,𝑎𝑛.\n\nPlease determine if it is possible to select any number of elements in 𝑎, so that their product is 67.\n\nNote that you may not select zero elements, as the product of zero elements is not defined in this problem.",
+  "input_format": "Each test contains multiple test cases. The first line contains the number of test cases 𝑡 (1≤𝑡≤10^4). The description of the test cases follows.\n\nThe first line of each test case contains a single integer 𝑛 (1≤𝑛≤5).\n\nThe second line of each test case contains 𝑛 positive integers 𝑎1,𝑎2,…,𝑎𝑛 (1≤𝑎𝑖≤67).",
+  "output_format": "If it is possible to select elements so that their product is 67, output \"YES\" on one line. Otherwise, output \"NO\" on one line.\n\nYou can output the answer in any case. For example, the strings \"yEs\", \"yes\", and \"Yes\" will also be recognized as positive responses.",
+  "constraints": "In the first test case, you can select 𝑎1 and 𝑎5 to get 𝑎1⋅𝑎5=1⋅67=67.\n\nIn the second test case, it is impossible to select any number of elements so that their product is 67.",
   "test_cases": [
     {
       "input": "2\n5\n1 7 6 7 67\n5\n1 3 5 7 8",
       "output": "YES\nNO",
       "is_sample": true
     }
+  ],
+  "patterns": [
+    "backtracking",
+    "bit-manipulation",
+    "math",
+    "dp",
+    "brute-force",
+    "recursion"
   ]
 }

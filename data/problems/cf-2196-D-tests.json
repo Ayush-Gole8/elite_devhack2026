@@ -1,0 +1,106 @@
+{
+  "slug": "cf-2196-D",
+  "title": "Unique Values",
+  "test_cases": [
+    {
+      "input": "2\n1\n14\n5\n20 13 19 8 12",
+      "output": "1\n5",
+      "is_sample": false
+    },
+    {
+      "input": "4\n3\n10 8 10\n8\n16 13 20 12 18 16 10 4\n4\n4 10 14 15\n6\n8 14 4 6 15 11",
+      "output": "2\n7\n4\n6",
+      "is_sample": false
+    },
+    {
+      "input": "1\n6\n13 5 16 16 20 14",
+      "output": "5",
+      "is_sample": false
+    },
+    {
+      "input": "2\n1\n10\n5\n17 7 14 2 18",
+      "output": "1\n5",
+      "is_sample": false
+    },
+    {
+      "input": "3\n5\n11 14 13 15 14\n7\n9 2 9 16 8 11 2\n5\n15 14 8 19 6",
+      "output": "4\n5\n5",
+      "is_sample": false
+    },
+    {
+      "input": "2\n2\n20 20\n6\n5 20 18 1 1 13",
+      "output": "1\n5",
+      "is_sample": false
+    },
+    {
+      "input": "1\n6\n12 18 3 2 17 7",
+      "output": "6",
+      "is_sample": false
+    },
+    {
+      "input": "3\n4\n6 18 13 8\n5\n6 12 11 14 7\n4\n1 2 1 17",
+      "output": "4\n5\n3",
+      "is_sample": false
+    },
+    {
+      "input": "1\n7\n16 2 6 10 10 1 8",
+      "output": "6",
+      "is_sample": false
+    },
+    {
+      "input": "2\n1\n9\n2\n13 13",
+      "output": "1\n1",
+      "is_sample": false
+    },
+    {
+      "input": "2\n5\n3 3 3 17 14\n1\n1",
+      "output": "3\n1",
+      "is_sample": false
+    },
+    {
+      "input": "2\n2\n19 13\n4\n20 10 11 14",
+      "output": "2\n4",
+      "is_sample": false
+    },
+    {
+      "input": "1\n5\n9 15 7 4 9",
+      "output": "4",
+      "is_sample": false
+    },
+    {
+      "input": "4\n7\n10 14 3 8 14 18 9\n8\n10 18 17 8 13 1 16 13\n6\n18 4 15 8 19 1\n7\n8 15 12 16 19 4 10",
+      "output": "6\n7\n6\n7",
+      "is_sample": false
+    },
+    {
+      "input": "3\n3\n3 4 18\n3\n7 16 19\n4\n3 5 13 20",
+      "output": "3\n3\n4",
+      "is_sample": false
+    },
+    {
+      "input": "4\n4\n2 16 9 14\n5\n11 5 2 11 19\n7\n1 9 7 18 16 18 16\n6\n8 11 15 16 17 18",
+      "output": "4\n4\n5\n6",
+      "is_sample": false
+    },
+    {
+      "input": "1\n2\n14 3",
+      "output": "2",
+      "is_sample": false
+    },
+    {
+      "input": "4\n3\n1 6 17\n2\n6 7\n8\n4 2 14 16 6 17 16 5\n7\n13 1 10 4 14 10 9",
+      "output": "3\n2\n7\n6",
+      "is_sample": false
+    },
+    {
+      "input": "3\n6\n19 6 5 10 17 7\n6\n17 20 9 16 15 7\n6\n5 6 17 16 1 11",
+      "output": "6\n6\n6",
+      "is_sample": false
+    },
+    {
+      "input": "4\n3\n5 16 3\n1\n10\n4\n7 4 18 15\n6\n4 2 20 15 20 6",
+      "output": "3\n1\n4\n5",
+      "is_sample": false
+    }
+  ]
+}

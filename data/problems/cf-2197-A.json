@@ -11,15 +11,20 @@
   ],
   "time_limit_ms": 2000,
   "memory_limit_kb": 256000,
-  "description": "For an integer x, we call another integer y \"friendly\" if the following condition holds: y - d(y) = x, where d(y) is the sum of the digits of y.\n\nFor a given integer x, determine how many friendly numbers it has.",
-  "input_format": "The first line contains the number of test cases t (1 ≤ t ≤ 500).\n\nEach test case consists of a single line containing one integer x (1 ≤ x ≤ 10^9).",
-  "output_format": "For each test case, output one integer — the number of friendly numbers for x.",
-  "constraints": "Examples:\n- The number 1 does not have any friendly numbers.\n- The number 18 has 10 friendly numbers: 20, 21, 22, ..., 29. For example, 20 - d(20) = 20 - 2 = 18.\n- The number 998244360 has 10 friendly numbers: 998244400 through 998244409.",
+  "description": "For an integer 𝑥, we call another integer 𝑦 friendly if the following condition holds:\n\n𝑦−𝑑(𝑦)=𝑥𝑦−𝑑(𝑦)\n=𝑥, where 𝑑(𝑦)\n is the sum of the digits of 𝑦.\n\nFor a given integer 𝑥, determine how many friendly numbers it has.",
+  "input_format": "Each test contains multiple test cases. The first line contains the number of test cases 𝑡 (1≤𝑡≤500). The description of the test cases follows.\n\nEach test case consists of a single line containing one integer 𝑥 (1≤𝑥≤10^9).",
+  "output_format": "For each test case, output one integer — the answer to the problem.",
+  "constraints": "The number 1 does not have any friendly numbers.\n\nThe number 18 has 10 friendly numbers: These are all the numbers from 20 to 29. For example, 20−𝑑(20)=20−2=1820\n−𝑑(20)\n=20\n−2=18.\n\nThe number 998244360 has 10 friendly numbers:\n\n99824440099824440199824440299824440399824440499824440599824440699824440799824440899824440999824409",
   "test_cases": [
     {
       "input": "3\n1\n18\n998244360",
       "output": "0\n10\n10",
       "is_sample": true
     }
+  ],
+  "patterns": [
+    "math",
+    "brute-force",
+    "binary-search"
   ]
 }

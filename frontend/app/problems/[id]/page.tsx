@@ -1,553 +1,1051 @@
-'use client';
+"use client";
 
-import { useState, useEffect, use } from 'react';
-import { useAuth } from '@/context/AuthContext';
-import { useRouter } from 'next/navigation';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { problemAPI, submissionAPI } from '@/lib/api';
-import { toast } from 'sonner';
-import dynamic from 'next/dynamic';
+import { useState, useEffect, useCallback, use } from "react";
+import { useAuth } from "@/context/AuthContext";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { problemAPI, submissionAPI } from "@/lib/api";
+import { toast } from "sonner";
+import dynamic from "next/dynamic";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import rehypeHighlight from "rehype-highlight";
+import {
+  ArrowLeft,
+  CheckCircle2,
+  XCircle,
+  Copy,
+  Check,
+  Loader2,
+  Clock,
+  BarChart2,
+  ChevronDown,
+  Play,
+  ShieldAlert,
+  FlaskConical,
+  BookOpen,
+  History,
+  Trophy,
+  Terminal,
+  AlertCircle,
+} from "lucide-react";
 
-// Dynamically import Monaco Editor (client-side only)
-const Editor = dynamic(() => import('@monaco-editor/react'), { ssr: false });
+const Editor = dynamic(() => import("@monaco-editor/react"), { ssr: false });
 
-export default function ProblemDetailPage({ params }: { params: Promise<{ id: string }> }) {
-  // Unwrap params Promise (Next.js 15+ requirement)
+// ── Types ─────────────────────────────────────────────────────────────────────
+interface Example {
+  input: string;
+  output: string;
+  explanation?: string;
+}
+
+interface TestResult {
+  passed: boolean;
+  input: string;
+  expected: string;
+  actual: string;
+  error?: string | null;
+}
+
+interface Problem {
+  _id: string;
+  title: string;
+  difficulty: string;
+  tags?: string[];
+  description?: string;
+  constraints?: string;
+  examples?: Example[];
+  sample?: Example;
+  time_limit_ms?: number;
+  memory_limit_mb?: number;
+  totalSubmissions?: number;
+  acceptedSubmissions?: number;
+  source?: string;
+}
+
+interface Submission {
+  _id: string;
+  status: string;
+  testResults?: TestResult[];
+  testCasesPassed?: number;
+  totalTestCases?: number;
+  executionTime?: number;
+  error?: string;
+}
+
+// History record returned from GET /submissions/problem/:id?mine=true
+interface SubmissionRecord {
+  _id: string;
+  status: string;
+  testCasesPassed: number;
+  totalTestCases: number;
+  executionTime?: number;
+  language: string;
+  submittedAt: string;
+  error?: string;
+}
+
+interface ApiError {
+  response?: { data?: { message?: string } };
+}
+
+export default function ProblemDetailPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
   const { id } = use(params);
-  
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
-  const [problem, setProblem] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-  const [code, setCode] = useState('// Write your solution here\n');
-  const [language, setLanguage] = useState('63'); // Judge0 language ID (63 = JavaScript)
-  const [submitting, setSubmitting] = useState(false);
-  const [submission, setSubmission] = useState<any>(null);
-  const [polling, setPolling] = useState(false);
 
-  // Language configurations for Judge0
+  const [problem, setProblem] = useState<Problem | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [code, setCode] = useState("// Write your solution here\n");
+  const [language, setLanguage] = useState("63");
+  const [submitting, setSubmitting] = useState(false);
+  const [submission, setSubmission] = useState<Submission | null>(null);
+  const [polling, setPolling] = useState(false);
+  const [copiedInput, setCopiedInput] = useState<number | null>(null);
+  const [copiedOutput, setCopiedOutput] = useState<number | null>(null);
+  const [submissionHistory, setSubmissionHistory] = useState<SubmissionRecord[]>([]);
+  const [historyLoading, setHistoryLoading] = useState(false);
+  const [historyLoaded, setHistoryLoaded] = useState(false);
+  const [activeTab, setActiveTab] = useState("description");
+
+  // Language ID → display name map
+  const langIdToName: Record<string, string> = {
+    "63": "JavaScript",
+    "71": "Python",
+    "54": "C++",
+    "62": "Java",
+    "50": "C",
+  };
+
+  // Simple relative time helper
+  const timeAgo = (iso: string) => {
+    const diff = Date.now() - new Date(iso).getTime();
+    const m = Math.floor(diff / 60000);
+    if (m < 1) return "just now";
+    if (m < 60) return `${m}m ago`;
+    const h = Math.floor(m / 60);
+    if (h < 24) return `${h}h ago`;
+    return `${Math.floor(h / 24)}d ago`;
+  };
+
   const languages = [
-    { id: '63', name: 'JavaScript', monaco: 'javascript', ext: 'js', starter: '// Write your solution here\nconsole.log("Hello World");' },
-    { id: '71', name: 'Python', monaco: 'python', ext: 'py', starter: '# Write your solution here\nprint("Hello World")' },
-    { id: '54', name: 'C++', monaco: 'cpp', ext: 'cpp', starter: '#include <iostream>\nusing namespace std;\n\nint main() {\n    // Write your solution here\n    cout << "Hello World" << endl;\n    return 0;\n}' },
-    { id: '62', name: 'Java', monaco: 'java', ext: 'java', starter: 'import java.util.*;\n\npublic class Main {\n    public static void main(String[] args) {\n        // Write your solution here\n        System.out.println("Hello World");\n    }\n}' },
-    { id: '50', name: 'C', monaco: 'c', ext: 'c', starter: '#include <stdio.h>\n\nint main() {\n    // Write your solution here\n    printf("Hello World\\n");\n    return 0;\n}' },
+    {
+      id: "63",
+      name: "JavaScript",
+      monaco: "javascript",
+      starter: '// Write your solution here\nconsole.log("Hello World");',
+    },
+    {
+      id: "71",
+      name: "Python",
+      monaco: "python",
+      starter: '# Write your solution here\nprint("Hello World")',
+    },
+    {
+      id: "54",
+      name: "C++",
+      monaco: "cpp",
+      starter:
+        '#include <iostream>\nusing namespace std;\n\nint main() {\n    // Write your solution here\n    cout << "Hello World" << endl;\n    return 0;\n}',
+    },
+    {
+      id: "62",
+      name: "Java",
+      monaco: "java",
+      starter:
+        'import java.util.*;\n\npublic class Main {\n    public static void main(String[] args) {\n        // Write your solution here\n        System.out.println("Hello World");\n    }\n}',
+    },
+    {
+      id: "50",
+      name: "C",
+      monaco: "c",
+      starter:
+        '#include <stdio.h>\n\nint main() {\n    // Write your solution here\n    printf("Hello World\\n");\n    return 0;\n}',
+    },
   ];
 
-  const getCurrentLanguage = () => languages.find(lang => lang.id === language) || languages[0];
+  const getCurrentLanguage = () =>
+    languages.find((l) => l.id === language) || languages[0];
 
-  useEffect(() => {
-    if (!authLoading && !user) {
-      router.push('/login');
-      return;
-    }
-    if (user) {
-      fetchProblem();
-    }
-  }, [user, authLoading, id]);
-
-  const fetchProblem = async () => {
+  const fetchProblem = useCallback(async () => {
     try {
       setLoading(true);
       const response = await problemAPI.getProblem(id);
-      const problemData = response.data || response; // Handle both response formats
-      setProblem(problemData);
-      
-      // Set default starter code based on selected language
-      const currentLang = getCurrentLanguage();
-      setCode(currentLang.starter);
-    } catch (error) {
-      console.error('Error fetching problem:', error);
-      toast.error('Failed to load problem');
+      const data = response.data || response;
+      setProblem(data);
+      setCode(getCurrentLanguage().starter);
+    } catch {
+      toast.error("Failed to load problem");
     } finally {
       setLoading(false);
     }
-  };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id]);
+
+  const loadSubmissionHistory = useCallback(async (problemId: string) => {
+    if (!problemId) return;
+    setHistoryLoading(true);
+    try {
+      const response = await submissionAPI.getProblemSubmissions(problemId, true);
+      const data = response.data || [];
+      setSubmissionHistory(Array.isArray(data) ? data : []);
+      setHistoryLoaded(true);
+    } catch {
+      setSubmissionHistory([]);
+    } finally {
+      setHistoryLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!authLoading && !user) {
+      router.push("/login");
+      return;
+    }
+    if (user) fetchProblem();
+  }, [user, authLoading, id, fetchProblem, router]);
+
+  // Load history when problem is available and tab switches to submissions
+  useEffect(() => {
+    if (activeTab === "submissions" && problem?._id && !historyLoaded) {
+      loadSubmissionHistory(problem._id);
+    }
+  }, [activeTab, problem, historyLoaded, loadSubmissionHistory]);
 
   const handleSubmit = async () => {
     if (!code.trim()) {
-      toast.error('Please write some code before submitting');
+      toast.error("Please write some code before submitting");
       return;
     }
-
     try {
       setSubmitting(true);
-      // Convert language string ID to number for Judge0
-      const languageId = parseInt(language, 10);
-      const response = await submissionAPI.submitSolution(id, code, languageId);
-      const submissionData = response.data || response; // Handle both response formats
-      setSubmission(submissionData);
-      toast.success('Submission received! Evaluating...');
-      
-      // Start polling for results
-      startPolling(submissionData._id);
-    } catch (error: any) {
-      console.error('Submit error:', error);
-      toast.error(error.response?.data?.message || 'Failed to submit');
+      const response = await submissionAPI.submitSolution(
+        id,
+        code,
+        parseInt(language, 10),
+      );
+      const data = response.data || response;
+      setSubmission(data);
+      toast.success("Submission received! Evaluating…");
+      startPolling(data._id, id);
+    } catch (err) {
+      const e = err as ApiError;
+      toast.error(e.response?.data?.message || "Failed to submit");
     } finally {
       setSubmitting(false);
     }
   };
 
-  const startPolling = (submissionId: string) => {
+  const startPolling = (submissionId: string, problemId: string) => {
     setPolling(true);
-    
-    const pollInterval = setInterval(async () => {
+    const interval = setInterval(async () => {
       try {
         const response = await submissionAPI.getSubmission(submissionId);
-        const submissionData = response.data || response; // Handle both response formats
-        setSubmission(submissionData);
-        
-        if (submissionData.status !== 'Pending') {
-          clearInterval(pollInterval);
+        const data = response.data || response;
+        setSubmission(data);
+        if (data.status !== "Pending") {
+          clearInterval(interval);
           setPolling(false);
-          
-          if (submissionData.status === 'Accepted') {
-            toast.success('✅ Accepted! All test cases passed!');
-          } else if (submissionData.status === 'Wrong Answer') {
-            toast.error('❌ Wrong Answer');
-          } else if (submissionData.status === 'Runtime Error') {
-            toast.error('⚠️ Runtime Error');
-          }
+          if (data.status === "Accepted")
+            toast.success("✅ Accepted! All test cases passed!");
+          else if (data.status === "Wrong Answer")
+            toast.error("❌ Wrong Answer");
+          else if (data.status === "Runtime Error")
+            toast.error("⚠️ Runtime Error");
+          // Refresh submission history and switch to tab
+          setHistoryLoaded(false);
+          loadSubmissionHistory(problemId);
+          setActiveTab("submissions");
         }
-      } catch (error) {
-        console.error('Polling error:', error);
-        clearInterval(pollInterval);
+      } catch {
+        clearInterval(interval);
         setPolling(false);
       }
-    }, 1500); // Poll every 1.5 seconds
-
-    // Stop polling after 30 seconds
+    }, 1500);
     setTimeout(() => {
-      clearInterval(pollInterval);
+      clearInterval(interval);
       setPolling(false);
     }, 30000);
   };
 
-  const getDifficultyColor = (difficulty: string) => {
-    switch (difficulty?.toLowerCase()) {
-      case 'easy':
-        return 'bg-green-500/10 text-green-500 border-green-500/20';
-      case 'medium':
-        return 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20';
-      case 'hard':
-        return 'bg-red-500/10 text-red-500 border-red-500/20';
-      default:
-        return 'bg-gray-500/10 text-gray-500 border-gray-500/20';
+  const copyToClipboard = (text: string, type: "input" | "output", idx = 0) => {
+    navigator.clipboard.writeText(text);
+    if (type === "input") {
+      setCopiedInput(idx);
+      setTimeout(() => setCopiedInput(null), 1500);
+    } else {
+      setCopiedOutput(idx);
+      setTimeout(() => setCopiedOutput(null), 1500);
     }
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'Accepted':
-        return 'bg-green-500';
-      case 'Wrong Answer':
-        return 'bg-red-500';
-      case 'Runtime Error':
-        return 'bg-orange-500';
-      case 'Pending':
-        return 'bg-blue-500 animate-pulse';
-      default:
-        return 'bg-gray-500';
-    }
+  // Build example list: prefer problem.examples[], then fall back to problem.sample
+  const examples: Array<{
+    input: string;
+    output: string;
+    explanation?: string;
+  }> = problem?.examples?.length
+    ? problem.examples
+    : problem?.sample
+      ? [problem.sample]
+      : [];
+
+  // Tag color palette (deterministic per tag string)
+  const TAG_COLORS = [
+    "bg-sky-500/10 text-sky-500 border-sky-500/20",
+    "bg-violet-500/10 text-violet-500 border-violet-500/20",
+    "bg-teal-500/10 text-teal-500 border-teal-500/20",
+    "bg-fuchsia-500/10 text-fuchsia-500 border-fuchsia-500/20",
+    "bg-orange-500/10 text-orange-500 border-orange-500/20",
+    "bg-cyan-500/10 text-cyan-500 border-cyan-500/20",
+  ];
+  const getTagColor = (tag: string) => {
+    let h = 0;
+    for (let i = 0; i < tag.length; i++) h = tag.charCodeAt(i) + ((h << 5) - h);
+    return TAG_COLORS[Math.abs(h) % TAG_COLORS.length];
   };
 
-  if (authLoading || loading) {
+  const difficultyConfig: Record<string, { label: string; className: string }> =
+    {
+      easy: {
+        label: "Easy",
+        className: "text-emerald-500 bg-emerald-500/10 border-emerald-500/20",
+      },
+      medium: {
+        label: "Medium",
+        className: "text-amber-500  bg-amber-500/10  border-amber-500/20",
+      },
+      hard: {
+        label: "Hard",
+        className: "text-rose-500   bg-rose-500/10   border-rose-500/20",
+      },
+    };
+  const diffKey = problem?.difficulty?.toLowerCase() ?? "";
+  const diff = difficultyConfig[diffKey] ?? {
+    label: problem?.difficulty,
+    className: "text-muted-foreground bg-muted border-border",
+  };
+
+  const acceptanceRate =
+    (problem?.totalSubmissions ?? 0) > 0
+      ? Math.round(
+          ((problem?.acceptedSubmissions ?? 0) / (problem?.totalSubmissions ?? 1)) * 100,
+        )
+      : null;
+
+  const statusConfig: Record<
+    string,
+    { bg: string; text: string; border: string }
+  > = {
+    Accepted: {
+      bg: "bg-emerald-500/10",
+      text: "text-emerald-500",
+      border: "border-emerald-500/30",
+    },
+    "Wrong Answer": {
+      bg: "bg-rose-500/10",
+      text: "text-rose-500",
+      border: "border-rose-500/30",
+    },
+    "Runtime Error": {
+      bg: "bg-orange-500/10",
+      text: "text-orange-500",
+      border: "border-orange-500/30",
+    },
+    Pending: {
+      bg: "bg-blue-500/10",
+      text: "text-blue-400",
+      border: "border-blue-500/30",
+    },
+  };
+  const sConf = statusConfig[submission?.status ?? ""] ?? {
+    bg: "bg-muted",
+    text: "text-muted-foreground",
+    border: "border-border",
+  };
+
+  /* ─── Loading / Not Found ─── */
+  if (authLoading || loading)
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-          <p className="mt-4 text-muted-foreground">Loading problem...</p>
+      <div className="flex items-center justify-center h-screen bg-background">
+        <div className="flex flex-col items-center gap-3">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          <p className="text-sm text-muted-foreground font-mono">
+            Loading problem…
+          </p>
         </div>
       </div>
     );
-  }
 
-  if (!problem) {
+  if (!problem)
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <p className="text-xl">Problem not found</p>
-          <Button className="mt-4" onClick={() => router.push('/problems')}>
-            Back to Problems
-          </Button>
-        </div>
+      <div className="flex flex-col items-center justify-center h-screen gap-4">
+        <p className="text-lg font-semibold">Problem not found</p>
+        <Button variant="outline" onClick={() => router.push("/problems")}>
+          Back to Problems
+        </Button>
       </div>
     );
-  }
 
+  /* ─── Main Layout ─── */
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/30">
-      {/* Header */}
-      <nav className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50 shadow-sm">
-        <div className="container mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <Button 
-                variant="ghost" 
-                onClick={() => router.push('/problems')}
-                className="hover:bg-muted/80"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clipRule="evenodd" />
-                </svg>
-                Back
-              </Button>
-              <div className="flex items-center gap-3">
-                <div className="h-8 w-1 bg-primary rounded-full"></div>
-                <div>
-                  <h1 className="text-lg font-bold tracking-tight">{problem.title}</h1>
-                  <Badge className={`${getDifficultyColor(problem.difficulty)} mt-1`}>
-                    {problem.difficulty}
-                  </Badge>
-                </div>
-              </div>
-            </div>
-            <Button 
-              variant="outline" 
-              onClick={() => router.push('/dashboard')}
-              className="hover:bg-muted/80"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
-              </svg>
-              Dashboard
-            </Button>
-          </div>
-        </div>
-      </nav>
+    <div className="flex flex-col h-screen bg-background overflow-hidden">
+      {/* ── Top Nav Bar ── */}
+      <header className="flex items-center gap-3 px-4 h-12 border-b border-border/60 bg-background/95 backdrop-blur-sm shrink-0 z-10">
+        <Button
+          variant="ghost"
+          size="sm"
+          className="gap-1.5 text-muted-foreground hover:text-foreground h-8 px-2"
+          onClick={() => router.push("/problems")}
+        >
+          <ArrowLeft className="h-3.5 w-3.5" />
+          <span className="text-xs font-medium">Problem List</span>
+        </Button>
 
-      {/* Split View */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 h-[calc(100vh-73px)]">
-        {/* Left: Problem Description */}
-        <div className="border-r border-border/50 overflow-y-auto bg-background/50 backdrop-blur-sm">
-          <div className="p-8">
-            <Tabs defaultValue="description" className="w-full">
-              <TabsList className="grid w-full grid-cols-2 mb-6">
-                <TabsTrigger value="description" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clipRule="evenodd" />
-                  </svg>
-                  Description
-                </TabsTrigger>
-                <TabsTrigger value="submissions" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
-                  </svg>
-                  Submissions
-                </TabsTrigger>
+        <div className="w-px h-4 bg-border/70" />
+
+        {/* Problem title + badge */}
+        <div className="flex items-center gap-2 min-w-0">
+          <span className="text-sm font-semibold truncate">
+            {problem.title}
+          </span>
+          <span
+            className={`text-[11px] font-semibold px-2 py-0.5 rounded-full border ${diff.className}`}
+          >
+            {diff.label}
+          </span>
+        </div>
+
+        <div className="ml-auto flex items-center gap-2">
+          {acceptanceRate !== null && (
+            <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+              <BarChart2 className="h-3.5 w-3.5" />
+              <span>{acceptanceRate}% accepted</span>
+            </div>
+          )}
+          {problem.time_limit_ms && (
+            <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+              <Clock className="h-3.5 w-3.5" />
+              <span>{problem.time_limit_ms / 1000}s</span>
+            </div>
+          )}
+        </div>
+      </header>
+
+      {/* ── Split Panel ── */}
+      <div className="flex flex-1 min-h-0">
+        {/* ──── LEFT PANEL: Problem Info ──── */}
+        <div className="w-[46%] min-w-85 flex flex-col border-r border-border/60 overflow-hidden">
+          <Tabs
+            value={activeTab}
+            onValueChange={setActiveTab}
+            className="flex flex-col flex-1 min-h-0"
+          >
+            {/* Tab strip */}
+            <div className="border-b border-border/60 bg-background/50 px-4 shrink-0">
+              <TabsList className="h-10 bg-transparent gap-0 p-0 rounded-none">
+                {[
+                  { value: "description", label: "Description" },
+                  { value: "submissions", label: "Submissions" },
+                ].map((t) => (
+                  <TabsTrigger
+                    key={t.value}
+                    value={t.value}
+                    className="relative h-10 px-4 text-xs font-medium rounded-none bg-transparent
+                      text-muted-foreground data-[state=active]:text-foreground data-[state=active]:shadow-none
+                      data-[state=active]:after:absolute data-[state=active]:after:bottom-0
+                      data-[state=active]:after:left-0 data-[state=active]:after:right-0
+                      data-[state=active]:after:h-0.5 data-[state=active]:after:bg-primary
+                      data-[state=active]:after:rounded-t data-[state=active]:after:content-['']"
+                  >
+                    {t.label}
+                  </TabsTrigger>
+                ))}
               </TabsList>
+            </div>
 
-              <TabsContent value="description" className="space-y-6 mt-0">
-                {/* Problem Info */}
-                <Card className="border-2 shadow-lg bg-gradient-to-br from-card to-card/80">
-                  <CardHeader className="pb-4">
-                    <CardTitle className="text-2xl flex items-center gap-2">
-                      <span className="inline-block w-2 h-8 bg-primary rounded-full"></span>
+            {/* Description tab */}
+            <TabsContent
+              value="description"
+              className="flex-1 overflow-y-auto mt-0 p-0"
+            >
+              <div className="px-6 py-5 space-y-7">
+                {/* ── Title row with difficulty + tags ── */}
+                <div className="space-y-3">
+                  <div className="flex items-start gap-3 flex-wrap">
+                    <h2 className="text-lg font-bold leading-snug text-foreground flex-1 min-w-0">
                       {problem.title}
-                    </CardTitle>
-                    <CardDescription className="mt-4">
-                      <div className="flex items-center gap-4 flex-wrap">
-                        <Badge className={`${getDifficultyColor(problem.difficulty)} text-sm py-1 px-3`}>
-                          {problem.difficulty}
-                        </Badge>
-                        <div className="flex items-center gap-2 text-sm bg-muted/50 px-3 py-1 rounded-full">
-                          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-green-500" viewBox="0 0 20 20" fill="currentColor">
-                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                          </svg>
-                          <span className="font-medium">
-                            {problem.totalSubmissions > 0
-                              ? `${Math.round((problem.acceptedSubmissions / problem.totalSubmissions) * 100)}% Accepted`
-                              : 'No submissions yet'}
-                          </span>
-                        </div>
-                      </div>
-                      <div className="flex gap-2 mt-4 flex-wrap">
-                        {problem.tags?.map((tag: string) => (
-                          <Badge key={tag} variant="outline" className="text-xs bg-muted/50 hover:bg-muted">
-                            {tag}
-                          </Badge>
-                        ))}
-                      </div>
-                    </CardDescription>
-                  </CardHeader>
-                </Card>
+                    </h2>
+                    <span
+                      className={`shrink-0 inline-flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-1 rounded-full border ${diff.className}`}
+                    >
+                      {diff.label}
+                    </span>
+                  </div>
 
-                {/* Description */}
-                <Card className="shadow-md border-border/50">
-                  <CardHeader className="pb-3">
-                    <CardTitle className="text-lg flex items-center gap-2">
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-primary" viewBox="0 0 20 20" fill="currentColor">
-                        <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
-                      </svg>
-                      Problem Statement
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="prose prose-sm prose-invert max-w-none">
-                      <pre className="whitespace-pre-wrap text-sm leading-relaxed bg-muted/30 p-4 rounded-lg">{problem.description}</pre>
+                  {/* Tags */}
+                  {(problem.tags?.length ?? 0) > 0 && (
+                    <div className="flex flex-wrap gap-1.5">
+                      {problem.tags?.map((tag: string) => (
+                        <span
+                          key={tag}
+                          className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-[11px] font-medium cursor-default transition-colors ${getTagColor(tag)}`}
+                        >
+                          {tag}
+                        </span>
+                      ))}
                     </div>
-                  </CardContent>
-                </Card>
+                  )}
 
-                {/* Sample Test Cases */}
-                {problem.sample && (
-                  <Card className="shadow-md border-border/50">
-                    <CardHeader className="pb-3">
-                      <CardTitle className="text-lg flex items-center gap-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-blue-500" viewBox="0 0 20 20" fill="currentColor">
-                          <path fillRule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                        </svg>
-                        Sample Test Case
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                      <div>
-                        <h4 className="font-semibold mb-2 text-sm text-muted-foreground">Input:</h4>
-                        <pre className="bg-muted/50 p-4 rounded-lg text-sm font-mono border border-border/50">{problem.sample.input}</pre>
-                      </div>
-                      <div>
-                        <h4 className="font-semibold mb-2 text-sm text-muted-foreground">Output:</h4>
-                        <pre className="bg-muted/50 p-4 rounded-lg text-sm font-mono border border-border/50">{problem.sample.output}</pre>
-                      </div>
-                    </CardContent>
-                  </Card>
-                )}
+                  {/* Stats row */}
+                  <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                    <span className="flex items-center gap-1">
+                      <BarChart2 className="h-3.5 w-3.5" />
+                      {problem.totalSubmissions ?? 0} submissions
+                    </span>
+                    <span className="text-border">·</span>
+                    <span className="text-emerald-500 font-medium">
+                      {problem.acceptedSubmissions ?? 0} accepted
+                    </span>
+                    {acceptanceRate !== null && (
+                      <>
+                        <span className="text-border">·</span>
+                        <span>{acceptanceRate}% rate</span>
+                      </>
+                    )}
+                    {problem.time_limit_ms && (
+                      <>
+                        <span className="text-border">·</span>
+                        <span className="flex items-center gap-1">
+                          <Clock className="h-3 w-3" />
+                          {problem.time_limit_ms / 1000}s
+                        </span>
+                      </>
+                    )}
+                  </div>
+                </div>
 
-                {/* Constraints */}
+                {/* ── Problem Statement ── */}
+                <section className="space-y-3">
+                  <div className="flex items-center gap-2">
+                    <BookOpen className="h-3.5 w-3.5 text-primary shrink-0" />
+                    <h3 className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+                      Problem
+                    </h3>
+                  </div>
+                  <div
+                    className="prose prose-sm dark:prose-invert max-w-none
+                      prose-p:text-foreground/90 prose-p:leading-[1.75] prose-p:my-3
+                      prose-headings:text-foreground prose-headings:font-semibold
+                      prose-h3:text-[14px] prose-h3:mt-5 prose-h3:mb-2
+                      prose-strong:text-foreground prose-strong:font-semibold
+                      prose-em:text-foreground/80
+                      prose-ul:my-2 prose-ul:pl-5 prose-ol:my-2 prose-ol:pl-5
+                      prose-li:text-foreground/90 prose-li:leading-relaxed prose-li:my-1
+                      prose-li:marker:text-primary
+                      prose-blockquote:border-l-2 prose-blockquote:border-primary/40
+                      prose-blockquote:text-muted-foreground prose-blockquote:italic
+                      prose-blockquote:pl-4 prose-blockquote:my-3
+                      prose-pre:bg-[#1e1e2e] prose-pre:border prose-pre:border-border/60
+                      prose-pre:rounded-lg prose-pre:text-[12.5px] prose-pre:leading-relaxed
+                      prose-code:bg-muted prose-code:px-1.5 prose-code:py-0.5
+                      prose-code:rounded prose-code:text-[12px] prose-code:font-mono
+                      prose-code:text-primary/90 prose-code:font-medium
+                      prose-code:before:content-none prose-code:after:content-none
+                      prose-a:text-primary prose-a:no-underline hover:prose-a:underline
+                      prose-hr:border-border/40"
+                  >
+                    {problem.description ? (
+                      <ReactMarkdown
+                        remarkPlugins={[remarkGfm]}
+                        rehypePlugins={[rehypeHighlight]}
+                      >
+                        {problem.description}
+                      </ReactMarkdown>
+                    ) : (
+                      <p className="text-muted-foreground italic text-sm">
+                        No description available.
+                      </p>
+                    )}
+                  </div>
+                </section>
+
+                {/* ── Constraints (above examples) ── */}
                 {problem.constraints && (
-                  <Card className="shadow-md border-border/50">
-                    <CardHeader className="pb-3">
-                      <CardTitle className="text-lg flex items-center gap-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-yellow-500" viewBox="0 0 20 20" fill="currentColor">
-                          <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
-                        </svg>
+                  <section className="space-y-3">
+                    <div className="flex items-center gap-2">
+                      <ShieldAlert className="h-3.5 w-3.5 text-amber-500 shrink-0" />
+                      <h3 className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
                         Constraints
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <pre className="whitespace-pre-wrap text-sm leading-relaxed bg-muted/30 p-4 rounded-lg font-mono">{problem.constraints}</pre>
-                    </CardContent>
-                  </Card>
+                      </h3>
+                    </div>
+                    <div className="rounded-xl border border-amber-500/20 bg-amber-500/5 px-4 py-3.5 space-y-0">
+                      <div
+                        className="prose prose-sm dark:prose-invert max-w-none
+                          [&_p]:my-0.5 [&_p]:text-[13px] [&_p]:text-foreground/85 [&_p]:leading-relaxed
+                          [&_ul]:my-1 [&_ul]:pl-4 [&_ul]:list-none [&_ul]:space-y-1
+                          [&_ol]:my-1 [&_ol]:pl-4 [&_ol]:space-y-1
+                          [&_li]:text-[13px] [&_li]:text-foreground/85 [&_li]:leading-relaxed
+                          [&_li]:before:content-['·'] [&_li]:before:text-amber-500
+                          [&_li]:before:font-bold [&_li]:before:mr-2
+                          [&_code]:bg-amber-500/10 [&_code]:text-amber-600
+                          dark:[&_code]:text-amber-400 [&_code]:px-1.5 [&_code]:py-0.5
+                          [&_code]:rounded [&_code]:text-[12px] [&_code]:font-mono [&_code]:font-medium
+                          [&_code]:before:content-none [&_code]:after:content-none
+                          [&_strong]:text-foreground [&_strong]:font-semibold"
+                      >
+                        <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                          {problem.constraints}
+                        </ReactMarkdown>
+                      </div>
+                    </div>
+                  </section>
                 )}
-              </TabsContent>
 
-              <TabsContent value="submissions">
-                <Card className="shadow-md">
-                  <CardContent className="py-12 text-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 mx-auto text-muted-foreground/50 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                    </svg>
-                    <p className="text-muted-foreground">Submission history will appear here</p>
-                  </CardContent>
-                </Card>
-              </TabsContent>
-            </Tabs>
-          </div>
+                {/* ── Examples / Test Cases ── */}
+                {examples.length > 0 && (
+                  <section className="space-y-3">
+                    <div className="flex items-center gap-2">
+                      <FlaskConical className="h-3.5 w-3.5 text-primary shrink-0" />
+                      <h3 className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+                        Examples
+                      </h3>
+                    </div>
+
+                    <div className="space-y-4">
+                      {examples.map((ex, idx) => (
+                        <div
+                          key={idx}
+                          className="rounded-xl border border-border/60 overflow-hidden bg-card"
+                        >
+                          {/* Example header */}
+                          <div className="flex items-center gap-2 px-4 py-2.5 bg-muted/40 border-b border-border/50">
+                            <span className="flex items-center justify-center w-5 h-5 rounded-full bg-primary/15 text-primary text-[10px] font-bold shrink-0">
+                              {idx + 1}
+                            </span>
+                            <span className="text-xs font-semibold text-foreground">
+                              Example {idx + 1}
+                            </span>
+                          </div>
+
+                          <div className="divide-y divide-border/40">
+                            {/* Input block */}
+                            <div className="group">
+                              <div className="flex items-center justify-between px-4 py-1.5 bg-muted/20">
+                                <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                                  Input
+                                </span>
+                                <button
+                                  onClick={() =>
+                                    copyToClipboard(ex.input, "input", idx)
+                                  }
+                                  className="flex items-center gap-1 text-[10px] text-muted-foreground hover:text-foreground transition-colors opacity-0 group-hover:opacity-100"
+                                >
+                                  {copiedInput === idx ? (
+                                    <>
+                                      <Check className="h-3 w-3 text-emerald-500" />
+                                      <span className="text-emerald-500">
+                                        Copied
+                                      </span>
+                                    </>
+                                  ) : (
+                                    <>
+                                      <Copy className="h-3 w-3" />
+                                      Copy
+                                    </>
+                                  )}
+                                </button>
+                              </div>
+                              <pre className="px-4 py-3 text-[13px] font-mono text-foreground/90 whitespace-pre-wrap leading-relaxed bg-[#0d1117] dark:bg-[#0d1117] overflow-x-auto">
+                                <code>{ex.input || "(empty)"}</code>
+                              </pre>
+                            </div>
+
+                            {/* Output block */}
+                            <div className="group">
+                              <div className="flex items-center justify-between px-4 py-1.5 bg-muted/20">
+                                <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                                  Output
+                                </span>
+                                <button
+                                  onClick={() =>
+                                    copyToClipboard(ex.output, "output", idx)
+                                  }
+                                  className="flex items-center gap-1 text-[10px] text-muted-foreground hover:text-foreground transition-colors opacity-0 group-hover:opacity-100"
+                                >
+                                  {copiedOutput === idx ? (
+                                    <>
+                                      <Check className="h-3 w-3 text-emerald-500" />
+                                      <span className="text-emerald-500">
+                                        Copied
+                                      </span>
+                                    </>
+                                  ) : (
+                                    <>
+                                      <Copy className="h-3 w-3" />
+                                      Copy
+                                    </>
+                                  )}
+                                </button>
+                              </div>
+                              <pre className="px-4 py-3 text-[13px] font-mono text-emerald-400 dark:text-emerald-400 whitespace-pre-wrap leading-relaxed bg-[#0d1117] dark:bg-[#0d1117] overflow-x-auto">
+                                <code>{ex.output || "(empty)"}</code>
+                              </pre>
+                            </div>
+
+                            {/* Explanation (if present) */}
+                            {ex.explanation && (
+                              <div className="px-4 py-3 bg-muted/10">
+                                <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground mb-1.5">
+                                  Explanation
+                                </p>
+                                <p className="text-[13px] text-foreground/80 leading-relaxed">
+                                  {ex.explanation}
+                                </p>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </section>
+                )}
+
+                {/* bottom pad */}
+                <div className="h-4" />
+              </div>
+            </TabsContent>
+
+            {/* Submissions tab */}
+            <TabsContent
+              value="submissions"
+              className="flex-1 overflow-y-auto mt-0 p-0"
+            >
+              {historyLoading ? (
+                <div className="flex items-center justify-center h-32">
+                  <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+                </div>
+              ) : submissionHistory.length === 0 ? (
+                <div className="flex flex-col items-center justify-center h-full gap-3 text-muted-foreground py-16">
+                  <History className="h-9 w-9 opacity-20" />
+                  <p className="text-sm font-medium">No submissions yet</p>
+                  <p className="text-xs opacity-60">Submit your solution to see results here</p>
+                </div>
+              ) : (
+                <div className="divide-y divide-border/40">
+                  {submissionHistory.map((sub) => {
+                    const sc =
+                      statusConfig[sub.status] ??
+                      { bg: "bg-muted", text: "text-muted-foreground", border: "border-border" };
+                    const langName = langIdToName[sub.language] ?? `Lang ${sub.language}`;
+                    const isAcc = sub.status === "Accepted";
+                    const pct = sub.totalTestCases > 0
+                      ? Math.round((sub.testCasesPassed / sub.totalTestCases) * 100)
+                      : 0;
+                    return (
+                      <div key={sub._id} className="px-4 py-3.5 hover:bg-muted/15 transition-colors">
+                        {/* Top row: status + counts + lang + time */}
+                        <div className="flex items-center gap-2.5 flex-wrap">
+                          <span
+                            className={`shrink-0 inline-flex items-center gap-1.5 px-2.5 py-0.5
+                              rounded-full text-[11px] font-semibold border
+                              ${sc.bg} ${sc.text} ${sc.border}`}
+                          >
+                            {isAcc ? (
+                              <Trophy className="h-3 w-3" />
+                            ) : sub.status === "Pending" ? (
+                              <Loader2 className="h-3 w-3 animate-spin" />
+                            ) : (
+                              <AlertCircle className="h-3 w-3" />
+                            )}
+                            {sub.status}
+                          </span>
+
+                          <span
+                            className={`text-xs font-mono font-semibold ${
+                              isAcc ? "text-emerald-500" : "text-muted-foreground"
+                            }`}
+                          >
+                            {sub.testCasesPassed}/{sub.totalTestCases} cases
+                          </span>
+
+                          <div className="ml-auto flex items-center gap-2">
+                            <span className="text-[11px] text-muted-foreground bg-muted/50 px-2 py-0.5 rounded border border-border/40 font-mono">
+                              {langName}
+                            </span>
+                            <span className="text-[11px] text-muted-foreground/70 shrink-0">
+                              {timeAgo(sub.submittedAt)}
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Progress bar */}
+                        <div className="mt-2.5 h-1 rounded-full bg-muted/50 overflow-hidden">
+                          <div
+                            className={`h-full rounded-full transition-all duration-500 ${
+                              isAcc ? "bg-emerald-500" : pct > 0 ? "bg-rose-500/70" : "bg-muted-foreground/30"
+                            }`}
+                            style={{ width: `${isAcc ? 100 : pct}%` }}
+                          />
+                        </div>
+
+                        {/* Test case dot grid */}
+                        {sub.totalTestCases > 0 && (
+                          <div className="flex flex-wrap gap-1 mt-2">
+                            {Array.from({ length: sub.totalTestCases }).map((_, i) => {
+                              const dotPassed = isAcc || i < sub.testCasesPassed;
+                              const dotFailed = !isAcc && i === sub.testCasesPassed;
+                              return (
+                                <div
+                                  key={i}
+                                  title={`Case ${i + 1}: ${
+                                    dotPassed ? "Passed" : dotFailed ? "Failed" : "Not evaluated"
+                                  }`}
+                                  className={`h-5 w-5 rounded text-[9px] font-bold flex items-center justify-center
+                                    ${
+                                      dotPassed
+                                        ? "bg-emerald-500/20 text-emerald-500 border border-emerald-500/30"
+                                        : dotFailed
+                                        ? "bg-rose-500/20 text-rose-500 border border-rose-500/30"
+                                        : "bg-muted/60 text-muted-foreground/50 border border-border/30"
+                                    }`}
+                                >
+                                  {i + 1}
+                                </div>
+                              );
+                            })}
+                          </div>
+                        )}
+
+                        {/* Error snippet */}
+                        {sub.error && (
+                          <div className="mt-2 flex items-start gap-1.5">
+                            <Terminal className="h-3 w-3 text-orange-400 mt-0.5 shrink-0" />
+                            <p className="text-[11px] font-mono text-orange-400/80 leading-relaxed line-clamp-2">
+                              {sub.error}
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </TabsContent>
+          </Tabs>
         </div>
 
-        {/* Right: Code Editor */}
-        <div className="flex flex-col bg-muted/5">
-          {/* Editor Controls */}
-          <div className="p-4 border-b border-border/50 bg-background/80 backdrop-blur-sm flex items-center justify-between shadow-sm">
-            <div className="flex items-center gap-3">
-              <div className="flex items-center gap-2 bg-muted/50 px-3 py-2 rounded-lg border border-border/50">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-primary" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M12.316 3.051a1 1 0 01.633 1.265l-4 12a1 1 0 11-1.898-.632l4-12a1 1 0 011.265-.633zM5.707 6.293a1 1 0 010 1.414L3.414 10l2.293 2.293a1 1 0 11-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0zm8.586 0a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 11-1.414-1.414L16.586 10l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd" />
-                </svg>
-                <select
-                  className="bg-transparent border-none outline-none text-sm font-medium cursor-pointer"
-                  value={language}
-                  onChange={(e) => {
-                    const newLang = e.target.value;
-                    setLanguage(newLang);
-                    // Update code with starter template for new language
-                    const langConfig = languages.find(l => l.id === newLang);
-                    if (langConfig) {
-                      setCode(langConfig.starter);
-                    }
-                  }}
-                >
-                  {languages.map(lang => (
-                    <option key={lang.id} value={lang.id}>{lang.name}</option>
-                  ))}
-                </select>
-              </div>
-              <Badge variant="outline" className="text-xs">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 mr-1" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
-                </svg>
-                Time Limit: 1s
-              </Badge>
+        {/* ──── RIGHT PANEL: Editor ──── */}
+        <div className="flex-1 flex flex-col min-h-0 min-w-0">
+          {/* Editor toolbar */}
+          <div className="flex items-center justify-between px-4 h-11 border-b border-border/60 bg-background/80 shrink-0 gap-3">
+            {/* Language selector */}
+            <div className="relative">
+              <select
+                value={language}
+                onChange={(e) => {
+                  const newLang = e.target.value;
+                  setLanguage(newLang);
+                  const langConfig = languages.find((l) => l.id === newLang);
+                  if (langConfig) setCode(langConfig.starter);
+                }}
+                className="appearance-none h-7 pl-3 pr-7 text-xs font-medium rounded-md border border-border/60
+                  bg-muted/50 text-foreground cursor-pointer hover:bg-muted transition-colors
+                  focus:outline-none focus:ring-1 focus:ring-primary/40"
+              >
+                {languages.map((lang) => (
+                  <option key={lang.id} value={lang.id}>
+                    {lang.name}
+                  </option>
+                ))}
+              </select>
+              <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 h-3 w-3 text-muted-foreground pointer-events-none" />
             </div>
+
+            {/* Time limit pill */}
+            {problem.time_limit_ms && (
+              <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground bg-muted/40 px-2.5 py-1 rounded-full border border-border/40">
+                <Clock className="h-3 w-3" />
+                <span>{problem.time_limit_ms / 1000}s limit</span>
+              </div>
+            )}
+
+            {/* Submit button */}
             <Button
               onClick={handleSubmit}
               disabled={submitting || polling}
-              className="bg-gradient-to-r from-green-600 to-green-500 hover:from-green-700 hover:to-green-600 shadow-md text-white font-semibold px-6"
-              size="default"
+              size="sm"
+              className="ml-auto h-8 px-4 text-xs font-semibold gap-2 bg-emerald-600 hover:bg-emerald-700
+                text-white border-0 shadow-md hover:shadow-emerald-900/20 transition-all"
             >
-              {submitting ? (
+              {submitting || polling ? (
                 <>
-                  <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                  </svg>
-                  Submitting...
-                </>
-              ) : polling ? (
-                <>
-                  <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                  </svg>
-                  Evaluating...
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                  {polling ? "Evaluating…" : "Submitting…"}
                 </>
               ) : (
                 <>
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 001.414 1.414L9 9.414V13a1 1 0 102 0V9.414l1.293 1.293a1 1 0 001.414-1.414z" clipRule="evenodd" />
-                  </svg>
-                  Submit Code
+                  <Play className="h-3.5 w-3.5 fill-current" />
+                  Submit
                 </>
               )}
             </Button>
           </div>
 
           {/* Monaco Editor */}
-          <div className="flex-1 relative border-b border-border/50">
+          <div className="flex-1 min-h-0 overflow-hidden">
             <Editor
               height="100%"
-              defaultLanguage="javascript"
               language={getCurrentLanguage().monaco}
               value={code}
-              onChange={(value: string | undefined) => setCode(value || '')}
+              onChange={(value) => setCode(value || "")}
               theme="vs-dark"
               options={{
                 minimap: { enabled: false },
-                fontSize: 14,
-                lineNumbers: 'on',
+                fontSize: 13.5,
+                lineNumbers: "on",
                 scrollBeyondLastLine: false,
                 automaticLayout: true,
-                padding: { top: 16, bottom: 16 },
-                fontFamily: 'Fira Code, Consolas, Monaco, monospace',
+                padding: { top: 14, bottom: 14 },
+                fontFamily: '"Fira Code", "Cascadia Code", Consolas, monospace',
                 fontLigatures: true,
-                cursorBlinking: 'smooth',
+                cursorBlinking: "smooth",
                 smoothScrolling: true,
-                renderLineHighlight: 'all',
+                renderLineHighlight: "gutter",
                 bracketPairColorization: { enabled: true },
+                lineDecorationsWidth: 6,
+                lineNumbersMinChars: 3,
+                glyphMargin: false,
+                folding: true,
+                wordWrap: "on",
               }}
             />
           </div>
 
-          {/* Submission Result */}
+          {/* ── Submission Result Panel ── */}
           {submission && (
-            <div className="border-t p-6 space-y-4 bg-background/80 backdrop-blur-sm max-h-[40vh] overflow-y-auto">
-              <div className="flex items-center justify-between">
-                <h3 className="font-semibold text-lg flex items-center gap-2">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-primary" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
-                  </svg>
-                  Submission Result
-                </h3>
-                <Badge className={`${getStatusColor(submission.status)} text-white px-3 py-1 text-sm font-semibold`}>
+            <div
+              className={`shrink-0 border-t border-border/60 ${sConf.bg} transition-all`}
+            >
+              {/* Result header */}
+              <div
+                className={`flex items-center gap-3 px-5 py-3 border-b ${sConf.border}`}
+              >
+                {submission.status === "Accepted" ? (
+                  <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0" />
+                ) : submission.status === "Pending" ? (
+                  <Loader2 className="h-4 w-4 animate-spin text-blue-400 shrink-0" />
+                ) : (
+                  <XCircle className="h-4 w-4 text-rose-500 shrink-0" />
+                )}
+                <span className={`text-sm font-bold ${sConf.text}`}>
                   {submission.status}
-                </Badge>
-              </div>
-              
-              {submission.status !== 'Pending' && (
-                <>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="bg-muted/50 rounded-lg p-4 border border-border/50">
-                      <div className="text-sm text-muted-foreground mb-1">Test Cases</div>
-                      <div className="text-2xl font-bold flex items-center gap-2">
-                        {submission.testCasesPassed} / {submission.totalTestCases}
-                        {submission.testCasesPassed === submission.totalTestCases ? (
-                          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-green-500" viewBox="0 0 20 20" fill="currentColor">
-                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                          </svg>
-                        ) : (
-                          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-red-500" viewBox="0 0 20 20" fill="currentColor">
-                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                          </svg>
-                        )}
-                      </div>
-                    </div>
-                    
+                </span>
+
+                {submission.status !== "Pending" && (
+                  <div className="ml-auto flex items-center gap-4 text-xs text-muted-foreground">
+                    <span className="font-mono">
+                      {submission.testCasesPassed}/{submission.totalTestCases}{" "}
+                      test cases
+                    </span>
                     {submission.executionTime && (
-                      <div className="bg-muted/50 rounded-lg p-4 border border-border/50">
-                        <div className="text-sm text-muted-foreground mb-1">Execution Time</div>
-                        <div className="text-2xl font-bold flex items-center gap-2">
-                          {submission.executionTime}ms
-                          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-blue-500" viewBox="0 0 20 20" fill="currentColor">
-                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
-                          </svg>
-                        </div>
-                      </div>
+                      <span className="flex items-center gap-1">
+                        <Clock className="h-3 w-3" />
+                        {submission.executionTime}ms
+                      </span>
                     )}
                   </div>
-                  
-                  {submission.error && (
-                    <div className="bg-red-500/10 border-2 border-red-500/30 rounded-lg p-4">
-                      <div className="flex items-start gap-3">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-red-500 mt-0.5 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
-                          <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                        </svg>
-                        <div>
-                          <p className="text-sm font-semibold text-red-500 mb-1">Error</p>
-                          <p className="text-sm text-red-400 font-mono">{submission.error}</p>
+                )}
+              </div>
+
+              {/* Test results grid */}
+              {submission.status !== "Pending" && (
+                <div className="px-5 py-3 max-h-44 overflow-y-auto space-y-2">
+                {/* Test cases: show all judge test dots */}
+                {(submission.totalTestCases ?? 0) > 0 && (
+                  <div className="flex flex-wrap gap-1.5 mb-3">
+                    {Array.from({ length: submission.totalTestCases! }).map((_, i) => {
+                      const isAccepted = submission.status === "Accepted";
+                      const dotPassed = isAccepted || i < (submission.testCasesPassed ?? 0);
+                      const dotFailed =
+                        !isAccepted && i === (submission.testCasesPassed ?? 0);
+                      return (
+                        <div
+                          key={i}
+                          title={`Case ${i + 1}: ${
+                            dotPassed
+                              ? "Passed"
+                              : dotFailed
+                              ? "Failed"
+                              : "Not evaluated"
+                          }`}
+                          className={`h-6 w-6 rounded flex items-center justify-center text-[10px] font-bold
+                            ${
+                              dotPassed
+                                ? "bg-emerald-500/20 text-emerald-500 border border-emerald-500/30"
+                                : dotFailed
+                                ? "bg-rose-500/20 text-rose-500 border border-rose-500/30"
+                                : "bg-muted/60 text-muted-foreground/40 border border-border/40"
+                            }`}
+                        >
+                          {i + 1}
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+
+                  {/* Failed cases detail */}
+                  {submission.testResults
+                    ?.filter((r: TestResult) => !r.passed)
+                    .map((r: TestResult, i: number) => (
+                      <div
+                        key={i}
+                        className="rounded-lg border border-rose-500/20 bg-rose-500/5 p-3 space-y-1.5 text-[12px] font-mono"
+                      >
+                        <p className="text-rose-400 font-semibold text-[11px]">
+                          Failed Case
+                        </p>
+                        <div className="grid grid-cols-3 gap-2">
+                          <div>
+                            <p className="text-muted-foreground text-[10px] mb-0.5">
+                              Input
+                            </p>
+                            <p className="text-foreground/80">{r.input}</p>
+                          </div>
+                          <div>
+                            <p className="text-muted-foreground text-[10px] mb-0.5">
+                              Expected
+                            </p>
+                            <p className="text-emerald-400">{r.expected}</p>
+                          </div>
+                          <div>
+                            <p className="text-muted-foreground text-[10px] mb-0.5">
+                              Got
+                            </p>
+                            <p className="text-rose-400">{r.actual}</p>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  )}
-                  
-                  {submission.testResults && submission.testResults.length > 0 && (
-                    <div className="space-y-3">
-                      <p className="text-sm font-semibold flex items-center gap-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-primary" viewBox="0 0 20 20" fill="currentColor">
-                          <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
-                          <path fillRule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clipRule="evenodd" />
-                        </svg>
-                        Test Results
+                    ))}
+
+                  {/* Error output */}
+                  {submission.error && (
+                    <div className="rounded-lg border border-orange-500/20 bg-orange-500/5 p-3">
+                      <p className="text-[11px] text-orange-400 font-semibold mb-1">
+                        Error Output
                       </p>
-                      {submission.testResults.map((result: any, idx: number) => (
-                        <div
-                          key={idx}
-                          className={`rounded-lg p-4 border-2 ${
-                            result.passed 
-                              ? 'bg-green-500/10 border-green-500/30' 
-                              : 'bg-red-500/10 border-red-500/30'
-                          }`}
-                        >
-                          <div className="flex justify-between items-center mb-2">
-                            <span className="font-semibold text-sm">Test Case {idx + 1}</span>
-                            <span className="text-lg">
-                              {result.passed ? '✅' : '❌'}
-                            </span>
-                          </div>
-                          {!result.passed && (
-                            <div className="font-mono text-xs space-y-2 mt-3 bg-background/50 p-3 rounded border border-border/30">
-                              <div className="flex gap-2">
-                                <span className="text-muted-foreground font-semibold min-w-[70px]">Input:</span>
-                                <span className="text-foreground">{result.input}</span>
-                              </div>
-                              <div className="flex gap-2">
-                                <span className="text-muted-foreground font-semibold min-w-[70px]">Expected:</span>
-                                <span className="text-green-400">{result.expected}</span>
-                              </div>
-                              <div className="flex gap-2">
-                                <span className="text-muted-foreground font-semibold min-w-[70px]">Got:</span>
-                                <span className="text-red-400">{result.actual}</span>
-                              </div>
-                            </div>
-                          )}
-                        </div>
-                      ))}
+                      <pre className="text-[12px] font-mono text-foreground/80 whitespace-pre-wrap">
+                        {submission.error}
+                      </pre>
                     </div>
                   )}
-                </>
+                </div>
               )}
             </div>
           )}

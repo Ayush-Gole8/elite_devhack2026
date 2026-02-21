@@ -18,7 +18,6 @@ const submissionSchema = new mongoose.Schema({
   language: {
     type: String,
     required: true,
-    // Accepts Judge0 language IDs (e.g., "63", "71", "54") or language names
     default: '63', // Default to JavaScript (Judge0 ID: 63)
   },
   status: {

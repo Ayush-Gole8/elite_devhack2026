@@ -8,15 +8,19 @@
   ],
   "time_limit_ms": 2000,
   "memory_limit_kb": 256000,
-  "description": "Alice and Bob have two integers 𝑝 and 𝑞, and they are playing a game with these numbers. The players take turns, with Alice going first. On their turn, a player can do one of two actions:\n decrease 𝑝 by one (this action is possible if 𝑝>0 𝑝 > 0); decrease 𝑞 \n by one (this action is possible if 𝑞>1 𝑞 > 1). The game ends when 𝑝=0 𝑝 = 0 and 𝑞=1 𝑞 = 1. \nBob wins if at any point during the game the fraction 𝑝 𝑞 𝑝 𝑞\n is equal to in value the fraction 2 3 2 3. Otherwise, Alice wins. \nGiven the initial values of 𝑝 and 𝑞, determine the winner of the game if both players play optimally.",
-  "input_format": "Input\n\nEach test contains multiple test cases. The first line contains the number of test cases 𝑡 (1 ≤ 𝑡 ≤ 10 4 1 ≤ 𝑡 ≤ 10 4\n). The description of the test cases follows.\n\nEach input case consists of a single line containing two integers 𝑝 and 𝑞 (1 ≤ 𝑝,𝑞 ≤ 10 18 1 ≤ 𝑝, 𝑞 ≤ 10 18).",
-  "output_format": "Output\n\nFor each input case, output:\n \"Alice\" if Alice wins; \"Bob\" if Bob wins.",
-  "constraints": "Note\n\nIn the first input case, the fraction is already equal to 2 3 2 3 by value, so Bob wins. \nIn the second input case, one possible sequence of the game is as follows:\n initially 𝑝=10,𝑞=14 𝑝 = 10, 𝑞 = 14 ; after Alice's turn 𝑝=9,𝑞=14 𝑝 = 9, 𝑞 = 14 ; after Bob's turn 𝑝=9,𝑞=13 𝑝 = 9, 𝑞 = 13 ; after Alice's turn 𝑝=9,𝑞=12 𝑝 = 9, 𝑞 = 12 ; after Bob's turn 𝑝=8,𝑞=12 𝑝 = 8, 𝑞 = 12.\n Bob wins, as 8 12 8 12 is equal to 2 3 2 3\n. It can be shown that in this example, with optimal play from both players, Bob always wins.\n\nFor the third input case, Alice's optimal strategy will be to decrease 𝑞 \n as long as possible. In this case, the game will end in favor of Alice regardless of Bob's actions.",
+  "description": "Alice and Bob have two integers 𝑝 and 𝑞, and they are playing a game with these numbers. The players take turns, with Alice going first. On their turn, a player can do one of two actions:\n\ndecrease 𝑝 by one (this action is possible if 𝑝>0 𝑝\n>\n0);\ndecrease 𝑞 by one (this action is possible if 𝑞>1 𝑞\n>\n1).\n\nThe game ends when 𝑝=0 and 𝑞=1.\n\nBob wins if at any point during the game the fraction 𝑝𝑞 is equal to in value the fraction 2^3. Otherwise, Alice wins.\n\nGiven the initial values of 𝑝 and 𝑞, determine the winner of the game if both players play optimally.",
+  "input_format": "Each test contains multiple test cases. The first line contains the number of test cases 𝑡 (1≤𝑡≤10^4). The description of the test cases follows.\n\nEach input case consists of a single line containing two integers 𝑝 and 𝑞 (1≤𝑝,𝑞≤10^18).",
+  "output_format": "For each input case, output:\n\n\"Alice\" if Alice wins;\n\"Bob\" if Bob wins.",
+  "constraints": "In the first input case, the fraction is already equal to 2^3 by value, so Bob wins.\n\nIn the second input case, one possible sequence of the game is as follows:\n\ninitially 𝑝=10,𝑞=14;\nafter Alice's turn 𝑝=9,𝑞=14;\nafter Bob's turn 𝑝=9,𝑞=13;\nafter Alice's turn 𝑝=9,𝑞=12;\nafter Bob's turn 𝑝=8,𝑞=12.\n\nBob wins, as 8^12 is equal to 2^3. It can be shown that in this example, with optimal play from both players, Bob always wins.\n\nFor the third input case, Alice's optimal strategy will be to decrease 𝑞 as long as possible. In this case, the game will end in favor of Alice regardless of Bob's actions.",
   "test_cases": [
     {
       "input": "6\n4 6\n10 14\n15 15\n7 12\n7000000000000000 10487275715782582\n1000000000000000000 1000000000000000000",
       "output": "Bob\nBob\nAlice\nAlice\nBob\nAlice",
       "is_sample": true
     }
+  ],
+  "patterns": [
+    "math",
+    "dfs"
   ]
 }

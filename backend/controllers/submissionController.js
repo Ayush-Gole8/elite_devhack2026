@@ -1,7 +1,29 @@
 const Submission = require('../models/Submission');
 const Problem = require('../models/Problem');
+const ProblemTests = require('../models/ProblemTests');
 const User = require('../models/User');
 const { runCode } = require('../services/judgeService');
+
+/**
+ * Load the test cases to judge against for a problem.
+ * Priority: hiddenTests (inline) > ProblemTests (overflow) > visibleTests (fallback).
+ * Returns an array of { input, output } objects.
+ */
+async function loadJudgeTests(problem) {
+  // 1. Inline hidden tests
+  if (problem.hiddenTests && problem.hiddenTests.length > 0) {
+    return problem.hiddenTests;
+  }
+
+  // 2. Overflow ProblemTests collection
+  if (problem.meta && problem.meta.hiddenTestsRef) {
+    const pt = await ProblemTests.findById(problem.meta.hiddenTestsRef);
+    if (pt && pt.tests && pt.tests.length > 0) return pt.tests;
+  }
+
+  // 3. Fallback to visible tests (samples)
+  return problem.visibleTests || [];
+}
 
 // @desc    Submit solution
 // @route   POST /api/submissions
@@ -28,8 +50,10 @@ const submitSolution = async (req, res) => {
       });
     }
 
-    // Check if problem has visible tests
-    if (!problem.visibleTests || problem.visibleTests.length === 0) {
+    // Load test cases for judging (hidden first, fallback to visible)
+    const judgeTests = await loadJudgeTests(problem);
+
+    if (!judgeTests || judgeTests.length === 0) {
       return res.status(400).json({
         success: false,
         message: 'No test cases found for this problem',
@@ -41,77 +65,56 @@ const submitSolution = async (req, res) => {
     let passedCount = 0;
     const testResults = [];
     let errorMessage = null;
+    const totalTests = judgeTests.length;
 
-    // Run code against each visible test case
-    for (const testCase of problem.visibleTests) {
+    // Run code against each judge test case (stop on first failure)
+    for (const testCase of judgeTests) {
       try {
-        // Execute code with Judge0
+        // Execute code — judgeService handles backend selection automatically
         const result = await runCode({
           source_code,
           language_id,
           stdin: testCase.input,
         });
 
-        // Check for compilation errors
-        if (result.compile_output && result.compile_output.trim() !== '') {
-          status = 'Compilation Error';
-          errorMessage = result.compile_output.substring(0, 500);
+        // result shape: { stdout, stderr, status }
+        // status is one of: 'Accepted' | 'Compilation Error' | 'Runtime Error'
+        //                   | 'Time Limit Exceeded' | 'Wrong Answer'
 
-          testResults.push({
-            passed: false,
-            input: testCase.input.substring(0, 100),
-            expected: testCase.output.substring(0, 100),
-            actual: '',
-            error: result.compile_output.substring(0, 200),
-          });
+        const nonAccepted = result.status && result.status !== 'Accepted';
 
-          break; // Stop on compilation error
-        }
-
-        // Check for runtime errors (stderr or non-Accepted status)
-        if (result.stderr && result.stderr.trim() !== '') {
-          status = 'Runtime Error';
-          errorMessage = result.stderr.substring(0, 500);
-
-          testResults.push({
-            passed: false,
-            input: testCase.input.substring(0, 100),
-            expected: testCase.output.substring(0, 100),
-            actual: result.stdout ? result.stdout.substring(0, 100) : '',
-            error: result.stderr.substring(0, 200),
-          });
-
-          break; // Stop on runtime error
-        }
-
-        // Check if status is not Accepted (e.g., Time Limit Exceeded, etc.)
-        if (result.status && result.status.description !== 'Accepted') {
-          const statusDesc = result.status.description;
-
-          if (statusDesc === 'Time Limit Exceeded') {
-            status = 'Time Limit Exceeded';
-          } else if (statusDesc === 'Runtime Error (NZEC)' || statusDesc === 'Runtime Error (SIGSEGV)') {
+        if (nonAccepted) {
+          // Normalise any variant of runtime error descriptions
+          if (/runtime error/i.test(result.status) ||
+              /nzec/i.test(result.status) ||
+              /sigsegv/i.test(result.status) ||
+              /sigabrt/i.test(result.status)) {
             status = 'Runtime Error';
           } else {
-            status = statusDesc;
+            status = result.status;
           }
-
-          errorMessage = `Judge0 status: ${statusDesc}`;
+          errorMessage = result.stderr
+            ? result.stderr.substring(0, 500)
+            : `Execution status: ${result.status}`;
 
           testResults.push({
             passed: false,
             input: testCase.input.substring(0, 100),
             expected: testCase.output.substring(0, 100),
             actual: result.stdout ? result.stdout.substring(0, 100) : '',
-            error: statusDesc,
+            error: result.stderr ? result.stderr.substring(0, 200) : result.status,
           });
-
-          break; // Stop on error status
+          break;
         }
 
-        // Compare outputs (trim whitespace for comparison)
-        const actualOutput = (result.stdout || '').trim();
-        const expectedOutput = testCase.output.trim();
+        // Compare outputs (trim whitespace)
+        // Normalise: strip \r (Windows CRLF), collapse trailing spaces per line, then trim
+        const normalise = (s) =>
+          (s || '').replace(/\r\n/g, '\n').replace(/\r/g, '\n')
+                   .split('\n').map(l => l.trimEnd()).join('\n').trim();
+
+        const actualOutput   = normalise(result.stdout);
+        const expectedOutput = normalise(testCase.output);
         const passed = actualOutput === expectedOutput;
 
         testResults.push({
@@ -121,17 +124,15 @@ const submitSolution = async (req, res) => {
           actual: actualOutput.substring(0, 100),
           error: null,
         });
-
         if (passed) {
           passedCount++;
         } else {
           status = 'Wrong Answer';
-          break; // Stop on first wrong answer (early break)
+          break;
         }
 
       } catch (error) {
-        // Handle Judge0 service errors
-        status = 'Runtime Error';
+        status       = 'Runtime Error';
         errorMessage = error.message;
 
         testResults.push({
@@ -141,8 +142,7 @@ const submitSolution = async (req, res) => {
           actual: '',
           error: error.message.substring(0, 200),
         });
-
-        break; // Stop on service error
+        break;
       }
     }
 
@@ -151,13 +151,21 @@ const submitSolution = async (req, res) => {
       user: req.user,
       problem: problemId,
       code: source_code,
-      language: String(language_id), // Store language_id as string
+      language: String(language_id),
       status,
       testCasesPassed: passedCount,
-      totalTestCases: problem.visibleTests.length,
+      totalTestCases: totalTests,
       error: errorMessage,
-      testResults: testResults.slice(0, 5), // Store first 5 results
+      // Store up to 5 failed test results (never expose hidden test I/O for accepted)
+      testResults: status === 'Accepted' ? [] : testResults.slice(0, 5),
     });
+
+    // Update problem submission counters
+    problem.totalSubmissions = (problem.totalSubmissions || 0) + 1;
+    if (status === 'Accepted') {
+      problem.acceptedSubmissions = (problem.acceptedSubmissions || 0) + 1;
+    }
+    await problem.save();
 
     // If accepted, update user's solved problems
     if (status === 'Accepted') {
@@ -213,12 +221,18 @@ const getUserSubmissions = async (req, res) => {
   }
 };
 
-// @desc    Get all submissions for a problem
-// @route   GET /api/submissions/problem/:problemId
+// @desc    Get all submissions for a problem (optionally filtered to current user)
+// @route   GET /api/submissions/problem/:problemId?mine=true
 // @access  Private
 const getProblemSubmissions = async (req, res) => {
   try {
-    const submissions = await Submission.find({ problem: req.params.problemId })
+    const query = { problem: req.params.problemId };
+    // ?mine=true → return only the authenticated user's submissions for this problem
+    if (req.query.mine === 'true') {
+      query.user = req.user;
+    }
+
+    const submissions = await Submission.find(query)
       .populate('user', 'name username')
       .sort({ submittedAt: -1 });
 
@@ -240,11 +254,6 @@ const getProblemSubmissions = async (req, res) => {
 // @access  Private
 const getSubmission = async (req, res) => {
   try {
-    console.log('=== GET SUBMISSION DEBUG ===');
-    console.log('Submission ID:', req.params.id);
-    console.log('Request User ID:', req.user);
-    console.log('Request User Type:', typeof req.user);
-    
     // Validate MongoDB ObjectId format
     if (!req.params.id.match(/^[0-9a-fA-F]{24}$/)) {
       return res.status(400).json({
@@ -257,19 +266,12 @@ const getSubmission = async (req, res) => {
       .populate('user', 'name username')
       .populate('problem', 'title difficulty');
 
-    console.log('Submission found:', !!submission);
-    
     if (!submission) {
       return res.status(404).json({
         success: false,
         message: 'Submission not found',
       });
     }
-
-    console.log('Submission.user:', submission.user);
-    console.log('Submission.user type:', typeof submission.user);
-    console.log('Submission.user._id:', submission.user?._id);
-    console.log('Submission.user._id type:', typeof submission.user?._id);
 
     // Get the user ID from submission
     let submissionUserId;
@@ -279,13 +281,8 @@ const getSubmission = async (req, res) => {
       submissionUserId = submission.user.toString();
     }
     
-    console.log('Submission User ID (extracted):', submissionUserId);
-    console.log('Match:', submissionUserId === req.user);
-    console.log('=== END DEBUG ===\n');
-    
     // Only owner can view
     if (submissionUserId && submissionUserId !== req.user) {
-      console.log('Authorization failed: User mismatch');
       return res.status(403).json({
         success: false,
         message: 'Not authorized to view this submission',

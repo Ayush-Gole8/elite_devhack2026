@@ -114,13 +114,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         window.location.href = '/dashboard';
       }
       
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Sign in error:', error);
       
       // Sign out from Firebase on error
       await firebaseSignOut(auth);
       
-      const errorMessage = error.response?.data?.message || 'Failed to sign in. Please try again.';
+      const errorMessage = (error && typeof error === 'object' && 'response' in error && error.response && typeof error.response === 'object' && 'data' in error.response && error.response.data && typeof error.response.data === 'object' && 'message' in error.response.data) 
+        ? String(error.response.data.message) 
+        : 'Failed to sign in. Please try again.';
       toast.error(errorMessage);
       
       setUser(null);
@@ -150,7 +152,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // Redirect to home
       window.location.href = '/';
       
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Sign out error:', error);
       toast.error('Failed to sign out. Please try again.');
     } finally {

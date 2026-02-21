@@ -10,15 +10,20 @@
   ],
   "time_limit_ms": 2000,
   "memory_limit_kb": 256000,
-  "description": "There is a grid of 3𝑛×3𝑛 3 𝑛 × 3 𝑛\n points, consisting of all integer points (𝑥,𝑦) (𝑥, 𝑦) such that 1 ≤ 𝑥,𝑦 ≤ 3𝑛 1 ≤ 𝑥, 𝑦 ≤ 3 𝑛. \nFind a largest set of triangles satisfying the following conditions:\n\nEach triangle has its vertices on exactly three points on the grid.\nEach triangle has an area of exactly 1 2 1 2\n. Note that they do not have to be right triangles.\nNo two triangles share a common intersection point, including their vertices.\n\nIf there exist multiple largest such sets of triangles, you may output any of them.",
-  "input_format": "Input\n\nEach test contains multiple test cases. The first line contains the number of test cases 𝑡 (1 ≤ 𝑡 ≤ 30 1 ≤ 𝑡 ≤ 30). The description of the test cases follows.\n\nThe only line of each test case contains a single integer 𝑛 (1 ≤ 𝑛 ≤ 166 1 ≤ 𝑛 ≤ 166).\n\nIt is guaranteed that the sum of 𝑛 2 𝑛 2\n over all test cases does not exceed 166 2 166 2\n.",
-  "output_format": "Output\n\nOutput the maximum size 𝑚 \n of the set of triangles on one line (0 ≤ 𝑚 ≤ 3 𝑛 2 0 ≤ 𝑚 ≤ 3 𝑛 2). Then, output 𝑚 lines in the following format:\n 𝑥 𝑖,1 𝑦 𝑖,1 𝑥 𝑖,2 𝑦 𝑖,2 𝑥 𝑖,3 𝑦 𝑖,3 𝑥 𝑖, 1 𝑦 𝑖, 1 𝑥 𝑖, 2 𝑦 𝑖, 2 𝑥 𝑖, 3 𝑦 𝑖, 3\n: The vertices of the 𝑖 -th triangle are (𝑥 𝑖,1, 𝑦 𝑖,1) (𝑥 𝑖, 1, 𝑦 𝑖, 1), (𝑥 𝑖,2, 𝑦 𝑖,2) (𝑥 𝑖, 2, 𝑦 𝑖, 2), (𝑥 𝑖,3, 𝑦 𝑖,3) (𝑥 𝑖, 3, 𝑦 𝑖, 3).\n\nYou may output the vertices of one triangle in any order (clockwise or counterclockwise).\n\nYour output will be accepted if it satisfies all conditions and the maximum size given is correct.",
-  "constraints": "Note\n\nIn the first test case, the example output has 2 \n triangles as shown in the following image:\n\nIn the second test case, the example output has 12 \n triangles as shown in the image on the left: \t As the triangles are not required to be right triangles, the set of triangles shown in the image on the right will also be considered valid.",
+  "description": "There is a grid of 3𝑛×3𝑛3 𝑛×3 𝑛 points, consisting of all integer points (𝑥,𝑦)\n such that 1≤𝑥,𝑦≤3𝑛1≤𝑥,𝑦≤3 𝑛.\n\nFind a largest set of triangles satisfying the following conditions:\n\nEach triangle has its vertices on exactly three points on the grid.\nEach triangle has an area of exactly 1^2. Note that they do not have to be right triangles.\nNo two triangles share a common intersection point, including their vertices.\n\nIf there exist multiple largest such sets of triangles, you may output any of them.",
+  "input_format": "Each test contains multiple test cases. The first line contains the number of test cases 𝑡 (1≤𝑡≤30). The description of the test cases follows.\n\nThe only line of each test case contains a single integer 𝑛 (1≤𝑛≤166).\n\nIt is guaranteed that the sum of 𝑛2 over all test cases does not exceed 166^2.",
+  "output_format": "Output the maximum size 𝑚 of the set of triangles on one line (0≤𝑚≤3 𝑛20≤𝑚≤3 𝑛2).\n\nThen, output 𝑚 lines in the following format:\n\n𝑥𝑖,1 𝑦𝑖,1 𝑥𝑖,2 𝑦𝑖,2 𝑥𝑖,3 𝑦𝑖,3 𝑥𝑖,1 𝑦𝑖,1 𝑥𝑖,2 𝑦𝑖,2 𝑥𝑖,3 𝑦𝑖,3\n: The vertices of the 𝑖-th triangle are (𝑥𝑖,1,𝑦𝑖,1)\n, (𝑥𝑖,2,𝑦𝑖,2)\n, (𝑥𝑖,3,𝑦𝑖,3)\n.\n\nYou may output the vertices of one triangle in any order (clockwise or counterclockwise).\n\nYour output will be accepted if it satisfies all conditions and the maximum size given is correct.",
+  "constraints": "In the first test case, the example output has 2 triangles as shown in the following image:\n\nIn the second test case, the example output has 12 triangles as shown in the image on the left:\n\n\t\n\nAs the triangles are not required to be right triangles, the set of triangles shown in the image on the right will also be considered valid.",
   "test_cases": [
     {
       "input": "2\n1\n2",
       "output": "2\n1 1 1 2 2 1\n2 3 3 2 3 3\n12\n1 1 1 2 2 1\n2 2 3 2 3 1\n1 3 1 4 2 3\n2 4 3 4 3 3\n1 5 1 6 2 5\n2 6 3 6 3 5\n4 1 4 2 5 1\n5 2 6 2 6 1\n4 3 4 4 5 3\n5 4 6 4 6 3\n4 5 4 6 5 5\n5 6 6 6 6 5",
       "is_sample": true
     }
+  ],
+  "patterns": [
+    "backtracking",
+    "brute-force",
+    "greedy"
   ]
 }

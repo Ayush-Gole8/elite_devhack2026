@@ -12,9 +12,9 @@
   ],
   "time_limit_ms": 2000,
   "memory_limit_kb": 256000,
-  "description": "The Great Grail Tree has stood in the kingdom for 315 \n years. It takes up a lot of space, so King Ila decided to get rid of it as soon as possible. The tree itself is an acyclic, connected, undirected graph with 𝑛 \n vertices, each having its own value 𝑎 𝑣 𝑎 𝑣\n. The tree can be removed in the following way:\n Let 𝑆 𝑣 𝑆 𝑣 be the sum of the values of all remaining neighbors of 𝑣. If 𝑣 has no remaining neighbors, then 𝑆 𝑣 𝑆 𝑣 is 0. Choose a vertex 𝑣 such that 𝑎 𝑣 𝑎 𝑣 and 𝑆 𝑣 𝑆 𝑣\n differ in parity (i.e., either 𝑎 𝑣 𝑎 𝑣 is even and 𝑆 𝑣 𝑆 𝑣 is odd, or 𝑎 𝑣 𝑎 𝑣 is odd and 𝑆 𝑣 𝑆 𝑣 is even). If there are no such vertices, stop the process. Remove vertex 𝑣 and all edges connected to it from the tree.\nYour task is to determine whether there exists a sequence of removals that will lead to the complete removal of the Grail Tree (i.e., no vertices will remain in the tree). If such a sequence exists, output the sequence of 𝑛 \n vertices in the order of their removal. If there are multiple answers, output any of them.",
-  "input_format": "Input\n\nEach test consists of several test case. The first line contains one integer 𝑡 (1 ≤ 𝑡 ≤ 10 4 1 ≤ 𝑡 ≤ 10 4\n) — the number of test cases. The description of the test cases follows.\n\nThe first line contains the number 𝑛 (1 ≤ 𝑛 ≤ 2⋅ 10 5 1 ≤ 𝑛 ≤ 2 ⋅ 10 5\n) — the number of vertices in the Grail Tree.\n\nThe second line describes the array 𝑎 (1 ≤ 𝑎 𝑖 ≤ 10 9 1 ≤ 𝑎 𝑖 ≤ 10 9\n) — the values of the vertices in the tree.\n Next, there are 𝑛-1 𝑛 - 1 lines, each containing 2 numbers 𝑣 and 𝑢 (1 ≤ 𝑣,𝑢 ≤ 𝑛,𝑣≠𝑢 1 ≤ 𝑣, 𝑢 ≤ 𝑛, 𝑣 ≠ 𝑢\n), indicating that vertices 𝑣 and 𝑢 are connected by an edge in the tree.\n\nIt is guaranteed that the sum of 𝑛 \n across all test cases does not exceed 2⋅ 10 5 2 ⋅ 10 5.",
-  "output_format": "Output\n\nFor each test case, output \"YES\" if it is possible to completely remove the Grail Tree. Otherwise, output \"NO\". If the answer is \"YES\", output any sequence of removals.\n\nYou can output each letter in any case (lowercase or uppercase). For example, the strings \"yEs\", \"yes\", \"Yes\", and \"YES\" will be accepted as a positive answer.",
+  "description": "The Great Grail Tree has stood in the kingdom for 315 years. It takes up a lot of space, so King Ila decided to get rid of it as soon as possible. The tree itself is an acyclic, connected, undirected graph with 𝑛 vertices, each having its own value 𝑎𝑣. The tree can be removed in the following way:\n\nLet 𝑆𝑣 be the sum of the values of all remaining neighbors of 𝑣. If 𝑣 has no remaining neighbors, then 𝑆𝑣 is 0. Choose a vertex 𝑣 such that 𝑎𝑣 and 𝑆𝑣 differ in parity (i.e., either 𝑎𝑣 is even and 𝑆𝑣 is odd, or 𝑎𝑣 is odd and 𝑆𝑣 is even). If there are no such vertices, stop the process.\nRemove vertex 𝑣 and all edges connected to it from the tree.\nYour task is to determine whether there exists a sequence of removals that will lead to the complete removal of the Grail Tree (i.e., no vertices will remain in the tree). If such a sequence exists, output the sequence of 𝑛 vertices in the order of their removal. If there are multiple answers, output any of them.",
+  "input_format": "Each test consists of several test case. The first line contains one integer 𝑡 (1≤𝑡≤10^4) — the number of test cases. The description of the test cases follows.\n\nThe first line contains the number 𝑛 (1≤𝑛≤2⋅10^5) — the number of vertices in the Grail Tree.\n\nThe second line describes the array 𝑎 (1≤𝑎𝑖≤10^9) — the values of the vertices in the tree.\n\nNext, there are 𝑛−1 lines, each containing 2 numbers 𝑣 and 𝑢 (1≤𝑣,𝑢≤𝑛,𝑣≠𝑢1≤𝑣,𝑢≤𝑛,𝑣≠𝑢), indicating that vertices 𝑣 and 𝑢 are connected by an edge in the tree.\n\nIt is guaranteed that the sum of 𝑛 across all test cases does not exceed 2⋅10^5.",
+  "output_format": "For each test case, output \"YES\" if it is possible to completely remove the Grail Tree. Otherwise, output \"NO\". If the answer is \"YES\", output any sequence of removals.\n\nYou can output each letter in any case (lowercase or uppercase). For example, the strings \"yEs\", \"yes\", \"Yes\", and \"YES\" will be accepted as a positive answer.",
   "constraints": "",
   "test_cases": [
     {
@@ -22,5 +22,10 @@
       "output": "NO\nYES\n2 3 1 4 \nNO\nYES\n1 5 2 3 4 \nYES\n2 4 1 5 3",
       "is_sample": true
     }
+  ],
+  "patterns": [
+    "dfs",
+    "bfs",
+    "greedy"
   ]
 }

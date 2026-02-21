@@ -1,8 +1,9 @@
 const Problem = require('../models/Problem');
+const User    = require('../models/User');
 
 // @desc    Get all problems
 // @route   GET /api/problems
-// @access  Public
+// @access  Public (solved flag added when authenticated)
 const getProblems = async (req, res) => {
   try {
     const { difficulty, tags, search } = req.query;
@@ -28,10 +29,25 @@ const getProblems = async (req, res) => {
       .populate('createdBy', 'name username')
       .sort({ createdAt: -1 });
 
+    // Attach solved flag per-problem when the request is authenticated
+    let solvedSet = new Set();
+    if (req.user) {
+      const userDoc = await User.findById(req.user).select('solvedProblems').lean();
+      if (userDoc?.solvedProblems) {
+        userDoc.solvedProblems.forEach(id => solvedSet.add(String(id)));
+      }
+    }
+
+    const data = problems.map(p => {
+      const obj = p.toObject();
+      obj.solved = solvedSet.has(String(p._id));
+      return obj;
+    });
+
     res.status(200).json({
       success: true,
-      count: problems.length,
-      data: problems,
+      count: data.length,
+      data,
     });
   } catch (error) {
     res.status(500).json({

@@ -119,10 +119,12 @@ export const submissionAPI = {
   },
 
   /**
-   * Get problem submissions (protected)
+   * Get all submissions for a problem (optionally only the current user's)
    */
-  getProblemSubmissions: async (problemId: string) => {
-    const response = await axiosInstance.get(`/submissions/problem/${problemId}`);
+  getProblemSubmissions: async (problemId: string, mine = false) => {
+    const response = await axiosInstance.get(`/submissions/problem/${problemId}`, {
+      params: mine ? { mine: 'true' } : undefined,
+    });
     return response.data;
   },
 

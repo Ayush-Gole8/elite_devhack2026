@@ -9,15 +9,20 @@
   ],
   "time_limit_ms": 2000,
   "memory_limit_kb": 256000,
-  "description": "You are given two numbers 𝑛 and 𝑚.\n\nAn undirected graph is called beautiful if it satisfies the following conditions:\n\nIt has no loops or multiple edges. It has exactly 𝑛 vertices and 𝑚 edges. Its vertices cannot be divided into 2 \n sets such that the sums of the degrees of all vertices in the first set and the sums of the degrees of all vertices in the second set are equal.\n\nYou need to either report that a beautiful undirected graph with the given 𝑛,𝑚 𝑛, 𝑚\n does not exist, or provide one.",
-  "input_format": "Input\n\nEach test contains multiple test cases. The first line contains the number of test cases 𝑡 (1 ≤ 𝑡 ≤ 10 4 1 ≤ 𝑡 ≤ 10 4\n). The description of the test cases follows.\n\nThe only line of each test case contains two integers 𝑛,𝑚 𝑛, 𝑚 (12 ≤ 𝑛 ≤ 10 5,1 ≤ 𝑚 ≤ min(2⋅ 10 5, 𝑛(𝑛-1) 2) 12 ≤ 𝑛 ≤ 10 5, 1 ≤ 𝑚 ≤ min (2 ⋅ 10 5, 𝑛 (𝑛 - 1) 2)) — the number of vertices and edges in the graph.\n\nIt is guaranteed that the sum of 𝑛 \n across all test cases does not exceed 10 5 10 5, and the sum of 𝑚 across all test cases does not exceed 2⋅ 10 5 2 ⋅ 10 5.",
-  "output_format": "Output\n\nFor each test case, output \"No\" if such a graph does not exist. Otherwise, output \"Yes\", and then, in the following 𝑚 \n lines — the edges of the beautiful graph in arbitrary order. If there are multiple answers, you may output any of them.",
-  "constraints": "Note\n\nIn the first test case, the graph is a simple cycle of 7 \n vertices. The degrees of the vertices are {2,2,2,2,2,2,2,0,0,0,0,0} { 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0 }\n. It is easy to see that in such a graph, it is impossible to divide the vertices into 2 \n parts with equal sums of degrees.\n\nIn the second test case, since 𝑚=1 𝑚 = 1\n, it is easy to see that the vertices can always be divided into 2 \n parts with equal sums of degrees. Therefore, no solution exists.",
+  "description": "You are given two numbers 𝑛 and 𝑚.\n\nAn undirected graph is called beautiful if it satisfies the following conditions:\n\nIt has no loops or multiple edges.\nIt has exactly 𝑛 vertices and 𝑚 edges.\nIts vertices cannot be divided into 2 sets such that the sums of the degrees of all vertices in the first set and the sums of the degrees of all vertices in the second set are equal.\n\nYou need to either report that a beautiful undirected graph with the given 𝑛,𝑚 does not exist, or provide one.",
+  "input_format": "Each test contains multiple test cases. The first line contains the number of test cases 𝑡 (1≤𝑡≤10^4). The description of the test cases follows.\n\nThe only line of each test case contains two integers 𝑛,𝑚 (12≤𝑛≤10^5,1≤𝑚≤min(2⋅10^5,𝑛(𝑛−1)2)12≤𝑛≤10^5,1≤𝑚≤\nmin\n(2⋅10^5,𝑛(𝑛−1)2) — the number of vertices and edges in the graph.\n\nIt is guaranteed that the sum of 𝑛 across all test cases does not exceed 10^5, and the sum of 𝑚 across all test cases does not exceed 2⋅10^5.",
+  "output_format": "For each test case, output \"No\" if such a graph does not exist. Otherwise, output \"Yes\", and then, in the following 𝑚 lines — the edges of the beautiful graph in arbitrary order. If there are multiple answers, you may output any of them.",
+  "constraints": "In the first test case, the graph is a simple cycle of 7 vertices. The degrees of the vertices are {2,2,0,0,0}\n{\n2,2,0,0,0\n}\n. It is easy to see that in such a graph, it is impossible to divide the vertices into 2 parts with equal sums of degrees.\n\nIn the second test case, since 𝑚=1, it is easy to see that the vertices can always be divided into 2 parts with equal sums of degrees. Therefore, no solution exists.",
   "test_cases": [
     {
       "input": "5\n12 7\n12 1\n90000 12\n30 434\n30 435",
       "output": "Yes\n1 2\n2 3\n3 4\n4 5\n5 1\n1 3\n2 4\nNo\nYes\n1 4\n1 5\n1 6\n2 4\n2 5\n2 6\n3 4\n3 5\n3 6\n4 5\n4 6\n5 6\nNo\nNo",
       "is_sample": true
     }
+  ],
+  "patterns": [
+    "brute-force",
+    "backtracking",
+    "greedy"
   ]
 }

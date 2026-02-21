@@ -1,0 +1,106 @@
+{
+  "slug": "cf-2190-B1",
+  "title": "Inversion Count (Easy)",
+  "test_cases": [
+    {
+      "input": "4\n3\n7 8 7\n4\n2 9 3 6\n1\n3\n5\n7 9 3 4 1",
+      "output": "1\n2\n0\n8",
+      "is_sample": false
+    },
+    {
+      "input": "1\n3\n8 9 7",
+      "output": "2",
+      "is_sample": false
+    },
+    {
+      "input": "4\n2\n4 8\n3\n3 5 4\n6\n2 1 7 10 1 4\n2\n2 2",
+      "output": "0\n1\n6\n0",
+      "is_sample": false
+    },
+    {
+      "input": "1\n4\n10 1 4 1",
+      "output": "4",
+      "is_sample": false
+    },
+    {
+      "input": "4\n4\n4 9 4 1\n2\n9 5\n2\n10 6\n5\n10 6 4 5 3",
+      "output": "4\n1\n1\n9",
+      "is_sample": false
+    },
+    {
+      "input": "2\n4\n5 5 1 9\n5\n3 7 9 8 1",
+      "output": "2\n5",
+      "is_sample": false
+    },
+    {
+      "input": "3\n6\n7 9 6 7 7 3\n3\n7 3 9\n4\n4 4 5 3",
+      "output": "9\n1\n3",
+      "is_sample": false
+    },
+    {
+      "input": "4\n1\n9\n4\n7 9 9 3\n4\n4 5 4 6\n6\n2 8 6 2 9 4",
+      "output": "0\n3\n1\n6",
+      "is_sample": false
+    },
+    {
+      "input": "1\n3\n7 10 10",
+      "output": "0",
+      "is_sample": false
+    },
+    {
+      "input": "1\n1\n4",
+      "output": "0",
+      "is_sample": false
+    },
+    {
+      "input": "2\n4\n4 6 5 1\n2\n4 2",
+      "output": "4\n1",
+      "is_sample": false
+    },
+    {
+      "input": "4\n2\n10 4\n4\n4 9 6 5\n4\n8 9 6 5\n3\n6 9 8",
+      "output": "1\n3\n5\n1",
+      "is_sample": false
+    },
+    {
+      "input": "4\n1\n8\n3\n4 6 6\n4\n1 10 4 3\n1\n5",
+      "output": "0\n0\n3\n0",
+      "is_sample": false
+    },
+    {
+      "input": "4\n3\n3 4 6\n2\n7 10\n2\n8 9\n6\n6 5 8 8 8 3",
+      "output": "0\n0\n0\n6",
+      "is_sample": false
+    },
+    {
+      "input": "3\n2\n3 9\n4\n3 9 1 9\n1\n2",
+      "output": "0\n2\n0",
+      "is_sample": false
+    },
+    {
+      "input": "1\n1\n7",
+      "output": "0",
+      "is_sample": false
+    },
+    {
+      "input": "2\n6\n4 2 3 1 4 9\n4\n6 1 10 10",
+      "output": "5\n1",
+      "is_sample": false
+    },
+    {
+      "input": "4\n6\n8 1 1 9 9 7\n1\n1\n5\n5 9 5 1 9\n6\n7 3 2 2 9 3",
+      "output": "5\n0\n4\n7",
+      "is_sample": false
+    },
+    {
+      "input": "2\n2\n10 9\n3\n6 5 7",
+      "output": "1\n1",
+      "is_sample": false
+    },
+    {
+      "input": "1\n3\n7 8 10",
+      "output": "0",
+      "is_sample": false
+    }
+  ]
+}

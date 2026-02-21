@@ -1,6 +1,7 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
+@plugin "@tailwindcss/typography";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -113,7 +114,7 @@
   --secondary: rgb(28 28 35);
   --secondary-foreground: rgb(228 228 231);
   --muted: rgb(28 28 35);
-  --muted-foreground: rgb(113 113 122);
+  --muted-foreground: rgb(148 148 160);
   --accent: rgb(28 28 35);
   --accent-foreground: rgb(228 228 231);
   --destructive: rgb(239 68 68);
@@ -214,3 +215,56 @@
   color: rgba(148, 163, 184, 0.08);  /* slate-400 @ 8% */
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }
+
+/* ─────────── Custom scrollbar ─────────── */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.10);
+  border-radius: 999px;
+  transition: background 0.2s ease;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(16, 185, 129, 0.45);
+}
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.10) transparent;
+}
+*:hover {
+  scrollbar-color: rgba(16, 185, 129, 0.35) transparent;
+}
+
+/* ─────────── highlight.js — GitHub Dark theme (for rehype-highlight) ─────────── */
+.hljs {
+  color: #c9d1d9;
+  background: transparent;
+}
+.hljs-doctag, .hljs-keyword, .hljs-meta .hljs-keyword,
+.hljs-template-tag, .hljs-template-variable, .hljs-type,
+.hljs-variable.language_ { color: #ff7b72; }
+.hljs-title, .hljs-title.class_, .hljs-title.class_.inherited__,
+.hljs-title.function_ { color: #d2a8ff; }
+.hljs-attr,.hljs-attribute,.hljs-literal,.hljs-meta,.hljs-number,
+.hljs-operator,.hljs-selector-attr,.hljs-selector-class,
+.hljs-selector-id,.hljs-variable { color: #79c0ff; }
+.hljs-meta .hljs-string,.hljs-regexp,.hljs-string { color: #a5d6ff; }
+.hljs-built_in,.hljs-symbol { color: #ffa657; }
+.hljs-code,.hljs-comment,.hljs-formula { color: #8b949e; font-style: italic; }
+.hljs-name,.hljs-quote,.hljs-selector-pseudo,.hljs-selector-tag { color: #7ee787; }
+.hljs-subst { color: #c9d1d9; }
+.hljs-section { color: #1f6feb; font-weight: bold; }
+.hljs-bullet { color: #f2cc60; }
+.hljs-emphasis { color: #c9d1d9; font-style: italic; }
+.hljs-strong { color: #c9d1d9; font-weight: bold; }
+.hljs-addition { color: #aff5b4; background-color: #033a16; }
+.hljs-deletion { color: #ffdcd7; background-color: #67060c; }

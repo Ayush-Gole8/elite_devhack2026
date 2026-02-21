@@ -1,0 +1,106 @@
+{
+  "slug": "cf-2194-A",
+  "title": "Triangular Number",
+  "test_cases": [
+    {
+      "input": "5\n10\n4\n1\n13\n16",
+      "output": "55\n10\n1\n91\n136",
+      "is_sample": false
+    },
+    {
+      "input": "2\n15\n11",
+      "output": "120\n66",
+      "is_sample": false
+    },
+    {
+      "input": "2\n1\n18",
+      "output": "1\n171",
+      "is_sample": false
+    },
+    {
+      "input": "5\n11\n10\n16\n10\n19",
+      "output": "66\n55\n136\n55\n190",
+      "is_sample": false
+    },
+    {
+      "input": "6\n5\n19\n15\n11\n4\n16",
+      "output": "15\n190\n120\n66\n10\n136",
+      "is_sample": false
+    },
+    {
+      "input": "1\n5",
+      "output": "15",
+      "is_sample": false
+    },
+    {
+      "input": "6\n18\n4\n10\n1\n13\n20",
+      "output": "171\n10\n55\n1\n91\n210",
+      "is_sample": false
+    },
+    {
+      "input": "2\n15\n12",
+      "output": "120\n78",
+      "is_sample": false
+    },
+    {
+      "input": "1\n11",
+      "output": "66",
+      "is_sample": false
+    },
+    {
+      "input": "1\n20",
+      "output": "210",
+      "is_sample": false
+    },
+    {
+      "input": "6\n7\n19\n17\n8\n9\n7",
+      "output": "28\n190\n153\n36\n45\n28",
+      "is_sample": false
+    },
+    {
+      "input": "1\n3",
+      "output": "6",
+      "is_sample": false
+    },
+    {
+      "input": "5\n15\n3\n17\n13\n7",
+      "output": "120\n6\n153\n91\n28",
+      "is_sample": false
+    },
+    {
+      "input": "4\n11\n20\n20\n17",
+      "output": "66\n210\n210\n153",
+      "is_sample": false
+    },
+    {
+      "input": "1\n12",
+      "output": "78",
+      "is_sample": false
+    },
+    {
+      "input": "4\n5\n14\n12\n13",
+      "output": "15\n105\n78\n91",
+      "is_sample": false
+    },
+    {
+      "input": "3\n1\n10\n12",
+      "output": "1\n55\n78",
+      "is_sample": false
+    },
+    {
+      "input": "3\n10\n15\n18",
+      "output": "55\n120\n171",
+      "is_sample": false
+    },
+    {
+      "input": "1\n7",
+      "output": "28",
+      "is_sample": false
+    },
+    {
+      "input": "6\n15\n14\n15\n10\n6\n14",
+      "output": "120\n105\n120\n55\n21\n105",
+      "is_sample": false
+    }
+  ]
+}

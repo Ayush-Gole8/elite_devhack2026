@@ -8,15 +8,19 @@
   ],
   "time_limit_ms": 2000,
   "memory_limit_kb": 256000,
-  "description": "DBMB had a birthday yesterday. He was gifted an array 𝑎 of 𝑛 elements and a number 𝑥 \n. But there is one problem: he only likes arrays where the sum of the elements equals 𝑠 \n. To make the array appealing to him, you can perform the following operation any number of times:\n Choose an index 𝑖 (1 ≤ 𝑖 ≤ 𝑛 1 ≤ 𝑖 ≤ 𝑛) and add 𝑥 to the number 𝑎 𝑖 𝑎 𝑖. For example, if he was given the array [1,2,3,5] [1, 2, 3, 5] and 𝑥=2 𝑥 = 2, you can choose index 3 and get the array [1,2,5,5] [1, 2, 5, 5]. Your task is to determine whether the array can appeal to DBMB after any number of operations.",
-  "input_format": "Input\n\nEach test consists of several test cases. The first line contains a single integer 𝑡 (1 ≤ 𝑡 ≤ 1000 1 ≤ 𝑡 ≤ 1000) — the number of test cases. The following describes the test cases.\n\nThe first line of each test case contains three integers 𝑛, 𝑠, 𝑥 (1 ≤ 𝑛,𝑥 ≤ 10 1 ≤ 𝑛, 𝑥 ≤ 10, 1 ≤ 𝑠 ≤ 100 1 ≤ 𝑠 ≤ 100). \nThe second line of each test case contains 𝑛 integers 𝑎 1, 𝑎 2,… 𝑎 𝑛 𝑎 1, 𝑎 2, … 𝑎 𝑛 (1 ≤ 𝑎 𝑖 ≤ 10 1 ≤ 𝑎 𝑖 ≤ 10) — the elements of the array gifted to DBMB.",
-  "output_format": "Output\n\nFor each test case, output \"YES\" if the array can appeal to DBMB. Otherwise, output \"NO\".\n\nYou can output each letter in any case (lowercase or uppercase). For example, the strings \"yEs\", \"yes\", \"Yes\", and \"YES\" will be accepted as a positive answer.",
-  "constraints": "Note\n In the second test case, 𝑎=[1,2,3] 𝑎 = [1, 2, 3], applying the operation on 𝑎 2 𝑎 2 gives us 𝑎=[1,4,3] 𝑎 = [1, 4, 3]. The sum of the array equals 𝑠 \n.",
+  "description": "DBMB had a birthday yesterday. He was gifted an array 𝑎 of 𝑛 elements and a number 𝑥. But there is one problem: he only likes arrays where the sum of the elements equals 𝑠. To make the array appealing to him, you can perform the following operation any number of times:\n\nChoose an index 𝑖 (1≤𝑖≤𝑛) and add 𝑥 to the number 𝑎𝑖.\nFor example, if he was given the array [1,2,3,5]\n[\n1,2,3,5\n]\n and 𝑥=2, you can choose index 3 and get the array [1,2,5,5]\n[\n1,2,5,5\n]\n. Your task is to determine whether the array can appeal to DBMB after any number of operations.",
+  "input_format": "Each test consists of several test cases. The first line contains a single integer 𝑡 (1≤𝑡≤10^00) — the number of test cases. The following describes the test cases.\n\nThe first line of each test case contains three integers 𝑛, 𝑠, 𝑥 (1≤𝑛,𝑥≤10, 1≤𝑠≤100).\n\nThe second line of each test case contains 𝑛 integers 𝑎1,𝑎2,…\n𝑎𝑛𝑎1,𝑎2,…\n𝑎𝑛 (1≤𝑎𝑖≤10) — the elements of the array gifted to DBMB.",
+  "output_format": "For each test case, output \"YES\" if the array can appeal to DBMB. Otherwise, output \"NO\".\n\nYou can output each letter in any case (lowercase or uppercase). For example, the strings \"yEs\", \"yes\", \"Yes\", and \"YES\" will be accepted as a positive answer.",
+  "constraints": "In the second test case, 𝑎=[1,2,3]\n𝑎=\n[\n1,2,3\n]\n, applying the operation on 𝑎2 gives us 𝑎=[1,4,3]\n𝑎=\n[\n1,4,3\n]\n. The sum of the array equals 𝑠.",
   "test_cases": [
     {
       "input": "6\n3 3 5\n1 1 1\n3 8 2\n1 2 3\n4 7 2\n1 1 1 1\n3 15 1\n2 4 10\n2 100 5\n4 6\n5 12 1\n1 2 2 3 2",
       "output": "YES\nYES\nNO\nNO\nYES\nYES",
       "is_sample": true
     }
+  ],
+  "patterns": [
+    "math",
+    "brute-force"
   ]
 }

@@ -6,12 +6,12 @@ const {
   updateProblem,
   deleteProblem,
 } = require('../controllers/problemController');
-const { protect } = require('../middleware/authMiddleware');
+const { protect, optionalProtect } = require('../middleware/authMiddleware');
 
 const router = express.Router();
 
-router.get('/', getProblems);
-router.get('/:id', getProblem);
+router.get('/', optionalProtect, getProblems);
+router.get('/:id', optionalProtect, getProblem);
 router.post('/', protect, createProblem);
 router.put('/:id', protect, updateProblem);
 router.delete('/:id', protect, deleteProblem);

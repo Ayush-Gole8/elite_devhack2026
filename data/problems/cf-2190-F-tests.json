@@ -1,0 +1,106 @@
+{
+  "slug": "cf-2190-F",
+  "title": "Array Minimum",
+  "test_cases": [
+    {
+      "input": "2\n8\n20 9 11 3 3 13 18 13\n6\n11 9 17 15 1 20",
+      "output": "3\n1",
+      "is_sample": false
+    },
+    {
+      "input": "4\n2\n14 5\n3\n19 19 19\n8\n4 4 19 4 10 18 12 14\n4\n13 16 19 20",
+      "output": "5\n19\n4\n13",
+      "is_sample": false
+    },
+    {
+      "input": "4\n2\n6 9\n5\n5 20 20 13 2\n5\n11 8 2 16 9\n4\n1 11 10 10",
+      "output": "6\n2\n2\n1",
+      "is_sample": false
+    },
+    {
+      "input": "3\n8\n16 4 8 5 10 15 11 9\n7\n14 20 3 7 15 7 14\n7\n16 17 12 2 17 6 3",
+      "output": "4\n3\n2",
+      "is_sample": false
+    },
+    {
+      "input": "3\n7\n17 13 5 17 19 1 6\n3\n7 2 8\n2\n15 2",
+      "output": "1\n2\n2",
+      "is_sample": false
+    },
+    {
+      "input": "3\n7\n7 9 12 15 17 13 4\n7\n1 8 12 16 20 15 6\n8\n16 19 18 12 12 6 9 3",
+      "output": "4\n1\n3",
+      "is_sample": false
+    },
+    {
+      "input": "3\n2\n13 2\n3\n19 7 8\n7\n8 7 9 14 17 1 1",
+      "output": "2\n7\n1",
+      "is_sample": false
+    },
+    {
+      "input": "4\n3\n6 20 1\n3\n9 20 10\n7\n9 14 13 12 15 9 7\n5\n10 17 20 13 19",
+      "output": "1\n9\n7\n10",
+      "is_sample": false
+    },
+    {
+      "input": "1\n2\n17 12",
+      "output": "12",
+      "is_sample": false
+    },
+    {
+      "input": "3\n4\n4 16 3 11\n4\n11 9 9 10\n3\n5 17 8",
+      "output": "3\n9\n5",
+      "is_sample": false
+    },
+    {
+      "input": "1\n8\n20 13 11 5 1 16 10 9",
+      "output": "1",
+      "is_sample": false
+    },
+    {
+      "input": "4\n5\n13 2 19 19 7\n4\n8 18 16 12\n6\n10 6 18 6 10 4\n5\n5 9 18 6 11",
+      "output": "2\n8\n4\n5",
+      "is_sample": false
+    },
+    {
+      "input": "1\n3\n12 8 10",
+      "output": "8",
+      "is_sample": false
+    },
+    {
+      "input": "4\n8\n11 12 9 19 10 15 4 16\n2\n19 19\n6\n3 16 7 17 4 13\n6\n10 14 2 5 5 7",
+      "output": "4\n19\n3\n2",
+      "is_sample": false
+    },
+    {
+      "input": "3\n5\n19 15 5 11 6\n8\n3 16 11 6 11 2 1 15\n4\n7 6 19 6",
+      "output": "5\n1\n6",
+      "is_sample": false
+    },
+    {
+      "input": "4\n8\n3 5 20 14 14 13 14 16\n5\n1 2 18 7 12\n2\n11 17\n3\n1 1 8",
+      "output": "3\n1\n11\n1",
+      "is_sample": false
+    },
+    {
+      "input": "2\n7\n12 10 5 4 13 17 19\n4\n6 3 2 10",
+      "output": "4\n2",
+      "is_sample": false
+    },
+    {
+      "input": "3\n5\n17 20 17 11 14\n7\n5 11 16 12 7 6 13\n2\n8 8",
+      "output": "11\n5\n8",
+      "is_sample": false
+    },
+    {
+      "input": "2\n3\n1 19 17\n3\n4 12 2",
+      "output": "1\n2",
+      "is_sample": false
+    },
+    {
+      "input": "4\n7\n9 18 20 2 20 2 4\n7\n1 2 4 14 15 13 4\n6\n9 16 5 7 1 10\n5\n4 17 9 20 20",
+      "output": "2\n1\n1\n4",
+      "is_sample": false
+    }
+  ]
+}
