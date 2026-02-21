@@ -3,7 +3,11 @@
 @import "shadcn/tailwind.css";
 @plugin "@tailwindcss/typography";
 
-@custom-variant dark (&:is(.dark *));
+@custom-variant dark {
+  &:is(.dark *) {
+    @slot;
+  }
+}
 
 /* ─────────── Tailwind theme token mapping ─────────── */
 @theme inline {
