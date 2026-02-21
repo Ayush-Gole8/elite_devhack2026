@@ -23,10 +23,21 @@ export default function ProblemDetailPage({ params }: { params: Promise<{ id: st
   const [problem, setProblem] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [code, setCode] = useState('// Write your solution here\n');
-  const [language, setLanguage] = useState('javascript');
+  const [language, setLanguage] = useState('63'); // Judge0 language ID (63 = JavaScript)
   const [submitting, setSubmitting] = useState(false);
   const [submission, setSubmission] = useState<any>(null);
   const [polling, setPolling] = useState(false);
+
+  // Language configurations for Judge0
+  const languages = [
+    { id: '63', name: 'JavaScript', monaco: 'javascript', ext: 'js', starter: '// Write your solution here\nconsole.log("Hello World");' },
+    { id: '71', name: 'Python', monaco: 'python', ext: 'py', starter: '# Write your solution here\nprint("Hello World")' },
+    { id: '54', name: 'C++', monaco: 'cpp', ext: 'cpp', starter: '#include <iostream>\nusing namespace std;\n\nint main() {\n    // Write your solution here\n    cout << "Hello World" << endl;\n    return 0;\n}' },
+    { id: '62', name: 'Java', monaco: 'java', ext: 'java', starter: 'import java.util.*;\n\npublic class Main {\n    public static void main(String[] args) {\n        // Write your solution here\n        System.out.println("Hello World");\n    }\n}' },
+    { id: '50', name: 'C', monaco: 'c', ext: 'c', starter: '#include <stdio.h>\n\nint main() {\n    // Write your solution here\n    printf("Hello World\\n");\n    return 0;\n}' },
+  ];
+
+  const getCurrentLanguage = () => languages.find(lang => lang.id === language) || languages[0];
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -45,8 +56,9 @@ export default function ProblemDetailPage({ params }: { params: Promise<{ id: st
       const problemData = response.data || response; // Handle both response formats
       setProblem(problemData);
       
-      // Set default starter code
-      setCode(`// ${problemData.title}\n// Difficulty: ${problemData.difficulty}\n\n// Write your solution here\n`);
+      // Set default starter code based on selected language
+      const currentLang = getCurrentLanguage();
+      setCode(currentLang.starter);
     } catch (error) {
       console.error('Error fetching problem:', error);
       toast.error('Failed to load problem');
@@ -63,7 +75,9 @@ export default function ProblemDetailPage({ params }: { params: Promise<{ id: st
 
     try {
       setSubmitting(true);
-      const response = await submissionAPI.submitSolution(id, code, language);
+      // Convert language string ID to number for Judge0
+      const languageId = parseInt(language, 10);
+      const response = await submissionAPI.submitSolution(id, code, languageId);
       const submissionData = response.data || response; // Handle both response formats
       setSubmission(submissionData);
       toast.success('Submission received! Evaluating...');
@@ -347,9 +361,19 @@ export default function ProblemDetailPage({ params }: { params: Promise<{ id: st
                 <select
                   className="bg-transparent border-none outline-none text-sm font-medium cursor-pointer"
                   value={language}
-                  onChange={(e) => setLanguage(e.target.value)}
+                  onChange={(e) => {
+                    const newLang = e.target.value;
+                    setLanguage(newLang);
+                    // Update code with starter template for new language
+                    const langConfig = languages.find(l => l.id === newLang);
+                    if (langConfig) {
+                      setCode(langConfig.starter);
+                    }
+                  }}
                 >
-                  <option value="javascript">JavaScript</option>
+                  {languages.map(lang => (
+                    <option key={lang.id} value={lang.id}>{lang.name}</option>
+                  ))}
                 </select>
               </div>
               <Badge variant="outline" className="text-xs">
@@ -397,7 +421,7 @@ export default function ProblemDetailPage({ params }: { params: Promise<{ id: st
             <Editor
               height="100%"
               defaultLanguage="javascript"
-              language={language}
+              language={getCurrentLanguage().monaco}
               value={code}
               onChange={(value: string | undefined) => setCode(value || '')}
               theme="vs-dark"

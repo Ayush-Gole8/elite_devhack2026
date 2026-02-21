@@ -105,8 +105,8 @@ export const submissionAPI = {
   /**
    * Submit a solution (protected)
    */
-  submitSolution: async (problemId: string, code: string, language: string) => {
-    const response = await axiosInstance.post('/submissions', { problemId, code, language });
+  submitSolution: async (problemId: string, source_code: string, language_id: number) => {
+    const response = await axiosInstance.post('/submissions', { problemId, source_code, language_id });
     return response.data;
   },
 

@@ -1,28 +1,20 @@
 const Submission = require('../models/Submission');
 const Problem = require('../models/Problem');
 const User = require('../models/User');
-const { executeCode, getSupportedLanguages } = require('../services/executionService');
+const { runCode } = require('../services/judgeService');
 
 // @desc    Submit solution
 // @route   POST /api/submissions
 // @access  Private
 const submitSolution = async (req, res) => {
   try {
-    const { problemId, code, language = 'javascript' } = req.body;
+    const { problemId, source_code, language_id } = req.body;
 
-    if (!problemId || !code) {
+    // Validate required fields
+    if (!problemId || !source_code || !language_id) {
       return res.status(400).json({
         success: false,
-        message: 'Please provide problem ID and code',
-      });
-    }
-
-    // Validate language
-    const validLanguages = getSupportedLanguages();
-    if (!validLanguages.includes(language)) {
-      return res.status(400).json({
-        success: false,
-        message: `Unsupported language. Supported languages: ${validLanguages.join(', ')}`,
+        message: 'Please provide problemId, source_code, and language_id',
       });
     }
 
@@ -36,85 +28,141 @@ const submitSolution = async (req, res) => {
       });
     }
 
-    // Create submission with Pending status
-    const submission = await Submission.create({
-      user: req.user,
-      problem: problemId,
-      code,
-      language,
-      status: 'Pending',
-    });
-
-    // Get all test cases (visible + hidden)
-    const allTestCases = [
-      ...problem.visibleTests,
-      ...problem.hiddenTests,
-    ];
-
-    if (allTestCases.length === 0) {
+    // Check if problem has visible tests
+    if (!problem.visibleTests || problem.visibleTests.length === 0) {
       return res.status(400).json({
         success: false,
         message: 'No test cases found for this problem',
       });
     }
 
-    // Execute code against each test case
+    // Initialize submission tracking variables
     let status = 'Accepted';
     let passedCount = 0;
     const testResults = [];
     let errorMessage = null;
 
-    for (const testCase of allTestCases) {
-      const result = await executeCode(language, code, testCase.input);
+    // Run code against each visible test case
+    for (const testCase of problem.visibleTests) {
+      try {
+        // Execute code with Judge0
+        const result = await runCode({
+          source_code,
+          language_id,
+          stdin: testCase.input,
+        });
 
-      // Check for runtime errors
-      if (result.stderr && result.stderr.trim() !== '') {
+        // Check for compilation errors
+        if (result.compile_output && result.compile_output.trim() !== '') {
+          status = 'Compilation Error';
+          errorMessage = result.compile_output.substring(0, 500);
+
+          testResults.push({
+            passed: false,
+            input: testCase.input.substring(0, 100),
+            expected: testCase.output.substring(0, 100),
+            actual: '',
+            error: result.compile_output.substring(0, 200),
+          });
+
+          break; // Stop on compilation error
+        }
+
+        // Check for runtime errors (stderr or non-Accepted status)
+        if (result.stderr && result.stderr.trim() !== '') {
+          status = 'Runtime Error';
+          errorMessage = result.stderr.substring(0, 500);
+
+          testResults.push({
+            passed: false,
+            input: testCase.input.substring(0, 100),
+            expected: testCase.output.substring(0, 100),
+            actual: result.stdout ? result.stdout.substring(0, 100) : '',
+            error: result.stderr.substring(0, 200),
+          });
+
+          break; // Stop on runtime error
+        }
+
+        // Check if status is not Accepted (e.g., Time Limit Exceeded, etc.)
+        if (result.status && result.status.description !== 'Accepted') {
+          const statusDesc = result.status.description;
+
+          if (statusDesc === 'Time Limit Exceeded') {
+            status = 'Time Limit Exceeded';
+          } else if (statusDesc === 'Runtime Error (NZEC)' || statusDesc === 'Runtime Error (SIGSEGV)') {
+            status = 'Runtime Error';
+          } else {
+            status = statusDesc;
+          }
+
+          errorMessage = `Judge0 status: ${statusDesc}`;
+
+          testResults.push({
+            passed: false,
+            input: testCase.input.substring(0, 100),
+            expected: testCase.output.substring(0, 100),
+            actual: result.stdout ? result.stdout.substring(0, 100) : '',
+            error: statusDesc,
+          });
+
+          break; // Stop on error status
+        }
+
+        // Compare outputs (trim whitespace for comparison)
+        const actualOutput = (result.stdout || '').trim();
+        const expectedOutput = testCase.output.trim();
+        const passed = actualOutput === expectedOutput;
+
+        testResults.push({
+          passed,
+          input: testCase.input.substring(0, 100),
+          expected: expectedOutput.substring(0, 100),
+          actual: actualOutput.substring(0, 100),
+          error: null,
+        });
+
+        if (passed) {
+          passedCount++;
+        } else {
+          status = 'Wrong Answer';
+          break; // Stop on first wrong answer (early break)
+        }
+
+      } catch (error) {
+        // Handle Judge0 service errors
         status = 'Runtime Error';
-        errorMessage = result.stderr.substring(0, 500); // Limit error message length
-        
+        errorMessage = error.message;
+
         testResults.push({
           passed: false,
           input: testCase.input.substring(0, 100),
           expected: testCase.output.substring(0, 100),
-          actual: result.stdout.substring(0, 100),
-          error: result.stderr.substring(0, 200),
+          actual: '',
+          error: error.message.substring(0, 200),
         });
-        
-        break; // Stop on first runtime error
-      }
 
-      // Compare outputs
-      const actualOutput = result.stdout.trim();
-      const expectedOutput = testCase.output.trim();
-      const passed = actualOutput === expectedOutput;
-
-      testResults.push({
-        passed,
-        input: testCase.input.substring(0, 100),
-        expected: expectedOutput.substring(0, 100),
-        actual: actualOutput.substring(0, 100),
-        error: null,
-      });
-
-      if (passed) {
-        passedCount++;
-      } else {
-        status = 'Wrong Answer';
+        break; // Stop on service error
       }
     }
 
-    // Update submission with results
-    submission.status = status;
-    submission.testCasesPassed = passedCount;
-    submission.totalTestCases = allTestCases.length;
-    submission.error = errorMessage;
-    submission.testResults = testResults.slice(0, 5); // Store first 5 results
-    await submission.save();
+    // Create and save submission
+    const submission = await Submission.create({
+      user: req.user,
+      problem: problemId,
+      code: source_code,
+      language: String(language_id), // Store language_id as string
+      status,
+      testCasesPassed: passedCount,
+      totalTestCases: problem.visibleTests.length,
+      error: errorMessage,
+      testResults: testResults.slice(0, 5), // Store first 5 results
+    });
 
-    // If accepted, update user's solved count
+    // If accepted, update user's solved problems
     if (status === 'Accepted') {
       const user = await User.findById(req.user);
-      
+
       if (user && !user.solvedProblems.includes(problemId)) {
         user.solvedProblems.push(problemId);
         user.solvedCount = user.solvedProblems.length;
@@ -133,7 +181,7 @@ const submitSolution = async (req, res) => {
       data: populatedSubmission,
       message: status === 'Accepted' ? 'All test cases passed!' : 'Submission evaluated',
     });
-    
+
   } catch (error) {
     console.error('Submit solution error:', error);
     res.status(500).json({
