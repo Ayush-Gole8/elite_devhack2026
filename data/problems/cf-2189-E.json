@@ -1,0 +1,24 @@
+{
+  "title": "Majority Wins?",
+  "slug": "cf-2189-E",
+  "difficulty": "Hard",
+  "tags": [
+    "constructive algorithms",
+    "greedy",
+    "math",
+    "strings"
+  ],
+  "time_limit_ms": 2000,
+  "memory_limit_kb": 256000,
+  "description": "You are given a binary string\n∗\n∗\n \n𝑠\n𝑠\n of length \n𝑛\n𝑛\n.\n\nIn one operation with a binary string \n𝑔\n𝑔\n of length \n𝑘\n𝑘\n, you can do the following:\n\nchoose some \n𝑙,𝑟\n𝑙\n,\n𝑟\n such that \n1≤𝑙≤𝑟≤𝑘\n1\n≤\n𝑙\n≤\n𝑟\n≤\n𝑘\n;\n\nreplace the substring\n†\n†\n \n𝑔\n𝑙\n,…,\n𝑔\n𝑟\n𝑔\n𝑙\n,\n…\n,\n𝑔\n𝑟\n of the string \n𝑔\n𝑔\n with one character that appears in this substring at least as many times as the other character.\n\nThe cost of such an operation will be equal to \n𝑟−𝑙+1\n𝑟\n−\n𝑙\n+\n1\n.\n\nFor example, the string 010010 can be transformed into 010 in one operation with a cost of \n4\n4\n by replacing the substring 1001 with 1; the string 1111 can be transformed into 1 by performing an operation with a cost of \n4\n4\n on the entire string, and the string 0100 can be transformed, for example, into 00 by taking the substring 100.\n\nYou need to find the minimum cost to transform the entire string \n𝑠\n𝑠\n into the string 1, using several (possibly none) operations, or determine that it is impossible.\n\n∗\n∗\nA binary string is a string that only consists of characters \n0\n0\n and \n1\n1\n.\n\n†\n†\nA string \n𝑡\n𝑡\n is a substring of a string \n𝑔\n𝑔\n if \n𝑡\n𝑡\n can be obtained from \n𝑔\n𝑔\n by the deletion of several (possibly, zero or all) characters from the beginning and several (possibly, zero or all) characters from the end.",
+  "input_format": "Input\n\nEach test contains multiple test cases. The first line contains the number of test cases \n𝑡\n𝑡\n (\n1≤𝑡≤\n10\n4\n1\n≤\n𝑡\n≤\n10\n4\n). The description of the test cases follows.\n\nThe first line of each test case contains a single integer \n𝑛\n𝑛\n (\n1≤𝑛≤5⋅\n10\n5\n1\n≤\n𝑛\n≤\n5\n⋅\n10\n5\n) — the length of the binary string.\n\nThe second line of each test case contains a string of length \n𝑛\n𝑛\n, consisting of the characters 0 and 1 — the string \n𝑠\n𝑠\n.\n\nIt is guaranteed that the sum of \n𝑛\n𝑛\n over all test cases does not exceed \n5⋅\n10\n5\n5\n⋅\n10\n5\n.",
+  "output_format": "Output\n\nFor each test case, if it is impossible to obtain the string 1, output \n−1\n−\n1\n. Otherwise, output the minimum cost.",
+  "constraints": "Note\n\nIn the first test case, it is impossible to obtain 1, since the only possible operation (\n𝑙=𝑟=1\n𝑙\n=\n𝑟\n=\n1\n) does not change the string.\n\nIn the second test case, the string is already 1 initially, so the answer is 0.\n\nIn the fourth test case, it is possible to perform an operation on the entire string, replacing it with 1. The cost of this operation is \n2\n2\n. It can be shown that it is impossible to obtain the string 1 for a lower cost.",
+  "test_cases": [
+    {
+      "input": "7\n1\n0\n1\n1\n2\n00\n2\n10\n3\n010\n8\n00111000\n6\n100100",
+      "output": "-1\n0\n-1\n2\n4\n9\n7",
+      "is_sample": true
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "title": "Fuzzy Concatenation (Hard version)",
+  "slug": "cf-2196-E2",
+  "difficulty": "Easy",
+  "tags": [
+    "binary search",
+    "bitmasks",
+    "data structures",
+    "dp",
+    "greedy",
+    "string suffix structures"
+  ],
+  "time_limit_ms": 2000,
+  "memory_limit_kb": 256000,
+  "description": "This is the hard version of the problem. The difference between the versions is that in this version, \n𝑛≤5⋅\n10\n5\n,𝑚≤5⋅\n10\n4\n𝑛\n≤\n5\n⋅\n10\n5\n,\n𝑚\n≤\n5\n⋅\n10\n4\n. You can hack only if you solved all versions of this problem.\n\nThere are two strings \n𝑠\n𝑠\n and \n𝑡\n𝑡\n, both consisting of lowercase Latin letters. You also have an empty string \n𝑝\n𝑝\n.\n\nYou can perform the following operation, which consists of several stages:\n\nchoose any two integers \n𝑙\n𝑙\n and \n𝑟\n𝑟\n (\n1≤𝑙≤𝑟≤|𝑠|\n1\n≤\n𝑙\n≤\n𝑟\n≤\n|\n𝑠\n|\n);\ncopy the substring \n𝑠\n𝑙\n,…,\n𝑠\n𝑟\n𝑠\n𝑙\n,\n…\n,\n𝑠\n𝑟\n and append it to the end of string \n𝑝\n𝑝\n;\namong the last \n𝑟−𝑙+1\n𝑟\n−\n𝑙\n+\n1\n characters of string \n𝑝\n𝑝\n, change at most one character to any lowercase Latin letter.\n\nFor example, if the string \n𝑠=\n𝑠\n=\n \"dhhtyhwbsl\" and \n𝑝=\n𝑝\n=\n \"\", you can choose \n𝑙=3,𝑟=6\n𝑙\n=\n3\n,\n𝑟\n=\n6\n and add \"htyh\" to the end of \n𝑝\n𝑝\n, and then change the character \"y\" to \"a\", resulting in \n𝑝=\n𝑝\n=\n \"htah\".\n\nYour task is to determine the minimum number of operations required for string \n𝑝\n𝑝\n to become equal to \n𝑡\n𝑡\n.",
+  "input_format": "Input\n\nEach test contains multiple test cases. The first line contains the number of test cases \n𝑡\n𝑡\n (\n1≤𝑡≤\n10\n4\n1\n≤\n𝑡\n≤\n10\n4\n). The description of the test cases follows.\n\nThe first line of each test case contains two integers \n𝑛\n𝑛\n and \n𝑚\n𝑚\n (\n1≤𝑛≤5⋅\n10\n5\n,1≤𝑚≤5⋅\n10\n4\n1\n≤\n𝑛\n≤\n5\n⋅\n10\n5\n,\n1\n≤\n𝑚\n≤\n5\n⋅\n10\n4\n) — the lengths of strings \n𝑠\n𝑠\n and \n𝑡\n𝑡\n.\n\nThe second line of each test case contains the string \n𝑠\n𝑠\n of length \n𝑛\n𝑛\n, consisting of lowercase Latin letters.\n\nThe third line of each test case contains the string \n𝑡\n𝑡\n of length \n𝑚\n𝑚\n, consisting of lowercase Latin letters.\n\nIt is guaranteed that the sum of \n𝑛\n𝑛\n across all test cases does not exceed \n5⋅\n10\n5\n5\n⋅\n10\n5\n, and the sum of \n𝑚\n𝑚\n across all test cases does not exceed \n5⋅\n10\n4\n5\n⋅\n10\n4\n.",
+  "output_format": "Output\n\nFor each test case, output a single integer — the answer to the problem.",
+  "constraints": "Note\n\nIn the first test case, you can take the substring \n«𝚊»\n«\n𝑎\n»\n from the string \n𝑠\n𝑠\n, change a single letter in this string to \n«𝚋»\n«\n𝑏\n»\n, and append it to the end of the string \n𝑝\n𝑝\n, resulting in \n𝑝\n𝑝\n becoming equal to \n𝑡\n𝑡\n.\n\nIn the second test case, \n𝑡\n𝑡\n can be obtained in \n3\n3\n operations as follows:\n\n«𝚊𝚋»+«𝚣»+«𝚋𝚊»\n«\n𝑎\n𝑏\n»\n+\n«\n𝑧\n»\n+\n«\n𝑏\n𝑎\n»\n\nThe modified characters are highlighted in red.\n\nIn the third test case, the string \n𝑡\n𝑡\n can be obtained as follows:\n\n«𝚑𝚝𝚊𝚑»+«𝚋𝚜𝚎»+«𝚑𝚝𝚢𝚑𝚣𝚋»\n«\nℎ\n𝑡\n𝑎\nℎ\n»\n+\n«\n𝑏\n𝑠\n𝑒\n»\n+\n«\nℎ\n𝑡\n𝑦\nℎ\n𝑧\n𝑏\n»",
+  "test_cases": [
+    {
+      "input": "4\n1 1\na\nb\n5 5\naaaaa\nabzba\n10 13\ndhhtyhwbsl\nhtahbsehtyhzb\n7 2\ncontest\non",
+      "output": "1\n3\n3\n1",
+      "is_sample": true
+    }
+  ]
+}

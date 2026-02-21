@@ -1,0 +1,26 @@
+{
+  "title": "Sub-RBS (Easy Version)",
+  "slug": "cf-2190-B1",
+  "difficulty": "Medium",
+  "tags": [
+    "combinatorics",
+    "constructive algorithms",
+    "dp",
+    "greedy",
+    "strings",
+    "two pointers"
+  ],
+  "time_limit_ms": 2000,
+  "memory_limit_kb": 256000,
+  "description": "This is the easy version of the problem. The difference between the versions is that in this version, you only need to evaluate for whole string \n𝑠\n𝑠\n, \n𝑠\n𝑠\n is regular, and the constraints on \n𝑛\n𝑛\n are higher.\n\nWe say that a bracket sequence \n𝑎\n𝑎\n is better than a bracket sequence \n𝑏\n𝑏\n if one of the following holds:\n\n𝑏\n𝑏\n is a prefix of \n𝑎\n𝑎\n, but \n𝑎≠𝑏\n𝑎\n≠\n𝑏\n; or\nlet \n𝑖\n𝑖\n be the first position (if it exists) where \n𝑎\n𝑖\n≠\n𝑏\n𝑖\n𝑎\n𝑖\n≠\n𝑏\n𝑖\n, then \n𝑎\n𝑖\n=(\n𝑎\n𝑖\n=\n(\n and \n𝑏\n𝑖\n=)\n𝑏\n𝑖\n=\n)\n.\n\nYou are given a regular bracket sequence\n∗\n∗\n \n𝑠\n𝑠\n of even length \n𝑛\n𝑛\n.\n\nAmong all non-empty subsequences \n†\n†\n \n𝑡\n𝑡\n of \n𝑠\n𝑠\n that are regular bracket sequences, find the maximum possible length of \n𝑡\n𝑡\n such that \n𝑡\n𝑡\n is better than \n𝑠\n𝑠\n. If no such \n𝑡\n𝑡\n exists, report it.\n\n∗\n∗\nA regular bracket sequence is a bracket sequence that can be transformed into a correct arithmetic expression by inserting the characters \n𝟷\n1\n and \n+\n+\n between the original characters of the sequence. For example:\n\nbracket sequences \n()()\n()()\n and \n(())\n(())\n are regular (the resulting expressions are \n(𝟷)+(𝟷)\n(1)+(1)\n and \n((𝟷+𝟷)+𝟷)\n((1+1)+1)\n);\nbracket sequences \n)(\n)(\n, \n(\n(\n, and \n)\n)\n are not.\n\n†\n†\nA sequence \n𝑎\n𝑎\n is a subsequence of a sequence \n𝑏\n𝑏\n if \n𝑎\n𝑎\n can be obtained from \n𝑏\n𝑏\n by the deletion of several (possibly, zero or all) element from arbitrary positions.",
+  "input_format": "Input\n\nEach test contains multiple test cases. The first line contains the number of test cases \n𝑡\n𝑡\n (\n1≤𝑡≤\n10\n4\n1\n≤\n𝑡\n≤\n10\n4\n). The description of the test cases follows.\n\nThe first line of each test case contains a single integer \n𝑛\n𝑛\n (\n2≤𝑛≤2⋅\n10\n5\n2\n≤\n𝑛\n≤\n2\n⋅\n10\n5\n, \n𝑛\n𝑛\n is even) — the length of the string \n𝑠\n𝑠\n.\n\nThe second line of each test case contains a sequence \n𝑠\n𝑠\n of length \n𝑛\n𝑛\n consisting only of characters \n(\n(\n and \n)\n)\n.\n\nIt is guaranteed that the given sequence \n𝑠\n𝑠\n is a regular bracket sequence.\n\nIt is guaranteed that the sum of \n𝑛\n𝑛\n over all test cases does not exceed \n2⋅\n10\n5\n2\n⋅\n10\n5\n.",
+  "output_format": "Output\n\nFor each test case, print a single integer — the maximum possible length of a non-empty subsequence \n𝑡\n𝑡\n of \n𝑠\n𝑠\n that is a regular bracket sequence and is better than \n𝑠\n𝑠\n. If no such \n𝑡\n𝑡\n exists, print \n−1\n−\n1\n.",
+  "constraints": "Note\n\nIn the first example, the only non-empty regular bracket subsequence of \n𝑠\n𝑠\n is \n𝑡=𝑠=()\n𝑡\n=\n𝑠\n=\n()\n. Since \n𝑡\n𝑡\n is not better than \n𝑠\n𝑠\n, we output \n−1\n−\n1\n.\n\nIn the second example, we can choose \n𝑡=((()))\n𝑡\n=\n((()))\n. The first index where \n𝑡\n𝑡\n and \n𝑠\n𝑠\n differ is \n𝑖=3\n𝑖\n=\n3\n. Since \n𝑡\n3\n=(\n𝑡\n3\n=\n(\n and \n𝑠\n3\n=)\n𝑠\n3\n=\n)\n, \n𝑡\n𝑡\n is better than \n𝑠\n𝑠\n. We cannot choose a longer subsequence because the only longer regular bracket subsequence is \n𝑠\n𝑠\n itself, which is not better than \n𝑠\n𝑠\n. Thus, we output \n6\n6\n.",
+  "test_cases": [
+    {
+      "input": "3\n2\n()\n8\n(()(()))\n6\n(())()",
+      "output": "-1\n6\n-1",
+      "is_sample": true
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "title": "Remove the Grail Tree",
+  "slug": "cf-2193-H",
+  "difficulty": "Hard",
+  "tags": [
+    "dfs and similar",
+    "dp",
+    "graphs",
+    "greedy",
+    "implementation",
+    "trees"
+  ],
+  "time_limit_ms": 2000,
+  "memory_limit_kb": 256000,
+  "description": "The Great Grail Tree has stood in the kingdom for \n315\n315\n years. It takes up a lot of space, so King Ila decided to get rid of it as soon as possible. The tree itself is an acyclic, connected, undirected graph with \n𝑛\n𝑛\n vertices, each having its own value \n𝑎\n𝑣\n𝑎\n𝑣\n. The tree can be removed in the following way:\n\nLet \n𝑆\n𝑣\n𝑆\n𝑣\n be the sum of the values of all remaining neighbors of \n𝑣\n𝑣\n. If \n𝑣\n𝑣\n has no remaining neighbors, then \n𝑆\n𝑣\n𝑆\n𝑣\n is \n0\n0\n. Choose a vertex \n𝑣\n𝑣\n such that \n𝑎\n𝑣\n𝑎\n𝑣\n and \n𝑆\n𝑣\n𝑆\n𝑣\n differ in parity (i.e., either \n𝑎\n𝑣\n𝑎\n𝑣\n is even and \n𝑆\n𝑣\n𝑆\n𝑣\n is odd, or \n𝑎\n𝑣\n𝑎\n𝑣\n is odd and \n𝑆\n𝑣\n𝑆\n𝑣\n is even). If there are no such vertices, stop the process.\nRemove vertex \n𝑣\n𝑣\n and all edges connected to it from the tree.\nYour task is to determine whether there exists a sequence of removals that will lead to the complete removal of the Grail Tree (i.e., no vertices will remain in the tree). If such a sequence exists, output the sequence of \n𝑛\n𝑛\n vertices in the order of their removal. If there are multiple answers, output any of them.",
+  "input_format": "Input\n\nEach test consists of several test case. The first line contains one integer \n𝑡\n𝑡\n (\n1≤𝑡≤\n10\n4\n1\n≤\n𝑡\n≤\n10\n4\n) — the number of test cases. The description of the test cases follows.\n\nThe first line contains the number \n𝑛\n𝑛\n (\n1≤𝑛≤2⋅\n10\n5\n1\n≤\n𝑛\n≤\n2\n⋅\n10\n5\n) — the number of vertices in the Grail Tree.\n\nThe second line describes the array \n𝑎\n𝑎\n (\n1≤\n𝑎\n𝑖\n≤\n10\n9\n1\n≤\n𝑎\n𝑖\n≤\n10\n9\n) — the values of the vertices in the tree.\n\nNext, there are \n𝑛−1\n𝑛\n−\n1\n lines, each containing 2 numbers \n𝑣\n𝑣\n and \n𝑢\n𝑢\n (\n1≤𝑣,𝑢≤𝑛,𝑣≠𝑢\n1\n≤\n𝑣\n,\n𝑢\n≤\n𝑛\n,\n𝑣\n≠\n𝑢\n), indicating that vertices \n𝑣\n𝑣\n and \n𝑢\n𝑢\n are connected by an edge in the tree.\n\nIt is guaranteed that the sum of \n𝑛\n𝑛\n across all test cases does not exceed \n2⋅\n10\n5\n2\n⋅\n10\n5\n.",
+  "output_format": "Output\n\nFor each test case, output \"YES\" if it is possible to completely remove the Grail Tree. Otherwise, output \"NO\". If the answer is \"YES\", output any sequence of removals.\n\nYou can output each letter in any case (lowercase or uppercase). For example, the strings \"yEs\", \"yes\", \"Yes\", and \"YES\" will be accepted as a positive answer.",
+  "constraints": "",
+  "test_cases": [
+    {
+      "input": "5\n3\n1 2 4\n1 2\n2 3\n4\n3 4 2 1\n1 2\n2 3\n3 4\n6\n9 6 5 1 7 4\n1 2\n2 3\n2 4\n3 5\n4 6\n5\n2 1 1 1 2\n2 1\n3 2\n2 4\n5 4\n5\n1 5 3 7 9\n1 2\n2 3\n3 4\n4 5",
+      "output": "NO\nYES\n2 3 1 4 \nNO\nYES\n1 5 2 3 4 \nYES\n2 4 1 5 3",
+      "is_sample": true
+    }
+  ]
+}

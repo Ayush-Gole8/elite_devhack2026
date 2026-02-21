@@ -1,0 +1,21 @@
+{
+  "title": "Reverse a Permutation",
+  "slug": "cf-2193-B",
+  "difficulty": "Easy",
+  "tags": [
+    "greedy"
+  ],
+  "time_limit_ms": 2000,
+  "memory_limit_kb": 256000,
+  "description": "A permutation of length \n𝑛\n𝑛\n is an array consisting of \n𝑛\n𝑛\n distinct integers from \n1\n1\n to \n𝑛\n𝑛\n in arbitrary order. For example, \n[2,3,1,5,4]\n[\n2\n,\n3\n,\n1\n,\n5\n,\n4\n]\n is a permutation, but \n[1,2,2]\n[\n1\n,\n2\n,\n2\n]\n and \n[1,3,4]\n[\n1\n,\n3\n,\n4\n]\n are not permutations.\n\nYou are given a permutation \n𝑝\n𝑝\n of length \n𝑛\n𝑛\n. You can perform the following operation exactly once:\n\nChoose two integers \n𝑙,\n𝑙\n,\n \n𝑟\n𝑟\n (\n1≤𝑙≤𝑟≤𝑛\n1\n≤\n𝑙\n≤\n𝑟\n≤\n𝑛\n).\nReverse the segment \n[𝑙,𝑟]\n[\n𝑙\n,\n𝑟\n]\n in the permutation \n𝑝\n𝑝\n.\nYour task is to output the lexicographically maximum permutation that can be obtained by performing this operation. A permutation \n𝑎\n𝑎\n is lexicographically greater than a permutation \n𝑏\n𝑏\n if for the first position \n𝑖\n𝑖\n where they differ, it holds that \n𝑎\n𝑖\n>\n𝑏\n𝑖\n𝑎\n𝑖\n>\n𝑏\n𝑖\n.",
+  "input_format": "Input\n\nEach test consists of several test cases. The first line contains a single integer \n𝑡\n𝑡\n (\n1≤𝑡≤\n10\n4\n1\n≤\n𝑡\n≤\n10\n4\n) — the number of test cases. The description of the test cases follows.\n\nThe first line of each test case contains the number \n𝑛\n𝑛\n (\n1≤𝑛≤2⋅\n10\n5\n1\n≤\n𝑛\n≤\n2\n⋅\n10\n5\n).\n\nThe second line of each test case contains \n𝑛\n𝑛\n distinct integers \n𝑝\n1\n,\n𝑝\n2\n,...,\n𝑝\n𝑛\n𝑝\n1\n,\n𝑝\n2\n,\n.\n.\n.\n,\n𝑝\n𝑛\n \n(1≤\n𝑝\n𝑖\n≤𝑛)\n(\n1\n≤\n𝑝\n𝑖\n≤\n𝑛\n)\n.\n\nIt is guaranteed that the sum of the values of \n𝑛\n𝑛\n across all test cases does not exceed \n2⋅\n10\n5\n2\n⋅\n10\n5\n.",
+  "output_format": "Output\n\nFor each test case, output the lexicographically maximum permutation that can be obtained with one operation.",
+  "constraints": "Note\n\nFor the first test case, the best segment is \n[1,4]\n[\n1\n,\n4\n]\n. After reversing, \n𝑎=[4,1,2,3]\n𝑎\n=\n[\n4\n,\n1\n,\n2\n,\n3\n]\n. For the second test case, the best segment is \n[2,3]\n[\n2\n,\n3\n]\n. After reversing, \n𝑎=[3,2,1]\n𝑎\n=\n[\n3\n,\n2\n,\n1\n]\n.",
+  "test_cases": [
+    {
+      "input": "4\n4\n3 2 1 4\n3\n3 1 2\n4\n4 3 2 1\n2\n2 1",
+      "output": "4 1 2 3 \n3 2 1 \n4 3 2 1 \n2 1",
+      "is_sample": true
+    }
+  ]
+}

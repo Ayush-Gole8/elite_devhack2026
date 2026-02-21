@@ -1,0 +1,22 @@
+{
+  "title": "MEX Reordering",
+  "slug": "cf-2191-B",
+  "difficulty": "Easy",
+  "tags": [
+    "constructive algorithms",
+    "sortings"
+  ],
+  "time_limit_ms": 2000,
+  "memory_limit_kb": 256000,
+  "description": "You are given an integer array \n𝑎\n𝑎\n consisting of \n𝑛\n𝑛\n elements. Denote \n𝑓(𝑙,𝑟)=MEX([\n𝑎\n𝑙\n,\n𝑎\n𝑙+1\n,…,\n𝑎\n𝑟\n])\n𝑓\n(\n𝑙\n,\n𝑟\n)\n=\nMEX\n⁡\n(\n[\n𝑎\n𝑙\n,\n𝑎\n𝑙\n+\n1\n,\n…\n,\n𝑎\n𝑟\n]\n)\n∗\n∗\n.\n\nDetermine if there is a way to reorder the array \n𝑎\n𝑎\n such that for every \n𝑖\n𝑖\n (\n1≤𝑖≤𝑛−1\n1\n≤\n𝑖\n≤\n𝑛\n−\n1\n), \n𝑓(1,𝑖)≠𝑓(𝑖+1,𝑛)\n𝑓\n(\n1\n,\n𝑖\n)\n≠\n𝑓\n(\n𝑖\n+\n1\n,\n𝑛\n)\n. In other words, for every split point \n𝑖\n𝑖\n, the \nMEX\nMEX\n of the prefix must be different from the \nMEX\nMEX\n of the suffix.\n\n∗\n∗\nThe minimum excluded (MEX) of a collection of integers \n𝑐\n1\n,\n𝑐\n2\n,…,\n𝑐\n𝑘\n𝑐\n1\n,\n𝑐\n2\n,\n…\n,\n𝑐\n𝑘\n is defined as the smallest non-negative integer \n𝑥\n𝑥\n which does not occur in the collection \n𝑐\n𝑐\n.",
+  "input_format": "Input\n\nEach test contains multiple test cases. The first line contains the number of test cases \n𝑡\n𝑡\n (\n1≤𝑡≤500\n1\n≤\n𝑡\n≤\n500\n). The description of the test cases follows.\n\nThe first line of each test case contains a single integer \n𝑛\n𝑛\n (\n2≤𝑛≤100\n2\n≤\n𝑛\n≤\n100\n) — the length of the array.\n\nThe second line of each test case contains \n𝑛\n𝑛\n integers \n𝑎\n1\n,\n𝑎\n2\n,…,\n𝑎\n𝑛\n𝑎\n1\n,\n𝑎\n2\n,\n…\n,\n𝑎\n𝑛\n (\n0≤\n𝑎\n𝑖\n≤𝑛\n0\n≤\n𝑎\n𝑖\n≤\n𝑛\n).",
+  "output_format": "Output\n\nOutput \"YES\" if you can reorder \n𝑎\n𝑎\n so that the condition from the statement is satisfied, and \"NO\" otherwise. You can output the answer in any case (upper or lower). For example, the strings \"yEs\", \"yes\", \"Yes\", and \"YES\" will be recognized as positive responses.",
+  "constraints": "Note\n\nIn the first example, the initial ordering of \n𝑎\n𝑎\n already satisfies the condition. The only choice for \n𝑖\n𝑖\n is \n𝑖=1\n𝑖\n=\n1\n. Then \n𝑓(1,𝑖)=𝑓(1,1)=MEX([\n𝑎\n1\n])=MEX([1])=0\n𝑓\n(\n1\n,\n𝑖\n)\n=\n𝑓\n(\n1\n,\n1\n)\n=\nMEX\n⁡\n(\n[\n𝑎\n1\n]\n)\n=\nMEX\n⁡\n(\n[\n1\n]\n)\n=\n0\n, and \n𝑓(𝑖+1,𝑛)=𝑓(2,2)=MEX([\n𝑎\n2\n])=MEX([0])=1\n𝑓\n(\n𝑖\n+\n1\n,\n𝑛\n)\n=\n𝑓\n(\n2\n,\n2\n)\n=\nMEX\n⁡\n(\n[\n𝑎\n2\n]\n)\n=\nMEX\n⁡\n(\n[\n0\n]\n)\n=\n1\n. Since \n0≠1\n0\n≠\n1\n, the condition is satisfied.\n\nIn the second example, it can be shown that there is no way to reorder \n𝑎\n𝑎\n to satisfy the condition. As an example, consider the order \n𝑎=[3,0,0]\n𝑎\n=\n[\n3\n,\n0\n,\n0\n]\n and \n𝑖=2\n𝑖\n=\n2\n. We have \n𝑓(1,𝑖)=𝑓(1,2)=MEX([\n𝑎\n1\n,\n𝑎\n2\n])=MEX([3,0])=1\n𝑓\n(\n1\n,\n𝑖\n)\n=\n𝑓\n(\n1\n,\n2\n)\n=\nMEX\n⁡\n(\n[\n𝑎\n1\n,\n𝑎\n2\n]\n)\n=\nMEX\n⁡\n(\n[\n3\n,\n0\n]\n)\n=\n1\n, and \n𝑓(𝑖+1,𝑛)=𝑓(3,3)=MEX([\n𝑎\n3\n])=MEX([0])=1\n𝑓\n(\n𝑖\n+\n1\n,\n𝑛\n)\n=\n𝑓\n(\n3\n,\n3\n)\n=\nMEX\n⁡\n(\n[\n𝑎\n3\n]\n)\n=\nMEX\n⁡\n(\n[\n0\n]\n)\n=\n1\n, hence \n𝑓(1,𝑖)=𝑓(𝑖+1,𝑛)\n𝑓\n(\n1\n,\n𝑖\n)\n=\n𝑓\n(\n𝑖\n+\n1\n,\n𝑛\n)\n, so the choice of reordering is invalid.\n\nIn the third example, we can reorder \n𝑎\n𝑎\n into \n[1,6,1,0,0,5]\n[\n1\n,\n6\n,\n1\n,\n0\n,\n0\n,\n5\n]\n. When \n𝑖=4\n𝑖\n=\n4\n, \n𝑓(1,𝑖)=𝑓(1,4)=MEX([\n𝑎\n1\n,\n𝑎\n2\n,\n𝑎\n3\n,\n𝑎\n4\n])=MEX([1,6,1,0])=2\n𝑓\n(\n1\n,\n𝑖\n)\n=\n𝑓\n(\n1\n,\n4\n)\n=\nMEX\n⁡\n(\n[\n𝑎\n1\n,\n𝑎\n2\n,\n𝑎\n3\n,\n𝑎\n4\n]\n)\n=\nMEX\n⁡\n(\n[\n1\n,\n6\n,\n1\n,\n0\n]\n)\n=\n2\n, \n𝑓(𝑖+1,𝑛)=𝑓(5,6)=MEX([\n𝑎\n5\n,\n𝑎\n6\n])=MEX([0,5])=1\n𝑓\n(\n𝑖\n+\n1\n,\n𝑛\n)\n=\n𝑓\n(\n5\n,\n6\n)\n=\nMEX\n⁡\n(\n[\n𝑎\n5\n,\n𝑎\n6\n]\n)\n=\nMEX\n⁡\n(\n[\n0\n,\n5\n]\n)\n=\n1\n, so the condition is satisfied for this \n𝑖\n𝑖\n. It can be verified that the condition is also satisfied for all other \n𝑖\n𝑖\n.",
+  "test_cases": [
+    {
+      "input": "3\n2\n1 0\n3\n0 3 0\n6\n1 0 5 0 6 1",
+      "output": "YES\nNO\nYES",
+      "is_sample": true
+    }
+  ]
+}

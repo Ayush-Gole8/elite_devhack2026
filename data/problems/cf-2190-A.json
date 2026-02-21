@@ -1,0 +1,23 @@
+{
+  "title": "Sorting Game",
+  "slug": "cf-2190-A",
+  "difficulty": "Easy",
+  "tags": [
+    "constructive algorithms",
+    "games",
+    "greedy"
+  ],
+  "time_limit_ms": 2000,
+  "memory_limit_kb": 256000,
+  "description": "Alice and Bob play a game on a binary string \n𝑠\n𝑠\n of length \n𝑛\n𝑛\n (a string consisting only of characters \n𝟶\n0\n and \n𝟷\n1\n). Alice moves first, and the players take alternate turns.\n\nIn one turn, a player chooses a sequence of indices \n𝑖\n1\n,\n𝑖\n2\n,…,\n𝑖\n𝑚\n𝑖\n1\n,\n𝑖\n2\n,\n…\n,\n𝑖\n𝑚\n (\n1≤\n𝑖\n1\n<\n𝑖\n2\n<…<\n𝑖\n𝑚\n≤𝑛\n1\n≤\n𝑖\n1\n<\n𝑖\n2\n<\n…\n<\n𝑖\n𝑚\n≤\n𝑛\n) such that the characters at these positions form a non-increasing sequence (that is, \n𝑠\n𝑖\n1\n≥\n𝑠\n𝑖\n2\n≥…≥\n𝑠\n𝑖\n𝑚\n𝑠\n𝑖\n1\n≥\n𝑠\n𝑖\n2\n≥\n…\n≥\n𝑠\n𝑖\n𝑚\n). The player then rearranges the characters at these positions to be sorted in non-decreasing order.\n\nFormally, let the chosen characters consist of \n𝑧\n𝑧\n zeros and \n𝑜\n𝑜\n ones (where \n𝑧+𝑜=𝑚\n𝑧\n+\n𝑜\n=\n𝑚\n). The move replaces the characters at positions \n𝑖\n1\n,\n𝑖\n2\n,…,\n𝑖\n𝑚\n𝑖\n1\n,\n𝑖\n2\n,\n…\n,\n𝑖\n𝑚\n with a sequence of \n𝑧\n𝑧\n zeros followed by \n𝑜\n𝑜\n ones. A move is valid if and only if it strictly modifies the string \n𝑠\n𝑠\n (which implies \n𝑧≥1\n𝑧\n≥\n1\n and \n𝑜≥1\n𝑜\n≥\n1\n).\n\nThe player who cannot make a valid move loses.\n\nAssuming both players play optimally, determine the winner. If Alice wins, output a valid first move that is part of a winning strategy.",
+  "input_format": "Input\n\nEach test contains multiple test cases. The first line contains the number of test cases \n𝑡\n𝑡\n (\n1≤𝑡≤\n10\n4\n1\n≤\n𝑡\n≤\n10\n4\n). The description of the test cases follows.\n\nThe first line of each test case consists of a single integer \n𝑛\n𝑛\n (\n1≤𝑛≤2⋅\n10\n5\n1\n≤\n𝑛\n≤\n2\n⋅\n10\n5\n) — the length of the string \n𝑠\n𝑠\n.\n\nThe second line of each test case contains a binary string \n𝑠\n𝑠\n of length \n𝑛\n𝑛\n consisting of only characters \n𝟶\n0\n and \n𝟷\n1\n.\n\nIt is guaranteed that the sum of \n𝑛\n𝑛\n over all test cases does not exceed \n2⋅\n10\n5\n2\n⋅\n10\n5\n.",
+  "output_format": "Output\n\nFor each test case, output one or three lines:\n\nIf Bob wins with optimal play, print a single line containing \"Bob\".\nOtherwise, print three lines. On the first line print \"Alice\". On the second line print an integer \n𝑚\n𝑚\n (\n2≤𝑚≤𝑛\n2\n≤\n𝑚\n≤\n𝑛\n), and on the third line print \n𝑚\n𝑚\n distinct integers \n𝑖\n1\n,\n𝑖\n2\n,…,\n𝑖\n𝑚\n𝑖\n1\n,\n𝑖\n2\n,\n…\n,\n𝑖\n𝑚\n (\n1≤\n𝑖\n1\n<\n𝑖\n2\n<…<\n𝑖\n𝑚\n≤𝑛\n1\n≤\n𝑖\n1\n<\n𝑖\n2\n<\n…\n<\n𝑖\n𝑚\n≤\n𝑛\n) — the indices chosen for Alice's first move.\n\nThe sequence of indices you print must form a valid move according to the rules described in the statement. The indices must be printed in increasing order. If there are multiple winning moves, you may output any of them.",
+  "constraints": "Note\n\nIn the first example, there is no way to make a move after which \n𝑠\n𝑠\n will change, so Bob wins immediately.\n\nIn the third example, Alice can choose a subsequence \n[1,2]\n[\n1\n,\n2\n]\n and sort it, after which \n𝑠\n𝑠\n will turn into \n𝟶𝟷𝟷\n011\n. After that, Bob can't make a move, so Alice wins.",
+  "test_cases": [
+    {
+      "input": "3\n3\n000\n2\n10\n3\n101",
+      "output": "Bob\nAlice\n2\n1 2 \nAlice\n2\n1 2",
+      "is_sample": true
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "title": "Friendly Numbers",
+  "slug": "cf-2197-A",
+  "difficulty": "Easy",
+  "tags": [
+    "binary search",
+    "brute force",
+    "expression parsing",
+    "math",
+    "schedules"
+  ],
+  "time_limit_ms": 2000,
+  "memory_limit_kb": 256000,
+  "description": "For an integer \n𝑥\n𝑥\n, we call another integer \n𝑦\n𝑦\n friendly if the following condition holds:\n\n𝑦−𝑑(𝑦)=𝑥\n𝑦\n−\n𝑑\n(\n𝑦\n)\n=\n𝑥\n, where \n𝑑(𝑦)\n𝑑\n(\n𝑦\n)\n is the sum of the digits of \n𝑦\n𝑦\n.\n\nFor a given integer \n𝑥\n𝑥\n, determine how many friendly numbers it has.",
+  "input_format": "Input\n\nEach test contains multiple test cases. The first line contains the number of test cases \n𝑡\n𝑡\n (\n1≤𝑡≤500\n1\n≤\n𝑡\n≤\n500\n). The description of the test cases follows.\n\nEach test case consists of a single line containing one integer \n𝑥\n𝑥\n (\n1≤𝑥≤\n10\n9\n1\n≤\n𝑥\n≤\n10\n9\n).",
+  "output_format": "Output\n\nFor each test case, output one integer — the answer to the problem.",
+  "constraints": "Note\n\nThe number \n1\n1\n does not have any friendly numbers.\n\nThe number \n18\n18\n has \n10\n10\n friendly numbers: These are all the numbers from \n20\n20\n to \n29\n29\n. For example, \n20−𝑑(20)=20−2=18\n20\n−\n𝑑\n(\n20\n)\n=\n20\n−\n2\n=\n18\n.\n\nThe number \n998244360\n998\n244\n360\n has \n10\n10\n friendly numbers:\n\n998244400\n998\n244\n400\n998244401\n998\n244\n401\n998244402\n998\n244\n402\n998244403\n998\n244\n403\n998244404\n998\n244\n404\n998244405\n998\n244\n405\n998244406\n998\n244\n406\n998244407\n998\n244\n407\n998244408\n998\n244\n408\n998244409\n998\n244\n409",
+  "test_cases": [
+    {
+      "input": "3\n1\n18\n998244360",
+      "output": "0\n10\n10",
+      "is_sample": true
+    }
+  ]
+}

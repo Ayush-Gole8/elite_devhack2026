@@ -1,0 +1,24 @@
+{
+  "title": "The Turtle Strikes Back",
+  "slug": "cf-2194-E",
+  "difficulty": "Easy",
+  "tags": [
+    "dp",
+    "graphs",
+    "greedy",
+    "implementation"
+  ],
+  "time_limit_ms": 2000,
+  "memory_limit_kb": 256000,
+  "description": "After a heavy training session, Michelangelo and Raphael decided to order pizza. Today, on the occasion of the holiday, the pizzeria is preparing rectangular pizzas made of \n𝑛\n𝑛\n rows and \n𝑚\n𝑚\n columns of slices. Each slice has its own unique recipe and flavor.\n\nMichelangelo was the first to open the box and roughly estimated the pleasure of eating each slice: the pleasure from the slice located in the \n𝑖\n𝑖\n-th row and \n𝑗\n𝑗\n-th column is equal to \n𝑎\n𝑖,𝑗\n𝑎\n𝑖\n,\n𝑗\n. It is guaranteed that there is at least one slice that Michelangelo liked, meaning that among \n𝑎\n𝑖,𝑗\n𝑎\n𝑖\n,\n𝑗\n there is at least one non-negative number.\n\nThe turtles agreed that Michelangelo would eat first. According to an ancient tradition, he must choose a route from the top left corner \n(1,1)\n(\n1\n,\n1\n)\n to the bottom right corner \n(𝑛,𝑚)\n(\n𝑛\n,\n𝑚\n)\n and eat all the slices on that route. In one step, he can move either to the adjacent slice on the right or to the adjacent slice below.\n\nMichelangelo aims to maximize the total pleasure from the eaten slices.\n\nHowever, Raphael decided to use sauce. Before Michelangelo chooses a route, Raphael decided to choose exactly one slice of pizza and apply his signature sauce to it. But due to the specifics of this sauce, the pleasure from that slice changes to the opposite: if it was previously \n𝑎\n𝑖,𝑗\n𝑎\n𝑖\n,\n𝑗\n, after applying the sauce it becomes \n−\n𝑎\n𝑖,𝑗\n−\n𝑎\n𝑖\n,\n𝑗\n.\n\nAfter that, knowing Raphael's choice, Michelangelo will choose the optimal route for himself and eat all the slices on it.\n\nRaphael became curious about what minimum pleasure Michelangelo could achieve. Help him calculate this number.",
+  "input_format": "Input\n\nEach test contains multiple test cases. The first line contains the number of test cases \n𝑡\n𝑡\n (\n1≤𝑡≤\n10\n4\n1\n≤\n𝑡\n≤\n10\n4\n). The description of the test cases follows.\n\nIn the first line of each test case, two integers \n𝑛,𝑚(1≤𝑛,𝑚≤\n10\n6\n,1≤𝑛⋅𝑚≤\n10\n6\n)\n𝑛\n,\n𝑚\n(\n1\n≤\n𝑛\n,\n𝑚\n≤\n10\n6\n,\n1\n≤\n𝑛\n⋅\n𝑚\n≤\n10\n6\n)\n are given — the number of rows and columns in the table, respectively.\n\nIn each of the following \n𝑛\n𝑛\n lines of each test case, \n𝑚\n𝑚\n integers are provided, separated by spaces. The \n𝑗\n𝑗\n-th number in the \n𝑖\n𝑖\n-th of these lines corresponds to the value \n𝑎\n𝑖,𝑗\n𝑎\n𝑖\n,\n𝑗\n (\n−\n10\n9\n≤\n𝑎\n𝑖,𝑗\n≤\n10\n9\n−\n10\n9\n≤\n𝑎\n𝑖\n,\n𝑗\n≤\n10\n9\n). It is guaranteed that there is at least one non-negative value among the \n𝑎\n𝑖,𝑗\n𝑎\n𝑖\n,\n𝑗\n.\n\nIt is guaranteed that the sum of \n𝑛⋅𝑚\n𝑛\n⋅\n𝑚\n across all test cases does not exceed \n10\n6\n10\n6",
+  "output_format": "Output\n\nFor each test case, output a single integer — the minimum pleasure Michelangelo can achieve, which Raphael can guarantee.",
+  "constraints": "Note\n\nIf Raphael did not use the sauce, Michelangelo would choose the path\n(1,1)→(2,1)→(3,1)→(3,2)→(3,3)\n(\n1\n,\n1\n)\n→\n(\n2\n,\n1\n)\n→\n(\n3\n,\n1\n)\n→\n(\n3\n,\n2\n)\n→\n(\n3\n,\n3\n)\nwhich gives a total pleasure of \n1+4+1+6−1=11\n1\n+\n4\n+\n1\n+\n6\n−\n1\n=\n11\n.\n\nHowever, if Raphael applies the sauce to the cell \n(3,2)\n(\n3\n,\n2\n)\n, the value \n6\n6\n will turn into \n−6\n−\n6\n. Then the optimal path for Michelangelo will be\n(1,1)→(1,2)→(1,3)→(2,3)→(3,3)\n(\n1\n,\n1\n)\n→\n(\n1\n,\n2\n)\n→\n(\n1\n,\n3\n)\n→\n(\n2\n,\n3\n)\n→\n(\n3\n,\n3\n)\nwith a total pleasure of \n1−2+3+2−1=3\n1\n−\n2\n+\n3\n+\n2\n−\n1\n=\n3\n. Raphael cannot achieve a lower result in any cell",
+  "test_cases": [
+    {
+      "input": "2\n3 3\n1 -2 3\n4 -5 2\n1 6 -1\n2 4\n-1 -1 -1 1\n-1 -1 -1 -1",
+      "output": "3\n-5",
+      "is_sample": true
+    }
+  ]
+}

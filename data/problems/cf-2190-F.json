@@ -1,0 +1,22 @@
+{
+  "title": "Xor Product",
+  "slug": "cf-2190-F",
+  "difficulty": "Hard",
+  "tags": [
+    "bitmasks",
+    "dp"
+  ],
+  "time_limit_ms": 2000,
+  "memory_limit_kb": 256000,
+  "description": "For non-negative integers \n𝑥,𝑦\n𝑥\n,\n𝑦\n and a positive integer \n𝑘\n𝑘\n, let \n𝑆(𝑥,𝑦,𝑘)\n𝑆\n(\n𝑥\n,\n𝑦\n,\n𝑘\n)\n be the set of values \n(𝑥+𝑖)⊕(𝑦+𝑗)\n(\n𝑥\n+\n𝑖\n)\n⊕\n(\n𝑦\n+\n𝑗\n)\n for all \n0≤𝑖,𝑗<𝑘\n0\n≤\n𝑖\n,\n𝑗\n<\n𝑘\n. Formally:\n𝑆(𝑥,𝑦,𝑘)={(𝑥+𝑖)⊕(𝑦+𝑗)∣0≤𝑖,𝑗<𝑘}\n𝑆\n(\n𝑥\n,\n𝑦\n,\n𝑘\n)\n=\n{\n(\n𝑥\n+\n𝑖\n)\n⊕\n(\n𝑦\n+\n𝑗\n)\n∣\n0\n≤\n𝑖\n,\n𝑗\n<\n𝑘\n}\nwhere \n⊕\n⊕\n denotes the bitwise XOR operation.\n\nDefine \n𝑓(𝑥,𝑘)\n𝑓\n(\n𝑥\n,\n𝑘\n)\n as the maximum size of \n𝑆(𝑥,𝑦,𝑘)\n𝑆\n(\n𝑥\n,\n𝑦\n,\n𝑘\n)\n over all non-negative integers \n𝑦\n𝑦\n (that is, \n𝑦≥0\n𝑦\n≥\n0\n).\n\nYou are given integers \n𝑥\n𝑥\n and \n𝑘\n𝑘\n. Compute \n𝑓(𝑥,𝑘)\n𝑓\n(\n𝑥\n,\n𝑘\n)\n.",
+  "input_format": "Input\n\nEach test contains multiple test cases. The first line contains the number of test cases \n𝑡\n𝑡\n (\n1≤𝑡≤\n10\n4\n1\n≤\n𝑡\n≤\n10\n4\n). The description of the test cases follows.\n\nEach of the next \n𝑡\n𝑡\n lines contains two integers \n𝑥\n𝑥\n and \n𝑘\n𝑘\n (\n1≤𝑥,𝑘≤\n10\n17\n1\n≤\n𝑥\n,\n𝑘\n≤\n10\n17\n).",
+  "output_format": "Output\n\nFor each test case, output a single integer — the value of \n𝑓(𝑥,𝑘)\n𝑓\n(\n𝑥\n,\n𝑘\n)\n.",
+  "constraints": "Note\n\nIn the first example, since \n𝑘=1\n𝑘\n=\n1\n, the set \n𝑆\n𝑆\n will always contain exactly one element regardless of \n𝑦\n𝑦\n. For instance, if we pick \n𝑦=69\n𝑦\n=\n69\n, we have \n𝑆(67,69,1)={67⊕69}={6}\n𝑆\n(\n67\n,\n69\n,\n1\n)\n=\n{\n67\n⊕\n69\n}\n=\n{\n6\n}\n, so \n|𝑆(𝑥,𝑦,𝑘)|=1\n|\n𝑆\n(\n𝑥\n,\n𝑦\n,\n𝑘\n)\n|\n=\n1\n.\n\nIn the second example, we have \n𝑥=7\n𝑥\n=\n7\n and \n𝑘=3\n𝑘\n=\n3\n. The optimal choice is \n𝑦=8\n𝑦\n=\n8\n. The values of \n(𝑥+𝑖)⊕(𝑦+𝑗)\n(\n𝑥\n+\n𝑖\n)\n⊕\n(\n𝑦\n+\n𝑗\n)\n are:\n[7⊕8,7⊕9,7⊕10,8⊕8,8⊕9,8⊕10,9⊕8,9⊕9,9⊕10]\n[\n7\n⊕\n8\n,\n7\n⊕\n9\n,\n7\n⊕\n10\n,\n8\n⊕\n8\n,\n8\n⊕\n9\n,\n8\n⊕\n10\n,\n9\n⊕\n8\n,\n9\n⊕\n9\n,\n9\n⊕\n10\n]\nwhich simplifies to \n[15,14,13,0,1,2,1,0,3]\n[\n15\n,\n14\n,\n13\n,\n0\n,\n1\n,\n2\n,\n1\n,\n0\n,\n3\n]\n. The set of distinct values is \n𝑆(7,8,3)={0,1,2,3,13,14,15}\n𝑆\n(\n7\n,\n8\n,\n3\n)\n=\n{\n0\n,\n1\n,\n2\n,\n3\n,\n13\n,\n14\n,\n15\n}\n, so the size is \n7\n7\n. It can be shown that no other \n𝑦\n𝑦\n yields a larger size. However, the choice of \n𝑦\n𝑦\n matters; for example, if you chose \n𝑦=22\n𝑦\n=\n22\n, you would get \n𝑆(7,22,3)={16,17,30,31}\n𝑆\n(\n7\n,\n22\n,\n3\n)\n=\n{\n16\n,\n17\n,\n30\n,\n31\n}\n with size \n4\n4\n, which is suboptimal.\n\nIn the sixth example, after countless calculations, we managed to figure out that the optimal \n𝑦\n𝑦\n is \n278302368699121665\n278\n302\n368\n699\n121\n665\n, which gives an answer of \n398158383604301822\n398\n158\n383\n604\n301\n822\n. The proof is left to the reader as a trivial exercise.",
+  "test_cases": [
+    {
+      "input": "6\n67 1\n7 3\n100 12\n1 1043\n1526 1043\n88946092640567295 100000000000000000",
+      "output": "1\n7\n32\n3128\n4167\n398158383604301822",
+      "is_sample": true
+    }
+  ]
+}

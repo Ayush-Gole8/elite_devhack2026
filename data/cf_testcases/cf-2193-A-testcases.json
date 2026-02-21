@@ -1,0 +1,106 @@
+{
+  "slug": "cf-2193-A",
+  "title": "Prime Check",
+  "test_cases": [
+    {
+      "input": "1\n42",
+      "output": "NO",
+      "is_sample": false
+    },
+    {
+      "input": "3\n79\n34\n24",
+      "output": "YES\nNO\nNO",
+      "is_sample": false
+    },
+    {
+      "input": "5\n34\n31\n35\n61\n79",
+      "output": "NO\nYES\nNO\nYES\nYES",
+      "is_sample": false
+    },
+    {
+      "input": "3\n47\n24\n64",
+      "output": "YES\nNO\nNO",
+      "is_sample": false
+    },
+    {
+      "input": "4\n27\n54\n90\n97",
+      "output": "NO\nNO\nNO\nYES",
+      "is_sample": false
+    },
+    {
+      "input": "3\n47\n52\n36",
+      "output": "YES\nNO\nNO",
+      "is_sample": false
+    },
+    {
+      "input": "4\n24\n74\n17\n74",
+      "output": "NO\nNO\nYES\nNO",
+      "is_sample": false
+    },
+    {
+      "input": "6\n30\n13\n93\n35\n31\n72",
+      "output": "NO\nYES\nNO\nNO\nYES\nNO",
+      "is_sample": false
+    },
+    {
+      "input": "4\n49\n26\n19\n95",
+      "output": "NO\nNO\nYES\nNO",
+      "is_sample": false
+    },
+    {
+      "input": "2\n61\n2",
+      "output": "YES\nYES",
+      "is_sample": false
+    },
+    {
+      "input": "2\n54\n64",
+      "output": "NO\nNO",
+      "is_sample": false
+    },
+    {
+      "input": "2\n81\n67",
+      "output": "NO\nYES",
+      "is_sample": false
+    },
+    {
+      "input": "5\n93\n41\n63\n39\n33",
+      "output": "NO\nYES\nNO\nNO\nNO",
+      "is_sample": false
+    },
+    {
+      "input": "5\n73\n7\n51\n13\n89",
+      "output": "YES\nYES\nNO\nYES\nYES",
+      "is_sample": false
+    },
+    {
+      "input": "2\n8\n28",
+      "output": "NO\nNO",
+      "is_sample": false
+    },
+    {
+      "input": "3\n61\n81\n13",
+      "output": "YES\nNO\nYES",
+      "is_sample": false
+    },
+    {
+      "input": "4\n96\n43\n34\n47",
+      "output": "NO\nYES\nNO\nYES",
+      "is_sample": false
+    },
+    {
+      "input": "3\n72\n72\n33",
+      "output": "NO\nNO\nNO",
+      "is_sample": false
+    },
+    {
+      "input": "3\n3\n53\n16",
+      "output": "YES\nYES\nNO",
+      "is_sample": false
+    },
+    {
+      "input": "3\n87\n78\n26",
+      "output": "NO\nNO\nNO",
+      "is_sample": false
+    }
+  ]
+}
