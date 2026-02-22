@@ -16,6 +16,7 @@ interface RecentSubmission {
   problem?: { _id?: string; title?: string; difficulty?: string };
   language?: string;
   createdAt?: string;
+  submittedAt?: string;
 }
 
 export default function DashboardPage() {
