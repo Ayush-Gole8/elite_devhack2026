@@ -99,7 +99,7 @@ const ContestLeaderboard: React.FC<ContestLeaderboardProps> = ({
                 <th className="px-4 py-4 text-left text-sm font-bold text-gray-300 uppercase sticky left-0 bg-[#252525] z-10">
                   Rank
                 </th>
-                <th className="px-4 py-4 text-left text-sm font-bold text-gray-300 uppercase sticky left-[80px] bg-[#252525] z-10">
+                <th className="px-4 py-4 text-left text-sm font-bold text-gray-300 uppercase sticky left-20 bg-[#252525] z-10">
                   Participant
                 </th>
                 <th className="px-4 py-4 text-center text-sm font-bold text-gray-300 uppercase">
@@ -111,7 +111,7 @@ const ContestLeaderboard: React.FC<ContestLeaderboardProps> = ({
                 {problems.map((problem) => (
                   <th
                     key={problem._id}
-                    className="px-3 py-4 text-center text-xs font-bold text-gray-300 uppercase min-w-[100px]"
+                    className="px-3 py-4 text-center text-xs font-bold text-gray-300 uppercase min-w-25"
                     title={problem.title}
                   >
                     {problem.title.length > 12
@@ -147,14 +147,14 @@ const ContestLeaderboard: React.FC<ContestLeaderboardProps> = ({
                         </span>
                       </div>
                     </td>
-                    <td className="px-4 py-4 whitespace-nowrap sticky left-[80px] bg-[#1e1e1e] z-10">
+                    <td className="px-4 py-4 whitespace-nowrap sticky left-20 bg-[#1e1e1e] z-10">
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-[#2a2a2a] flex items-center justify-center flex-shrink-0">
+                        <div className="w-10 h-10 rounded-full bg-[#2a2a2a] flex items-center justify-center shrink-0">
                           <span className="text-lg font-bold text-white">
                             {participant.user?.name?.[0]?.toUpperCase() || '?'}
                           </span>
                         </div>
-                        <div className="min-w-[150px]">
+                        <div className="min-w-37.5">
                           <p className="text-white font-semibold flex items-center gap-2">
                             {participant.user?.name || 'Anonymous'}
                             {isCurrentUser && (

@@ -43,6 +43,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
     socketInstance.on('connect', () => {
       console.log('Socket.io connected:', socketInstance.id);
       setConnected(true);
+      setSocket(socketInstance);
     });
 
     socketInstance.on('disconnect', () => {
@@ -50,12 +51,10 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
       setConnected(false);
     });
 
-    socketInstance.on('connect_error', (error) => {
+    socketInstance.on('connect_error', (error: unknown) => {
       console.error('Socket.io connection error:', error);
       setConnected(false);
     });
-
-    setSocket(socketInstance);
 
     // Cleanup on unmount
     return () => {

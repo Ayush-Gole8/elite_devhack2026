@@ -3,13 +3,20 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
-import { Button } from '@/components/ui/button';
+import Image from 'next/image';
 import { userAPI, problemAPI, submissionAPI } from '@/lib/api';
 import {
-  Code2, Trophy, Target, Users, TrendingUp, Flame,
+  Code2, Trophy, Users, TrendingUp, Flame,
   CheckCircle2, ArrowRight, Zap, BarChart2, ChevronRight,
   Circle, LogOut, LayoutDashboard, BookOpen,
 } from 'lucide-react';
+
+interface RecentSubmission {
+  status: string;
+  problem?: { _id?: string; title?: string; difficulty?: string };
+  language?: string;
+  createdAt?: string;
+}
 
 export default function DashboardPage() {
   const { user, loading, signOut } = useAuth();
@@ -20,7 +27,7 @@ export default function DashboardPage() {
     totalSubmissions: 0,
     contestsJoined: 0,
     rating: 1200,
-    recentSubmissions: [] as any[],
+    recentSubmissions: [] as RecentSubmission[],
   });
   const [loadingStats, setLoadingStats] = useState(true);
 
@@ -141,10 +148,13 @@ export default function DashboardPage() {
               onClick={() => router.push(`/profile/${user._id}`)}
               className="flex items-center gap-2.5 px-2.5 py-1.5 rounded-xl hover:bg-white/5 border border-transparent hover:border-white/6 transition-all"
             >
-              <img
-                src={user.profilePhoto || `https://ui-avatars.com/api/?name=${user.name}&background=10b981&color=fff&size=80`}
+              <Image
+                src={user.profilePhoto || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name ?? '')}&background=10b981&color=fff&size=80`}
                 alt={user.name || 'User'}
+                width={28}
+                height={28}
                 className="w-7 h-7 rounded-full ring-1 ring-white/10"
+                unoptimized
               />
               <span className="hidden sm:block text-sm text-zinc-300 font-medium">{user.name?.split(' ')[0]}</span>
             </button>
@@ -166,7 +176,7 @@ export default function DashboardPage() {
             <h1 className="text-2xl font-bold text-white">
               Good to see you, <span className="text-emerald-400">{user.name?.split(' ')[0] || 'Coder'}</span> 👋
             </h1>
-            <p className="text-zinc-500 text-sm mt-1">Here's a snapshot of your progress today.</p>
+            <p className="text-zinc-500 text-sm mt-1">Here&apos;s a snapshot of your progress today.</p>
           </div>
           {!user.isOnboarded && (
             <button onClick={() => router.push('/onboarding')}
@@ -348,10 +358,13 @@ export default function DashboardPage() {
               className="group w-full text-left relative rounded-2xl overflow-hidden border border-white/6 hover:border-purple-500/20 transition-all bg-[#18181b] p-5">
               <div className="absolute inset-0 bg-linear-to-br from-purple-500/8 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
               <div className="relative flex items-center gap-4">
-                <img
-                  src={user.profilePhoto || `https://ui-avatars.com/api/?name=${user.name}&background=10b981&color=fff&size=80`}
+                <Image
+                  src={user.profilePhoto || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name ?? '')}&background=10b981&color=fff&size=80`}
                   alt={user.name || ''}
+                  width={44}
+                  height={44}
                   className="w-11 h-11 rounded-xl ring-1 ring-white/10 object-cover shrink-0"
+                  unoptimized
                 />
                 <div className="flex-1 min-w-0">
                   <p className="font-semibold text-white text-sm">Your Profile</p>
@@ -398,7 +411,7 @@ export default function DashboardPage() {
                 </div>
               ) : (
                 <div className="divide-y divide-white/4">
-                  {stats.recentSubmissions.map((submission: any, idx: number) => {
+                  {stats.recentSubmissions.map((submission, idx) => {
                     const accepted = submission.status === 'Accepted';
                     const diff = submission.problem?.difficulty;
                     return (

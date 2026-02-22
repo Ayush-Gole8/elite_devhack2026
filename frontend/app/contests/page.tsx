@@ -1,27 +1,30 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 import { contestAPI } from '@/lib/api';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { ContestTimer } from '@/components/ui/contest-timer';
-import { 
-  Trophy, 
-  Calendar, 
-  Clock, 
-  Users, 
-  Target,
-  Zap,
+import { motion, AnimatePresence } from 'framer-motion';
+import {
+  Trophy,
+  Calendar,
+  Clock,
+  Users,
+  ListChecks,
   CheckCircle2,
   ArrowRight,
-  Sparkles,
-  Plus
+  Lock,
+  Radio,
+  ChevronRight,
+  BarChart3,
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { toast } from 'sonner';
+
+interface ContestParticipant {
+  user: { _id: string; name: string; username: string } | string;
+  score?: number;
+}
 
 interface Contest {
   _id: string;
@@ -30,12 +33,232 @@ interface Contest {
   startTime: string;
   endTime: string;
   duration: number;
-  problems: any[];
-  participants: any[];
+  problems: { _id: string; title: string }[];
+  participants: ContestParticipant[];
   status: 'upcoming' | 'ongoing' | 'completed';
   isPublic: boolean;
 }
 
+/* ─── Countdown hook ─────────────────────────────────────────── */
+function useCountdown(target: string): string {
+  const [display, setDisplay] = useState('');
+  useEffect(() => {
+    const tick = () => {
+      const diff = new Date(target).getTime() - Date.now();
+      if (diff <= 0) { setDisplay('00:00:00'); return; }
+      const h = Math.floor(diff / 3_600_000);
+      const m = Math.floor((diff % 3_600_000) / 60_000);
+      const s = Math.floor((diff % 60_000) / 1000);
+      setDisplay(
+        `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`
+      );
+    };
+    tick();
+    const id = setInterval(tick, 1000);
+    return () => clearInterval(id);
+  }, [target]);
+  return display;
+}
+
+/* ─── Status badge ───────────────────────────────────────────── */
+function StatusBadge({ status }: { status: string }) {
+  if (status === 'ongoing') return (
+    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-500/15 text-emerald-400 border border-emerald-500/25">
+      <Radio className="w-3 h-3 animate-pulse" />
+      Live
+    </span>
+  );
+  if (status === 'upcoming') return (
+    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-sky-500/15 text-sky-400 border border-sky-500/25">
+      <Calendar className="w-3 h-3" />
+      Upcoming
+    </span>
+  );
+  return (
+    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-zinc-700/60 text-zinc-400 border border-zinc-700">
+      <CheckCircle2 className="w-3 h-3" />
+      Ended
+    </span>
+  );
+}
+
+/* ─── Contest card ───────────────────────────────────────────── */
+function ContestCard({
+  contest,
+  userId,
+  onRegister,
+  registering,
+}: {
+  contest: Contest;
+  userId?: string;
+  onRegister: (id: string, c: Contest) => void;
+  registering: string | null;
+}) {
+  const router = useRouter();
+  const isRegistered = userId
+    ? contest.participants.some((p) => (typeof p.user === 'string' ? p.user : p.user._id) === userId)
+    : false;
+
+  const timerTarget = contest.status === 'upcoming' ? contest.startTime : contest.endTime;
+  const countdown = useCountdown(timerTarget);
+
+  const accentHover =
+    contest.status === 'ongoing'
+      ? 'hover:border-emerald-500/30'
+      : contest.status === 'upcoming'
+      ? 'hover:border-sky-500/25'
+      : 'hover:border-zinc-600/40';
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      whileHover={{ y: -3, transition: { duration: 0.18 } }}
+      className={`group relative rounded-2xl bg-[#18181b] border border-white/6 overflow-hidden cursor-pointer shadow-lg hover:shadow-xl transition-shadow ${accentHover}`}
+      onClick={() => router.push(`/contests/${contest._id}`)}
+    >
+      {/* shimmer line */}
+      <div
+        className={`absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent ${
+          contest.status === 'ongoing'
+            ? 'via-emerald-500/50'
+            : contest.status === 'upcoming'
+            ? 'via-sky-500/40'
+            : 'via-zinc-500/20'
+        } to-transparent`}
+      />
+      {contest.status === 'ongoing' && (
+        <div className="absolute -top-8 -right-8 w-24 h-24 bg-emerald-500/8 rounded-full blur-2xl pointer-events-none" />
+      )}
+
+      <div className="p-5 flex flex-col gap-4">
+        {/* header */}
+        <div className="flex items-start justify-between gap-3">
+          <div className="flex items-start gap-3 min-w-0">
+            <div className={`shrink-0 mt-0.5 w-9 h-9 rounded-lg flex items-center justify-center ${
+              contest.status === 'ongoing'
+                ? 'bg-emerald-500/15 text-emerald-400'
+                : contest.status === 'upcoming'
+                ? 'bg-sky-500/10 text-sky-400'
+                : 'bg-zinc-800 text-zinc-500'
+            }`}>
+              <Trophy className="w-4 h-4" />
+            </div>
+            <div className="min-w-0">
+              <h3 className="font-semibold text-white text-sm leading-snug line-clamp-1 group-hover:text-emerald-300 transition-colors">
+                {contest.title}
+              </h3>
+              <p className="text-zinc-500 text-xs mt-0.5 line-clamp-2 leading-relaxed">
+                {contest.description}
+              </p>
+            </div>
+          </div>
+          <StatusBadge status={contest.status} />
+        </div>
+
+        {/* countdown */}
+        {contest.status !== 'completed' && (
+          <div className="rounded-xl bg-zinc-900/60 border border-white/4 px-4 py-2.5 flex items-center justify-between">
+            <span className="text-zinc-500 text-xs font-medium">
+              {contest.status === 'ongoing' ? 'Ends in' : 'Starts in'}
+            </span>
+            <span className="font-mono text-base font-bold tracking-widest text-white tabular-nums">
+              {countdown}
+            </span>
+          </div>
+        )}
+
+        {/* stats */}
+        <div className="flex items-center gap-4 text-xs text-zinc-500">
+          <span className="flex items-center gap-1.5">
+            <ListChecks className="w-3.5 h-3.5" />
+            {contest.problems?.length ?? 0} problems
+          </span>
+          <span className="flex items-center gap-1.5">
+            <Users className="w-3.5 h-3.5" />
+            {contest.participants?.length ?? 0} joined
+          </span>
+          <span className="flex items-center gap-1.5 ml-auto">
+            <Clock className="w-3.5 h-3.5" />
+            {contest.duration} min
+          </span>
+        </div>
+
+        {contest.status === 'upcoming' && (
+          <p className="text-zinc-500 text-xs flex items-center gap-1.5">
+            <Calendar className="w-3.5 h-3.5" />
+            {format(new Date(contest.startTime), 'MMM dd, yyyy · hh:mm a')}
+          </p>
+        )}
+
+        {/* CTA */}
+        <div onClick={(e) => e.stopPropagation()}>
+          {contest.status === 'completed' ? (
+            <button
+              className="w-full rounded-xl py-2.5 text-sm font-semibold bg-zinc-800 text-zinc-300 hover:bg-zinc-700 transition-colors flex items-center justify-center gap-2"
+              onClick={() => router.push(`/contests/${contest._id}`)}
+            >
+              <BarChart3 className="w-4 h-4" />
+              View Results
+            </button>
+          ) : isRegistered ? (
+            <button
+              className="w-full rounded-xl py-2.5 text-sm font-semibold bg-emerald-500/15 text-emerald-400 border border-emerald-500/25 hover:bg-emerald-500/25 transition-colors flex items-center justify-center gap-2"
+              onClick={() => router.push(`/contests/${contest._id}`)}
+            >
+              <ArrowRight className="w-4 h-4" />
+              {contest.status === 'ongoing' ? 'Enter Contest' : 'View Contest'}
+            </button>
+          ) : (
+            <button
+              className="w-full rounded-xl py-2.5 text-sm font-semibold bg-emerald-600 text-white hover:bg-emerald-500 transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={registering === contest._id || contest.status === 'ongoing'}
+              onClick={() => onRegister(contest._id, contest)}
+            >
+              {registering === contest._id ? (
+                <><div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />Registering...</>
+              ) : contest.status === 'ongoing' ? (
+                <><Lock className="w-4 h-4" />Registration Closed</>
+              ) : (
+                <><CheckCircle2 className="w-4 h-4" />Register Now</>
+              )}
+            </button>
+          )}
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+/* ─── Section header ─────────────────────────────────────────── */
+function SectionHeader({
+  icon: Icon,
+  label,
+  count,
+  dotColor,
+}: {
+  icon: React.ElementType;
+  label: string;
+  count: number;
+  dotColor: string;
+}) {
+  return (
+    <div className="flex items-center gap-3 mb-5">
+      <Icon className={`w-5 h-5 ${dotColor}`} />
+      <h2 className="text-base font-semibold text-white">{label}</h2>
+      <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-zinc-800 text-zinc-400">
+        {count}
+      </span>
+    </div>
+  );
+}
+
+const containerVariants = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.06 } },
+};
+
+/* ─── Page ───────────────────────────────────────────────────── */
 export default function ContestsPage() {
   const { user } = useAuth();
   const router = useRouter();
@@ -43,396 +266,153 @@ export default function ContestsPage() {
   const [loading, setLoading] = useState(true);
   const [registering, setRegistering] = useState<string | null>(null);
 
-  useEffect(() => {
-    fetchContests();
-  }, []);
-
-  const fetchContests = async () => {
+  const fetchContests = useCallback(async () => {
     try {
       setLoading(true);
       const response = await contestAPI.getContests();
-      const allContests = response.data || [];
-      
-      // Sort contests: ongoing first, then upcoming, then completed
-      const sorted = allContests.sort((a: Contest, b: Contest) => {
-        const statusOrder = { ongoing: 0, upcoming: 1, completed: 2 };
-        return statusOrder[a.status] - statusOrder[b.status] || 
-               new Date(b.startTime).getTime() - new Date(a.startTime).getTime();
-      });
-      
-      setContests(sorted);
-    } catch (error) {
-      console.error('Error fetching contests:', error);
+      const all: Contest[] = response.data || [];
+      const order: Record<string, number> = { ongoing: 0, upcoming: 1, completed: 2 };
+      all.sort(
+        (a, b) =>
+          (order[a.status] ?? 3) - (order[b.status] ?? 3) ||
+          new Date(b.startTime).getTime() - new Date(a.startTime).getTime()
+      );
+      setContests(all);
+    } catch {
       toast.error('Failed to load contests');
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => { fetchContests(); }, [fetchContests]);
 
   const handleRegister = async (contestId: string, contest: Contest) => {
-    if (!user) {
-      toast.error('Please login to register');
-      router.push('/login');
-      return;
-    }
-
-    // Frontend validation before API call
+    if (!user) { toast.error('Please login to register'); router.push('/login'); return; }
     const now = new Date();
-    const startTime = new Date(contest.startTime);
-    const endTime = new Date(contest.endTime);
-
-    if (endTime < now) {
-      toast.error('Cannot register for a contest that has already ended');
-      return;
+    if (new Date(contest.endTime) < now) { toast.error('Contest has already ended'); return; }
+    if (contest.participants.some((p) => (typeof p.user === 'string' ? p.user : p.user._id) === user._id)) {
+      toast.info('Already registered'); return;
     }
-
-    // Check if already registered
-    if (isUserRegistered(contest)) {
-      toast.info('You are already registered for this contest');
-      return;
-    }
-
     try {
       setRegistering(contestId);
       await contestAPI.registerForContest(contestId);
-      toast.success('Successfully registered for contest!');
-      fetchContests(); // Refresh to show updated registration
-    } catch (error: any) {
-      const message = error.response?.data?.message || 'Failed to register';
-      toast.error(message);
+      toast.success('Registered successfully');
+      fetchContests();
+    } catch (err: unknown) {
+      const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message;
+      toast.error(msg || 'Failed to register');
     } finally {
       setRegistering(null);
     }
   };
 
-  const isUserRegistered = (contest: Contest) => {
-    if (!user) return false;
-    return contest.participants.some((p: any) => 
-      (p.user?._id || p.user) === user._id
-    );
-  };
-
-  const canRegisterForContest = (contest: Contest): { allowed: boolean; reason?: string } => {
-    const now = new Date();
-    const startTime = new Date(contest.startTime);
-    const endTime = new Date(contest.endTime);
-
-    if (endTime < now) {
-      return { allowed: false, reason: 'Contest has ended' };
-    }
-
-    if (startTime <= now) {
-      return { allowed: false, reason: 'Contest is already ongoing' };
-    }
-
-    if (isUserRegistered(contest)) {
-      return { allowed: false, reason: 'Already registered' };
-    }
-
-    return { allowed: true };
-  };
-
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case 'ongoing':
-        return (
-          <Badge className="bg-green-500/20 text-green-400 border-green-500/50 px-3 py-1 font-semibold">
-            <Zap className="w-3 h-3 mr-1 animate-pulse" />
-            Live Now
-          </Badge>
-        );
-      case 'upcoming':
-        return (
-          <Badge className="bg-blue-500/20 text-blue-400 border-blue-500/50 px-3 py-1 font-semibold">
-            <Calendar className="w-3 h-3 mr-1" />
-            Upcoming
-          </Badge>
-        );
-      case 'completed':
-        return (
-          <Badge className="bg-gray-500/20 text-gray-400 border-gray-500/50 px-3 py-1 font-semibold">
-            <CheckCircle2 className="w-3 h-3 mr-1" />
-            Ended
-          </Badge>
-        );
-      default:
-        return null;
-    }
-  };
-
-  const groupedContests = {
-    ongoing: contests.filter(c => c.status === 'ongoing'),
-    upcoming: contests.filter(c => c.status === 'upcoming'),
-    completed: contests.filter(c => c.status === 'completed'),
+  const grouped = {
+    ongoing: contests.filter((c) => c.status === 'ongoing'),
+    upcoming: contests.filter((c) => c.status === 'upcoming'),
+    completed: contests.filter((c) => c.status === 'completed'),
   };
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-[#0f0f0f]">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-green-500 mx-auto mb-4"></div>
-          <p className="text-gray-400 text-lg">Loading Contests...</p>
+      <div className="min-h-screen bg-[#09090b] flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <div className="relative w-12 h-12">
+            <div className="absolute inset-0 rounded-full border-2 border-emerald-500/20" />
+            <div className="absolute inset-0 rounded-full border-t-2 border-emerald-500 animate-spin" />
+          </div>
+          <p className="text-zinc-500 text-sm">Loading contests...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#0f0f0f] p-4 md:p-6">
-      <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="mb-8 relative">
-          <div className="absolute inset-0 bg-gradient-to-r from-purple-600/10 via-pink-600/10 to-orange-600/10 blur-3xl -z-10"></div>
-          
-          <div className="text-center mb-8">
-            <div className="flex items-center justify-center gap-3 mb-4">
-              <Trophy className="w-12 h-12 text-purple-500 animate-bounce" />
-              <h1 className="text-5xl font-bold text-white">Coding Contests</h1>
-              <Sparkles className="w-12 h-12 text-pink-500 animate-pulse" />
+    <div className="min-h-screen bg-[#09090b] text-white">
+      {/* Navbar */}
+      <nav className="sticky top-0 z-40 glass-nav">
+        <div className="max-w-6xl mx-auto px-6 h-14 flex items-center justify-between">
+          <button
+            onClick={() => router.push('/dashboard')}
+            className="flex items-center gap-2 text-zinc-400 hover:text-white transition-colors text-sm font-medium"
+          >
+            <ChevronRight className="w-4 h-4 rotate-180" />
+            Dashboard
+          </button>
+          <div className="flex items-center gap-2">
+            <div className="w-7 h-7 rounded-lg bg-linear-to-br from-emerald-500 to-emerald-700 flex items-center justify-center">
+              <Trophy className="w-3.5 h-3.5 text-white" />
             </div>
-            <p className="text-gray-400 text-lg mb-4">
-              Compete in real-time coding challenges and climb the ranks
-            </p>
-            {user && (
-              <Button
-                onClick={() => router.push('/admin/contests/create')}
-                className="bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 text-white font-semibold px-6 py-3 shadow-lg hover:shadow-xl transition-all"
-              >
-                <Plus className="w-5 h-5 mr-2" />
-                Create Contest
-              </Button>
-            )}
+            <span className="text-white font-semibold text-sm">Contests</span>
           </div>
+          <div className="w-24" />
         </div>
+      </nav>
 
-        {/* Ongoing Contests */}
-        {groupedContests.ongoing.length > 0 && (
-          <div className="mb-12">
-            <h2 className="text-3xl font-bold text-white mb-6 flex items-center gap-3">
-              <Zap className="w-8 h-8 text-green-500" />
-              Live Contests
-            </h2>
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {groupedContests.ongoing.map((contest) => (
-                <Card 
-                  key={contest._id}
-                  className="bg-gradient-to-br from-green-500/10 to-emerald-600/10 border-2 border-green-500/30 hover:border-green-500/60 transition-all shadow-2xl hover:scale-105 cursor-pointer"
-                  onClick={() => router.push(`/contests/${contest._id}`)}
-                >
-                  <CardHeader>
-                    <div className="flex items-start justify-between mb-2">
-                      <CardTitle className="text-2xl text-white">{contest.title}</CardTitle>
-                      {getStatusBadge(contest.status)}
-                    </div>
-                    <CardDescription className="text-gray-300 line-clamp-2">
-                      {contest.description}
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4">
-                      <ContestTimer 
-                        startTime={contest.startTime}
-                        endTime={contest.endTime}
-                        status={contest.status}
-                      />
-                      
-                      <div className="flex items-center justify-between text-sm">
-                        <div className="flex items-center gap-2 text-gray-400">
-                          <Target className="w-4 h-4" />
-                          <span>{contest.problems?.length || 0} Problems</span>
-                        </div>
-                        <div className="flex items-center gap-2 text-gray-400">
-                          <Users className="w-4 h-4" />
-                          <span>{contest.participants?.length || 0} Participants</span>
-                        </div>
-                      </div>
+      <div className="max-w-6xl mx-auto px-6 py-10">
+        {/* Page header */}
+        <motion.div
+          initial={{ opacity: 0, y: -12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+          className="mb-10"
+        >
+          <h1 className="text-3xl font-bold text-white tracking-tight">Coding Contests</h1>
+          <p className="text-zinc-500 mt-1.5 text-sm">
+            Compete in timed challenges, earn rankings, and benchmark your skills.
+          </p>
+        </motion.div>
 
-                      {isUserRegistered(contest) ? (
-                        <Button 
-                          className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            router.push(`/contests/${contest._id}`);
-                          }}
-                        >
-                          <ArrowRight className="w-4 h-4 mr-2" />
-                          Enter Contest
-                        </Button>
-                      ) : (
-                        <Button 
-                          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleRegister(contest._id, contest);
-                          }}
-                          disabled={registering === contest._id}
-                        >
-                          {registering === contest._id ? (
-                            <>
-                              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                              Registering...
-                            </>
-                          ) : (
-                            'Register & Enter'
-                          )}
-                        </Button>
-                      )}
-                    </div>
-                  </CardContent>
-                </Card>
+        {/* Live */}
+        <AnimatePresence>
+          {grouped.ongoing.length > 0 && (
+            <motion.section key="ongoing" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mb-12">
+              <SectionHeader icon={Radio} label="Live Now" count={grouped.ongoing.length} dotColor="text-emerald-400" />
+              <motion.div variants={containerVariants} initial="hidden" animate="visible" className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                {grouped.ongoing.map((c) => (
+                  <ContestCard key={c._id} contest={c} userId={user?._id} onRegister={handleRegister} registering={registering} />
+                ))}
+              </motion.div>
+            </motion.section>
+          )}
+        </AnimatePresence>
+
+        {/* Upcoming */}
+        {grouped.upcoming.length > 0 && (
+          <motion.section initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="mb-12">
+            <SectionHeader icon={Calendar} label="Upcoming" count={grouped.upcoming.length} dotColor="text-sky-400" />
+            <motion.div variants={containerVariants} initial="hidden" animate="visible" className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {grouped.upcoming.map((c) => (
+                <ContestCard key={c._id} contest={c} userId={user?._id} onRegister={handleRegister} registering={registering} />
               ))}
-            </div>
-          </div>
+            </motion.div>
+          </motion.section>
         )}
 
-        {/* Upcoming Contests */}
-        {groupedContests.upcoming.length > 0 && (
-          <div className="mb-12">
-            <h2 className="text-3xl font-bold text-white mb-6 flex items-center gap-3">
-              <Calendar className="w-8 h-8 text-blue-500" />
-              Upcoming Contests
-            </h2>
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {groupedContests.upcoming.map((contest) => (
-                <Card 
-                  key={contest._id}
-                  className="bg-[#1e1e1e] border-[#2a2a2a] hover:border-blue-500/60 transition-all shadow-xl hover:scale-105 cursor-pointer"
-                  onClick={() => router.push(`/contests/${contest._id}`)}
-                >
-                  <CardHeader>
-                    <div className="flex items-start justify-between mb-2">
-                      <CardTitle className="text-2xl text-white">{contest.title}</CardTitle>
-                      {getStatusBadge(contest.status)}
-                    </div>
-                    <CardDescription className="text-gray-400 line-clamp-2">
-                      {contest.description}
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4">
-                      <div className="flex items-center gap-2 text-gray-400 text-sm">
-                        <Clock className="w-4 h-4" />
-                        <span>{format(new Date(contest.startTime), 'MMM dd, yyyy • hh:mm a')}</span>
-                      </div>
-
-                      <ContestTimer 
-                        startTime={contest.startTime}
-                        endTime={contest.endTime}
-                        status={contest.status}
-                      />
-                      
-                      <div className="flex items-center justify-between text-sm">
-                        <div className="flex items-center gap-2 text-gray-400">
-                          <Target className="w-4 h-4" />
-                          <span>{contest.problems?.length || 0} Problems</span>
-                        </div>
-                        <div className="flex items-center gap-2 text-gray-400">
-                          <Clock className="w-4 h-4" />
-                          <span>{contest.duration} mins</span>
-                        </div>
-                      </div>
-
-                      {isUserRegistered(contest) ? (
-                        <div className="flex items-center justify-center gap-2 py-2 bg-green-500/20 rounded-lg border border-green-500/30">
-                          <CheckCircle2 className="w-4 h-4 text-green-400" />
-                          <span className="text-green-400 font-semibold">Registered</span>
-                        </div>
-                      ) : (
-                        <Button 
-                          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleRegister(contest._id, contest);
-                          }}
-                          disabled={registering === contest._id}
-                        >
-                          {registering === contest._id ? (
-                            <>
-                              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                              Registering...
-                            </>
-                          ) : (
-                            'Register Now'
-                          )}
-                        </Button>
-                      )}
-                    </div>
-                  </CardContent>
-                </Card>
+        {/* Past */}
+        {grouped.completed.length > 0 && (
+          <motion.section initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="mb-12">
+            <SectionHeader icon={CheckCircle2} label="Past Contests" count={grouped.completed.length} dotColor="text-zinc-500" />
+            <motion.div variants={containerVariants} initial="hidden" animate="visible" className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {grouped.completed.map((c) => (
+                <ContestCard key={c._id} contest={c} userId={user?._id} onRegister={handleRegister} registering={registering} />
               ))}
-            </div>
-          </div>
+            </motion.div>
+          </motion.section>
         )}
 
-        {/* Completed Contests */}
-        {groupedContests.completed.length > 0 && (
-          <div className="mb-12">
-            <h2 className="text-3xl font-bold text-white mb-6 flex items-center gap-3">
-              <CheckCircle2 className="w-8 h-8 text-gray-500" />
-              Past Contests
-            </h2>
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {groupedContests.completed.map((contest) => (
-                <Card 
-                  key={contest._id}
-                  className="bg-[#1e1e1e] border-[#2a2a2a] hover:border-gray-500/60 transition-all shadow-xl hover:scale-105 cursor-pointer"
-                  onClick={() => router.push(`/contests/${contest._id}`)}
-                >
-                  <CardHeader>
-                    <div className="flex items-start justify-between mb-2">
-                      <CardTitle className="text-2xl text-white">{contest.title}</CardTitle>
-                      {getStatusBadge(contest.status)}
-                    </div>
-                    <CardDescription className="text-gray-400 line-clamp-2">
-                      {contest.description}
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4">
-                      <div className="flex items-center gap-2 text-gray-500 text-sm">
-                        <Calendar className="w-4 h-4" />
-                        <span>{format(new Date(contest.startTime), 'MMM dd, yyyy')}</span>
-                      </div>
-                      
-                      <div className="flex items-center justify-between text-sm">
-                        <div className="flex items-center gap-2 text-gray-400">
-                          <Target className="w-4 h-4" />
-                          <span>{contest.problems?.length || 0} Problems</span>
-                        </div>
-                        <div className="flex items-center gap-2 text-gray-400">
-                          <Users className="w-4 h-4" />
-                          <span>{contest.participants?.length || 0} Participants</span>
-                        </div>
-                      </div>
-
-                      <Button 
-                        className="w-full bg-gray-700 hover:bg-gray-600 text-white font-semibold"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          router.push(`/contests/${contest._id}`);
-                        }}
-                      >
-                        View Results
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Empty State */}
+        {/* Empty */}
         {contests.length === 0 && (
-          <Card className="bg-[#1e1e1e] border-[#2a2a2a] p-16 text-center">
-            <Trophy className="w-20 h-20 text-gray-600 mx-auto mb-4" />
-            <h3 className="text-2xl font-bold text-white mb-2">No Contests Available</h3>
-            <p className="text-gray-400">
-              Check back later for upcoming coding competitions!
-            </p>
-          </Card>
+          <motion.div initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }} className="rounded-2xl bg-[#18181b] border border-white/6 p-16 text-center">
+            <div className="w-14 h-14 rounded-2xl bg-zinc-800 flex items-center justify-center mx-auto mb-4">
+              <Trophy className="w-7 h-7 text-zinc-500" />
+            </div>
+            <h3 className="text-lg font-semibold text-white mb-2">No contests available</h3>
+            <p className="text-zinc-500 text-sm">Check back later for upcoming competitions.</p>
+          </motion.div>
         )}
       </div>
     </div>
   );
 }
+

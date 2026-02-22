@@ -89,6 +89,15 @@ interface SubmissionRecord {
   error?: string;
 }
 
+interface ContestData {
+  _id: string;
+  title: string;
+  startTime: string;
+  endTime: string;
+  status: 'upcoming' | 'ongoing' | 'completed';
+  penaltyPerWrongAttempt?: number;
+}
+
 interface ApiError {
   response?: { data?: { message?: string } };
 }
@@ -117,7 +126,7 @@ export default function ProblemDetailPage({
   const [historyLoading, setHistoryLoading] = useState(false);
   const [historyLoaded, setHistoryLoaded] = useState(false);
   const [activeTab, setActiveTab] = useState("description");
-  const [contest, setContest] = useState<any>(null);
+  const [contest, setContest] = useState<ContestData | null>(null);
   const [contestLoading, setContestLoading] = useState(false);
   const [contestElapsedTime, setContestElapsedTime] = useState<string>('00:00:00');
   const [contestElapsedMinutes, setContestElapsedMinutes] = useState<number>(0);
@@ -305,7 +314,12 @@ export default function ProblemDetailPage({
       setSubmitting(true);
       
       // Prepare submission data
-      const submissionData: any = {
+      const submissionData: {
+        problemId: string;
+        source_code: string;
+        language_id: number;
+        contestId?: string;
+      } = {
         problemId: id,
         source_code: code,
         language_id: parseInt(language, 10),
@@ -540,7 +554,7 @@ export default function ProblemDetailPage({
 
       {/* Contest Mode Banner */}
       {contestId && contest && (
-        <div className="bg-gradient-to-r from-purple-600/30 to-pink-600/30 border-b border-purple-500/50 px-6 py-4 shrink-0">
+        <div className="bg-linear-to-r from-purple-600/30 to-pink-600/30 border-b border-purple-500/50 px-6 py-4 shrink-0">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-6">
               <div className="flex items-center gap-3">
@@ -605,7 +619,7 @@ export default function ProblemDetailPage({
       
       {/* Contest Loading State */}
       {contestId && !contest && contestLoading && (
-        <div className="bg-gradient-to-r from-purple-600/20 to-pink-600/20 border-b border-purple-500/30 px-6 py-3 shrink-0">
+        <div className="bg-linear-to-r from-purple-600/20 to-pink-600/20 border-b border-purple-500/30 px-6 py-3 shrink-0">
           <div className="flex items-center gap-3">
             <Loader2 className="w-5 h-5 text-purple-400 animate-spin" />
             <span className="text-sm text-purple-300">Loading contest details...</span>
