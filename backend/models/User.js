@@ -28,6 +28,8 @@ const userSchema = new mongoose.Schema({
   username: {
     type: String,
     trim: true,
+    unique: true,
+    sparse: true,
   },
   social: {
     portfolio: {

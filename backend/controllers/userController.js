@@ -64,6 +64,17 @@ const updateUser = async (req, res) => {
 
     const { name, username, social, skills, experience, education, isOnboarded, profilePhoto } = req.body;
 
+    // Check if username is already taken by another user
+    if (username !== undefined) {
+      const existingUser = await User.findOne({ username, _id: { $ne: req.params.id } });
+      if (existingUser) {
+        return res.status(400).json({
+          success: false,
+          message: 'Username is already taken',
+        });
+      }
+    }
+
     // Build update object with only provided fields
     const updateFields = {};
     if (name !== undefined) updateFields.name = name;

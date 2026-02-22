@@ -253,7 +253,7 @@ export default function ContestDetailPage() {
                 </div>
               )}
 
-              {!isRegistered && contestState === 'not_started' ? (
+              {!isRegistered && contestState !== 'ended' ? (
                 <button
                   onClick={register}
                   disabled={registering}

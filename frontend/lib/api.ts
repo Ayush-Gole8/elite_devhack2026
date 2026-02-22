@@ -204,6 +204,21 @@ export const contestAPI = {
 };
 
 // ============================================
+// RECOMMENDATION API
+// ============================================
+
+export const recommendationAPI = {
+  /**
+   * Get personalised recommendations for a user (protected)
+   * Returns milestone, weakTopics, patternGaps, efficiencyNudge, recommendedProblems
+   */
+  getRecommendations: async (userId: string) => {
+    const response = await axiosInstance.get(`/recommendations/${userId}`);
+    return response.data;
+  },
+};
+
+// ============================================
 // EXAMPLE USAGE
 // ============================================
 

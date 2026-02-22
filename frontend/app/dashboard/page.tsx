@@ -10,6 +10,7 @@ import {
   CheckCircle2, ArrowRight, Zap, BarChart2, ChevronRight,
   Circle, LogOut, LayoutDashboard, BookOpen,
 } from 'lucide-react';
+import RecommendationPanel from '@/components/RecommendationPanel';
 
 interface RecentSubmission {
   status: string;
@@ -291,8 +292,8 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* ── Action cards + Recent activity ─────────────── */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+        {/* ── Action cards + Recent activity + Recommendations ── */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 items-start">
 
           {/* Action cards column */}
           <div className="rounded-2xl bg-[#18181b] border border-white/6 overflow-hidden">
@@ -377,7 +378,7 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          {/* Recent Activity */}
+          {/* Recent Activity — spans 2 cols on lg so recommendations go below on lg, beside on xl */}
           <div className="rounded-2xl bg-[#18181b] border border-white/6 overflow-hidden flex flex-col">
             <div className="flex items-center justify-between px-6 pt-5 pb-4 border-b border-white/6">
               <div>
@@ -444,6 +445,9 @@ export default function DashboardPage() {
               )}
             </div>
           </div>
+
+          {/* Recommendations Panel */}
+          <RecommendationPanel userId={user?._id} />
         </div>
       </div>
     </div>

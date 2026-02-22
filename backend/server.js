@@ -12,6 +12,7 @@ const userRoutes = require('./routes/userRoutes');
 const problemRoutes = require('./routes/problemRoutes');
 const submissionRoutes = require('./routes/submissionRoutes');
 const contestRoutes = require('./routes/contestRoutes');
+const recommendationRoutes = require('./routes/recommendationRoutes');
 
 // Initialize express app
 const app = express();
@@ -43,6 +44,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/problems', problemRoutes);
 app.use('/api/submissions', submissionRoutes);
 app.use('/api/contests', contestRoutes);
+app.use('/api/recommendations', recommendationRoutes);
 
 // Health check route
 app.get('/health', (req, res) => {

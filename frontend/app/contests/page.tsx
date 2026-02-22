@@ -212,13 +212,11 @@ function ContestCard({
           ) : (
             <button
               className="w-full rounded-xl py-2.5 text-sm font-semibold bg-emerald-600 text-white hover:bg-emerald-500 transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-              disabled={registering === contest._id || contest.status === 'ongoing'}
+              disabled={registering === contest._id}
               onClick={() => onRegister(contest._id, contest)}
             >
               {registering === contest._id ? (
                 <><div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />Registering...</>
-              ) : contest.status === 'ongoing' ? (
-                <><Lock className="w-4 h-4" />Registration Closed</>
               ) : (
                 <><CheckCircle2 className="w-4 h-4" />Register Now</>
               )}
@@ -345,7 +343,16 @@ export default function ContestsPage() {
             </div>
             <span className="text-white font-semibold text-sm">Contests</span>
           </div>
-          <div className="w-24" />
+          {user && (
+            <button
+              onClick={() => router.push('/admin/contests/create')}
+              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-semibold transition-colors"
+            >
+              <Trophy className="w-4 h-4" />
+              Create Contest
+            </button>
+          )}
+          {!user && <div className="w-24" />}
         </div>
       </nav>
 
