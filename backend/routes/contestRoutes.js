@@ -6,6 +6,7 @@ const {
   updateContest,
   deleteContest,
   registerForContest,
+  freezeLeaderboard,
 } = require('../controllers/contestController');
 const { protect } = require('../middleware/authMiddleware');
 
@@ -17,5 +18,6 @@ router.post('/', protect, createContest);
 router.put('/:id', protect, updateContest);
 router.delete('/:id', protect, deleteContest);
 router.post('/:id/register', protect, registerForContest);
+router.post('/:id/freeze', protect, freezeLeaderboard);
 
 module.exports = router;

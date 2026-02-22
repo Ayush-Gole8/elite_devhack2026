@@ -5,7 +5,8 @@ import { useAuth } from "@/context/AuthContext";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { problemAPI, submissionAPI } from "@/lib/api";
+import { problemAPI, submissionAPI, contestAPI } from "@/lib/api";
+import { ContestTimer } from "@/components/ui/contest-timer";
 import { toast } from "sonner";
 import dynamic from "next/dynamic";
 import ReactMarkdown from "react-markdown";
@@ -30,6 +31,7 @@ import {
   Terminal,
   AlertCircle,
   Zap,
+  Timer,
 } from "lucide-react";
 
 const Editor = dynamic(() => import("@monaco-editor/react"), { ssr: false });
@@ -115,6 +117,10 @@ export default function ProblemDetailPage({
   const [historyLoading, setHistoryLoading] = useState(false);
   const [historyLoaded, setHistoryLoaded] = useState(false);
   const [activeTab, setActiveTab] = useState("description");
+  const [contest, setContest] = useState<any>(null);
+  const [contestLoading, setContestLoading] = useState(false);
+  const [contestElapsedTime, setContestElapsedTime] = useState<string>('00:00:00');
+  const [contestElapsedMinutes, setContestElapsedMinutes] = useState<number>(0);
 
   // Language ID → display name map
   const langIdToName: Record<string, string> = {
@@ -190,6 +196,19 @@ export default function ProblemDetailPage({
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
+  const fetchContest = useCallback(async (cId: string) => {
+    try {
+      setContestLoading(true);
+      const response = await contestAPI.getContest(cId);
+      const data = response.data || response;
+      setContest(data);
+    } catch {
+      toast.error("Failed to load contest details");
+    } finally {
+      setContestLoading(false);
+    }
+  }, []);
+
   const loadSubmissionHistory = useCallback(async (problemId: string) => {
     if (!problemId) return;
     setHistoryLoading(true);
@@ -210,8 +229,65 @@ export default function ProblemDetailPage({
       router.push("/login");
       return;
     }
-    if (user) fetchProblem();
-  }, [user, authLoading, id, fetchProblem, router]);
+    if (user) {
+      fetchProblem();
+      if (contestId) {
+        console.log('Fetching contest with ID:', contestId);
+        fetchContest(contestId);
+      }
+    }
+  }, [user, authLoading, id, fetchProblem, router, contestId, fetchContest]);
+
+  // Debug logging
+  useEffect(() => {
+    console.log('Contest state:', { contestId, contest, contestLoading });
+  }, [contestId, contest, contestLoading]);
+
+  // Track time from contest start (for ACM-ICPC scoring)
+  useEffect(() => {
+    if (!contest || !contestId) return;
+
+    const updateContestElapsedTime = () => {
+      const now = Date.now();
+      const contestStart = new Date(contest.startTime).getTime();
+      const contestEnd = new Date(contest.endTime).getTime();
+      
+      // If contest hasn't started yet
+      if (now < contestStart) {
+        setContestElapsedTime('00:00:00');
+        setContestElapsedMinutes(0);
+        return;
+      }
+      
+      // If contest has ended
+      if (now >= contestEnd) {
+        const totalDuration = contestEnd - contestStart;
+        const totalMinutes = Math.floor(totalDuration / (1000 * 60));
+        const hours = Math.floor(totalMinutes / 60);
+        const minutes = totalMinutes % 60;
+        setContestElapsedTime(`${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:00`);
+        setContestElapsedMinutes(totalMinutes);
+        return;
+      }
+      
+      // Contest is ongoing - calculate elapsed time from start
+      const elapsed = now - contestStart;
+      const totalMinutes = Math.floor(elapsed / (1000 * 60));
+      const hours = Math.floor(elapsed / (1000 * 60 * 60));
+      const minutes = Math.floor((elapsed % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((elapsed % (1000 * 60)) / 1000);
+      
+      setContestElapsedTime(
+        `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
+      );
+      setContestElapsedMinutes(totalMinutes);
+    };
+
+    updateContestElapsedTime();
+    const interval = setInterval(updateContestElapsedTime, 1000);
+
+    return () => clearInterval(interval);
+  }, [contest, contestId]);
 
   // Load history when problem is available and tab switches to submissions
   useEffect(() => {
@@ -424,10 +500,12 @@ export default function ProblemDetailPage({
           variant="ghost"
           size="sm"
           className="gap-1.5 text-muted-foreground hover:text-foreground h-8 px-2"
-          onClick={() => router.push("/problems")}
+          onClick={() => router.push(contestId ? `/contests/${contestId}` : "/problems")}
         >
           <ArrowLeft className="h-3.5 w-3.5" />
-          <span className="text-xs font-medium">Problem List</span>
+          <span className="text-xs font-medium">
+            {contestId ? "Back to Contest" : "Problem List"}
+          </span>
         </Button>
 
         <div className="w-px h-4 bg-border/70" />
@@ -461,23 +539,76 @@ export default function ProblemDetailPage({
       </header>
 
       {/* Contest Mode Banner */}
-      {contestId && (
-        <div className="bg-linear-to-r from-purple-600/20 to-pink-600/20 border-b border-purple-500/30 px-6 py-3 shrink-0">
+      {contestId && contest && (
+        <div className="bg-gradient-to-r from-purple-600/30 to-pink-600/30 border-b border-purple-500/50 px-6 py-4 shrink-0">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-2 h-2 bg-purple-500 rounded-full animate-pulse"></div>
-              <Trophy className="w-5 h-5 text-purple-400" />
-              <span className="text-sm font-semibold text-purple-300">Contest Mode Active</span>
+            <div className="flex items-center gap-6">
+              <div className="flex items-center gap-3">
+                <Trophy className="w-6 h-6 text-purple-300" />
+                <div>
+                  <div className="text-xs text-purple-400 uppercase tracking-wide font-semibold">Contest Mode</div>
+                  <div className="text-base font-bold text-white">
+                    {contest.title}
+                  </div>
+                </div>
+              </div>
+              <div className="h-10 w-px bg-purple-500/40"></div>
+              <div className="flex items-center gap-3">
+                <Clock className="w-5 h-5 text-purple-300" />
+                <div>
+                  <div className="text-xs text-purple-400 uppercase tracking-wide font-medium">Contest Remaining</div>
+                  <ContestTimer
+                    startTime={contest.startTime}
+                    endTime={contest.endTime}
+                    status={contest.status}
+                    variant="compact"
+                  />
+                </div>
+              </div>
+              <div className="h-10 w-px bg-purple-500/40"></div>
+              <div className="flex items-center gap-3">
+                <Timer className="w-5 h-5 text-green-400" />
+                <div>
+                  <div className="text-xs text-green-400 uppercase tracking-wide font-medium">Your Time</div>
+                  <div className="font-mono text-base font-bold text-green-300">
+                    {contestElapsedTime} ({contestElapsedMinutes} min)
+                  </div>
+                </div>
+              </div>
+              {contest.penaltyPerWrongAttempt && (
+                <>
+                  <div className="h-10 w-px bg-purple-500/40"></div>
+                  <div className="flex items-center gap-2 bg-orange-500/10 border border-orange-500/30 rounded-lg px-3 py-2">
+                    <ShieldAlert className="w-4 h-4 text-orange-400" />
+                    <div>
+                      <div className="text-xs text-orange-400 font-medium">Penalty</div>
+                      <div className="text-xs text-orange-300 font-bold">
+                        +{contest.penaltyPerWrongAttempt} min per wrong attempt
+                      </div>
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
             <Button
               variant="ghost"
               size="sm"
-              className="text-purple-400 hover:text-purple-300 hover:bg-purple-500/10 h-7"
+              className="text-purple-300 hover:text-white hover:bg-purple-500/20 h-9 px-4 font-semibold"
               onClick={() => router.push(`/contests/${contestId}`)}
             >
-              View Contest
-              <Zap className="w-3.5 h-3.5 ml-1.5" />
+              View Leaderboard
+              <Zap className="w-4 h-4 ml-2" />
             </Button>
+          </div>
+        </div>
+      )}
+      
+      {/* Contest Loading State */}
+      {contestId && !contest && contestLoading && (
+        <div className="bg-gradient-to-r from-purple-600/20 to-pink-600/20 border-b border-purple-500/30 px-6 py-3 shrink-0">
+          <div className="flex items-center gap-3">
+            <Loader2 className="w-5 h-5 text-purple-400 animate-spin" />
+            <span className="text-sm text-purple-300">Loading contest details...</span>
           </div>
         </div>
       )}
@@ -911,6 +1042,17 @@ export default function ProblemDetailPage({
               </select>
               <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 h-3 w-3 text-muted-foreground pointer-events-none" />
             </div>
+
+            {/* Contest timer in editor toolbar */}
+            {contestId && (
+              <div className="flex items-center gap-2 text-[11px] font-mono font-bold bg-green-500/10 text-green-400 px-3 py-1.5 rounded-full border border-green-500/30">
+                <Timer className="h-3.5 w-3.5" />
+                <div className="flex flex-col">
+                  <span className="text-[9px] uppercase tracking-wide text-green-500 font-semibold">Submission Time</span>
+                  <span>{contestElapsedTime}</span>
+                </div>
+              </div>
+            )}
 
             {/* Time limit pill */}
             {problem.time_limit_ms && (

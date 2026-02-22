@@ -107,7 +107,7 @@ export default function DashboardPage() {
     <div className="min-h-screen bg-[#09090b] text-white">
 
       {/* ── Navbar ─────────────────────────────────────────── */}
-      <nav className="sticky top-0 z-50 glass-nav border-b border-white/[0.06]">
+      <nav className="sticky top-0 z-50 glass-nav border-b border-white/6">
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
           {/* Logo */}
           <div className="flex items-center gap-3">
@@ -129,7 +129,7 @@ export default function DashboardPage() {
               { label: 'Leaderboard', href: '/leaderboard' },
             ].map(({ label, href }) => (
               <button key={label} onClick={() => router.push(href)}
-                className="px-3 py-1.5 text-sm text-zinc-400 hover:text-white rounded-lg hover:bg-white/[0.05] transition-all">
+                className="px-3 py-1.5 text-sm text-zinc-400 hover:text-white rounded-lg hover:bg-white/5 transition-all">
                 {label}
               </button>
             ))}
@@ -139,7 +139,7 @@ export default function DashboardPage() {
           <div className="flex items-center gap-3">
             <button
               onClick={() => router.push(`/profile/${user._id}`)}
-              className="flex items-center gap-2.5 px-2.5 py-1.5 rounded-xl hover:bg-white/[0.05] border border-transparent hover:border-white/[0.06] transition-all"
+              className="flex items-center gap-2.5 px-2.5 py-1.5 rounded-xl hover:bg-white/5 border border-transparent hover:border-white/6 transition-all"
             >
               <img
                 src={user.profilePhoto || `https://ui-avatars.com/api/?name=${user.name}&background=10b981&color=fff&size=80`}
@@ -149,7 +149,7 @@ export default function DashboardPage() {
               <span className="hidden sm:block text-sm text-zinc-300 font-medium">{user.name?.split(' ')[0]}</span>
             </button>
             <button onClick={signOut}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm text-zinc-500 hover:text-white border border-white/[0.06] hover:border-white/10 hover:bg-white/[0.04] transition-all">
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm text-zinc-500 hover:text-white border border-white/6 hover:border-white/10 hover:bg-white/4 transition-all">
               <LogOut className="w-3.5 h-3.5" />
               <span className="hidden sm:block">Sign out</span>
             </button>
@@ -182,7 +182,7 @@ export default function DashboardPage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
 
           {/* Problems Solved */}
-          <div className="group relative rounded-2xl bg-[#18181b] border border-white/[0.06] p-5 overflow-hidden hover:border-emerald-500/20 transition-all">
+          <div className="group relative rounded-2xl bg-[#18181b] border border-white/6 p-5 overflow-hidden hover:border-emerald-500/20 transition-all">
             <div className="absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-emerald-500/40 to-transparent" />
             <div className="absolute -bottom-8 -right-8 w-32 h-32 bg-emerald-500/[0.07] rounded-full blur-2xl pointer-events-none" />
             <div className="relative">
@@ -199,7 +199,7 @@ export default function DashboardPage() {
               </div>
               <p className="text-sm text-zinc-500 mb-3">Problems Solved</p>
               {/* Progress bar */}
-              <div className="h-1 bg-white/[0.06] rounded-full overflow-hidden">
+              <div className="h-1 bg-white/6 rounded-full overflow-hidden">
                 <div className="h-full bg-linear-to-r from-emerald-500 to-teal-400 rounded-full transition-all duration-700"
                   style={{ width: loadingStats ? '0%' : `${solvedPct}%` }} />
               </div>
@@ -208,7 +208,7 @@ export default function DashboardPage() {
           </div>
 
           {/* Total Submissions */}
-          <div className="group relative rounded-2xl bg-[#18181b] border border-white/[0.06] p-5 overflow-hidden hover:border-indigo-500/20 transition-all">
+          <div className="group relative rounded-2xl bg-[#18181b] border border-white/6 p-5 overflow-hidden hover:border-indigo-500/20 transition-all">
             <div className="absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-indigo-500/40 to-transparent" />
             <div className="absolute -bottom-8 -right-8 w-32 h-32 bg-indigo-500/[0.07] rounded-full blur-2xl pointer-events-none" />
             <div className="relative">
@@ -227,7 +227,7 @@ export default function DashboardPage() {
                 {loadingStats ? <span className="text-zinc-600 animate-pulse">···</span> : stats.totalSubmissions}
               </div>
               <p className="text-sm text-zinc-500 mb-3">Total Submissions</p>
-              <div className="h-1 bg-white/[0.06] rounded-full overflow-hidden">
+              <div className="h-1 bg-white/6 rounded-full overflow-hidden">
                 <div className="h-full bg-linear-to-r from-indigo-500 to-violet-400 rounded-full w-3/4" />
               </div>
               <p className="text-[11px] text-zinc-600 mt-1.5">All time activity</p>
@@ -235,7 +235,7 @@ export default function DashboardPage() {
           </div>
 
           {/* Contests */}
-          <div className="group relative rounded-2xl bg-[#18181b] border border-white/[0.06] p-5 overflow-hidden hover:border-amber-500/20 transition-all">
+          <div className="group relative rounded-2xl bg-[#18181b] border border-white/6 p-5 overflow-hidden hover:border-amber-500/20 transition-all">
             <div className="absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-amber-500/40 to-transparent" />
             <div className="absolute -bottom-8 -right-8 w-32 h-32 bg-amber-500/[0.07] rounded-full blur-2xl pointer-events-none" />
             <div className="relative">
@@ -249,7 +249,7 @@ export default function DashboardPage() {
                 {stats.contestsJoined}
               </div>
               <p className="text-sm text-zinc-500 mb-3">Contests Joined</p>
-              <div className="h-1 bg-white/[0.06] rounded-full overflow-hidden">
+              <div className="h-1 bg-white/6 rounded-full overflow-hidden">
                 <div className="h-full bg-linear-to-r from-amber-500 to-orange-400 rounded-full w-0" />
               </div>
               <p className="text-[11px] text-zinc-600 mt-1.5">Start competing today</p>
@@ -257,7 +257,7 @@ export default function DashboardPage() {
           </div>
 
           {/* Rating */}
-          <div className="group relative rounded-2xl bg-[#18181b] border border-white/[0.06] p-5 overflow-hidden hover:border-purple-500/20 transition-all">
+          <div className="group relative rounded-2xl bg-[#18181b] border border-white/6 p-5 overflow-hidden hover:border-purple-500/20 transition-all">
             <div className="absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-purple-500/40 to-transparent" />
             <div className="absolute -bottom-8 -right-8 w-32 h-32 bg-purple-500/[0.07] rounded-full blur-2xl pointer-events-none" />
             <div className="relative">
@@ -271,7 +271,7 @@ export default function DashboardPage() {
                 {loadingStats ? <span className="text-zinc-600 animate-pulse">···</span> : stats.rating}
               </div>
               <p className="text-sm text-zinc-500 mb-3">Contest Rating</p>
-              <div className="h-1 bg-white/[0.06] rounded-full overflow-hidden">
+              <div className="h-1 bg-white/6 rounded-full overflow-hidden">
                 <div className="h-full bg-linear-to-r from-purple-500 to-pink-400 rounded-full"
                   style={{ width: `${Math.min(((stats.rating - 1200) / 900) * 100, 100)}%` }} />
               </div>
@@ -284,8 +284,8 @@ export default function DashboardPage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
 
           {/* Action cards column */}
-          <div className="rounded-2xl bg-[#18181b] border border-white/[0.06] overflow-hidden">
-            <div className="flex items-center justify-between px-6 pt-5 pb-4 border-b border-white/[0.06]">
+          <div className="rounded-2xl bg-[#18181b] border border-white/6 overflow-hidden">
+            <div className="flex items-center justify-between px-6 pt-5 pb-4 border-b border-white/6">
               <div>
                 <h3 className="text-sm font-semibold text-white">Quick Actions</h3>
                 <p className="text-[12px] text-zinc-600 mt-0.5">Jump right in</p>
@@ -295,8 +295,8 @@ export default function DashboardPage() {
 
             {/* Problems */}
             <button onClick={() => router.push('/problems')}
-              className="group w-full text-left relative rounded-2xl overflow-hidden border border-white/[0.06] hover:border-emerald-500/20 transition-all bg-[#18181b] p-5">
-              <div className="absolute inset-0 bg-linear-to-br from-emerald-500/[0.08] via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+              className="group w-full text-left relative rounded-2xl overflow-hidden border border-white/6 hover:border-emerald-500/20 transition-all bg-[#18181b] p-5">
+              <div className="absolute inset-0 bg-linear-to-br from-emerald-500/8 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
               <div className="relative flex items-center gap-4">
                 <div className="w-11 h-11 rounded-xl bg-emerald-500/10 border border-emerald-500/15 flex items-center justify-center shrink-0 group-hover:bg-emerald-500/15 transition-colors">
                   <BookOpen className="w-5 h-5 text-emerald-400" />
@@ -313,8 +313,8 @@ export default function DashboardPage() {
 
             {/* Contests */}
             <button onClick={() => router.push('/contests')}
-              className="group w-full text-left relative rounded-2xl overflow-hidden border border-white/[0.06] hover:border-amber-500/20 transition-all bg-[#18181b] p-5">
-              <div className="absolute inset-0 bg-linear-to-br from-amber-500/[0.08] via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+              className="group w-full text-left relative rounded-2xl overflow-hidden border border-white/6 hover:border-amber-500/20 transition-all bg-[#18181b] p-5">
+              <div className="absolute inset-0 bg-linear-to-br from-amber-500/8 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
               <div className="relative flex items-center gap-4">
                 <div className="w-11 h-11 rounded-xl bg-amber-500/10 border border-amber-500/15 flex items-center justify-center shrink-0 group-hover:bg-amber-500/15 transition-colors">
                   <Trophy className="w-5 h-5 text-amber-400" />
@@ -329,8 +329,8 @@ export default function DashboardPage() {
 
             {/* Leaderboard */}
             <button onClick={() => router.push('/leaderboard')}
-              className="group w-full text-left relative rounded-2xl overflow-hidden border border-white/[0.06] hover:border-indigo-500/20 transition-all bg-[#18181b] p-5">
-              <div className="absolute inset-0 bg-linear-to-br from-indigo-500/[0.08] via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+              className="group w-full text-left relative rounded-2xl overflow-hidden border border-white/6 hover:border-indigo-500/20 transition-all bg-[#18181b] p-5">
+              <div className="absolute inset-0 bg-linear-to-br from-indigo-500/8 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
               <div className="relative flex items-center gap-4">
                 <div className="w-11 h-11 rounded-xl bg-indigo-500/10 border border-indigo-500/15 flex items-center justify-center shrink-0 group-hover:bg-indigo-500/15 transition-colors">
                   <Users className="w-5 h-5 text-indigo-400" />
@@ -345,8 +345,8 @@ export default function DashboardPage() {
 
             {/* Profile */}
             <button onClick={() => router.push(`/profile/${user._id}`)}
-              className="group w-full text-left relative rounded-2xl overflow-hidden border border-white/[0.06] hover:border-purple-500/20 transition-all bg-[#18181b] p-5">
-              <div className="absolute inset-0 bg-linear-to-br from-purple-500/[0.08] via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+              className="group w-full text-left relative rounded-2xl overflow-hidden border border-white/6 hover:border-purple-500/20 transition-all bg-[#18181b] p-5">
+              <div className="absolute inset-0 bg-linear-to-br from-purple-500/8 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
               <div className="relative flex items-center gap-4">
                 <img
                   src={user.profilePhoto || `https://ui-avatars.com/api/?name=${user.name}&background=10b981&color=fff&size=80`}
@@ -364,8 +364,8 @@ export default function DashboardPage() {
           </div>
 
           {/* Recent Activity */}
-          <div className="rounded-2xl bg-[#18181b] border border-white/[0.06] overflow-hidden flex flex-col">
-            <div className="flex items-center justify-between px-6 pt-5 pb-4 border-b border-white/[0.06]">
+          <div className="rounded-2xl bg-[#18181b] border border-white/6 overflow-hidden flex flex-col">
+            <div className="flex items-center justify-between px-6 pt-5 pb-4 border-b border-white/6">
               <div>
                 <h3 className="text-sm font-semibold text-white">Recent Activity</h3>
                 <p className="text-[12px] text-zinc-600 mt-0.5">Your latest submissions</p>
@@ -397,13 +397,13 @@ export default function DashboardPage() {
                   </button>
                 </div>
               ) : (
-                <div className="divide-y divide-white/[0.04]">
+                <div className="divide-y divide-white/4">
                   {stats.recentSubmissions.map((submission: any, idx: number) => {
                     const accepted = submission.status === 'Accepted';
                     const diff = submission.problem?.difficulty;
                     return (
                       <div key={idx}
-                        className="flex items-center justify-between px-6 py-3.5 hover:bg-white/[0.02] transition-colors cursor-pointer group">
+                        className="flex items-center justify-between px-6 py-3.5 hover:bg-white/2 transition-colors cursor-pointer group">
                         <div className="flex items-center gap-3 min-w-0">
                           <div className={`w-1.5 h-1.5 rounded-full shrink-0 ${accepted ? 'bg-emerald-500' : 'bg-red-500'}`} />
                           <span className="text-sm text-zinc-300 group-hover:text-white transition-colors truncate font-medium">

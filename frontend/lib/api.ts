@@ -193,6 +193,14 @@ export const contestAPI = {
     const response = await axiosInstance.post(`/contests/${contestId}/register`);
     return response.data;
   },
+
+  /**
+   * Freeze contest leaderboard (protected/admin)
+   */
+  freezeLeaderboard: async (contestId: string) => {
+    const response = await axiosInstance.post(`/contests/${contestId}/freeze`);
+    return response.data;
+  },
 };
 
 // ============================================

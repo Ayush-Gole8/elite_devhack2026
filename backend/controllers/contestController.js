@@ -153,14 +153,6 @@ const registerForContest = async (req, res) => {
       });
     }
 
-    // Check if contest is ongoing
-    if (contest.startTime <= now) {
-      return res.status(400).json({
-        success: false,
-        message: 'Cannot register for a contest that is already ongoing',
-      });
-    }
-
     // Check if already registered
     const alreadyRegistered = contest.participants.some(
       p => p.user.toString() === req.user
@@ -192,6 +184,35 @@ const registerForContest = async (req, res) => {
   }
 };
 
+// @desc    Freeze contest leaderboard
+// @route   POST /api/contests/:id/freeze
+// @access  Private/Admin
+const freezeLeaderboard = async (req, res) => {
+  try {
+    const contest = await Contest.findById(req.params.id);
+
+    if (!contest) {
+      return res.status(404).json({
+        success: false,
+        message: 'Contest not found',
+      });
+    }
+
+    await contest.freezeLeaderboard();
+
+    res.status(200).json({
+      success: true,
+      message: 'Leaderboard frozen successfully',
+      data: contest,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
 module.exports = {
   getContests,
   getContest,
@@ -199,4 +220,5 @@ module.exports = {
   updateContest,
   deleteContest,
   registerForContest,
+  freezeLeaderboard,
 };

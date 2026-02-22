@@ -9,6 +9,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ContestTimer } from '@/components/ui/contest-timer';
+import ContestLeaderboard from '@/components/ContestLeaderboard';
 import { 
   Trophy, 
   Users, 
@@ -38,6 +39,8 @@ interface Contest {
   problems: any[];
   participants: any[];
   status: 'upcoming' | 'ongoing' | 'completed';
+  isFrozen?: boolean;
+  penaltyPerWrongAttempt?: number;
 }
 
 export default function ContestDetailPage() {
@@ -149,9 +152,25 @@ export default function ContestDetailPage() {
     }
   };
 
+  // Get current user's problem status
+  const getUserProblemStatus = (problemId: string) => {
+    if (!user || !contest) return null;
+    const participant = contest.participants.find((p: any) => p.user?._id === user._id);
+    if (!participant || !participant.problemStatus) return null;
+    return participant.problemStatus.find(
+      (ps: any) => (typeof ps.problem === 'string' ? ps.problem : ps.problem._id) === problemId
+    );
+  };
+
   const sortedParticipants = contest?.participants
     .slice()
-    .sort((a: any, b: any) => (b.score || 0) - (a.score || 0)) || [];
+    .sort((a: any, b: any) => {
+      // Sort by score descending, then by totalTime ascending (ACM-ICPC style)
+      if ((b.score || 0) !== (a.score || 0)) {
+        return (b.score || 0) - (a.score || 0);
+      }
+      return (a.totalTime || 0) - (b.totalTime || 0);
+    }) || [];
 
   if (loading) {
     return (
@@ -195,7 +214,7 @@ export default function ContestDetailPage() {
         </Button>
 
         {/* Contest Header */}
-        <div className="bg-linear-to-br from-purple-600/20 to-pink-600/20 rounded-2xl border-2 border-purple-500/30 p-8 mb-8">
+        <div className="bg-gradient-to-br from-purple-600/20 to-pink-600/20 rounded-2xl border-2 border-purple-500/30 p-8 mb-8">
           <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-6">
             <div className="flex-1">
               <div className="flex items-center gap-3 mb-4">
@@ -247,17 +266,19 @@ export default function ContestDetailPage() {
             </div>
 
             <div className="flex flex-col gap-4 items-stretch md:items-end">
-              <ContestTimer 
-                startTime={contest.startTime}
-                endTime={contest.endTime}
-                status={contest.status}
-              />
+              <div className="bg-[#1e1e1e] border-2 border-purple-500/50 rounded-xl p-4">
+                <ContestTimer 
+                  startTime={contest.startTime}
+                  endTime={contest.endTime}
+                  status={contest.status}
+                />
+              </div>
 
               {!registered && contest.status !== 'completed' && (
                 <Button 
                   onClick={handleRegister}
                   disabled={registering}
-                  className="bg-linear-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold px-8 py-6 text-lg"
+                  className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold px-8 py-6 text-lg"
                 >
                   {registering ? (
                     <>
@@ -355,44 +376,62 @@ export default function ContestDetailPage() {
                 )}
 
                 {contest.problems && contest.problems.length > 0 ? (
-                  contest.problems.map((problem: any, index: number) => (
-                    <Card 
-                      key={problem._id}
-                      className="bg-[#1e1e1e] border-[#2a2a2a] hover:border-purple-500/50 transition-all cursor-pointer"
-                      onClick={() => router.push(`/problems/${problem._id}?contestId=${contestId}`)}
-                    >
-                      <CardContent className="p-6">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-4 flex-1">
-                            <div className="text-2xl font-bold text-gray-500">
-                              {String.fromCharCode(65 + index)}
-                            </div>
-                            <div className="flex-1">
-                              <h3 className="text-xl font-semibold text-white mb-2 hover:text-purple-400 transition-colors">
-                                {problem.title}
-                              </h3>
-                              <div className="flex items-center gap-3">
-                                <Badge className={`${getDifficultyColor(problem.difficulty)} border font-semibold`}>
-                                  {problem.difficulty}
-                                </Badge>
-                                {problem.tags && problem.tags.slice(0, 3).map((tag: string) => (
-                                  <Badge key={tag} variant="outline" className="text-gray-400 border-gray-600">
-                                    {tag}
+                  contest.problems.map((problem: any, index: number) => {
+                    const problemStatus = getUserProblemStatus(problem._id);
+                    return (
+                      <Card 
+                        key={problem._id}
+                        className="bg-[#1e1e1e] border-[#2a2a2a] hover:border-purple-500/50 transition-all cursor-pointer"
+                        onClick={() => router.push(`/problems/${problem._id}?contestId=${contestId}`)}
+                      >
+                        <CardContent className="p-6">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-4 flex-1">
+                              <div className="text-2xl font-bold text-gray-500">
+                                {String.fromCharCode(65 + index)}
+                              </div>
+                              <div className="flex-1">
+                                <div className="flex items-center gap-3 mb-2">
+                                  <h3 className="text-xl font-semibold text-white hover:text-purple-400 transition-colors">
+                                    {problem.title}
+                                  </h3>
+                                  {problemStatus && (
+                                    problemStatus.solved ? (
+                                      <div className="flex items-center gap-1.5 bg-green-500/10 border border-green-500/30 rounded-full px-3 py-1">
+                                        <CheckCircle2 className="w-4 h-4 text-green-500" />
+                                        <span className="text-xs font-semibold text-green-500">Solved</span>
+                                      </div>
+                                    ) : problemStatus.attempts > 0 ? (
+                                      <div className="flex items-center gap-1.5 bg-yellow-500/10 border border-yellow-500/30 rounded-full px-3 py-1">
+                                        <div className="w-4 h-4 rounded-full bg-yellow-500"></div>
+                                        <span className="text-xs font-semibold text-yellow-500">{problemStatus.attempts} attempt{problemStatus.attempts > 1 ? 's' : ''}</span>
+                                      </div>
+                                    ) : null
+                                  )}
+                                </div>
+                                <div className="flex items-center gap-3">
+                                  <Badge className={`${getDifficultyColor(problem.difficulty)} border font-semibold`}>
+                                    {problem.difficulty}
                                   </Badge>
-                                ))}
+                                  {problem.tags && problem.tags.slice(0, 3).map((tag: string) => (
+                                    <Badge key={tag} variant="outline" className="text-gray-400 border-gray-600">
+                                      {tag}
+                                    </Badge>
+                                  ))}
+                                </div>
                               </div>
                             </div>
+                            <Button 
+                              variant="ghost"
+                              className="text-purple-500 hover:text-purple-400"
+                            >
+                              Solve →
+                            </Button>
                           </div>
-                          <Button 
-                            variant="ghost"
-                            className="text-purple-500 hover:text-purple-400"
-                          >
-                            Solve →
-                          </Button>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))
+                        </CardContent>
+                      </Card>
+                    );
+                  })
                 ) : (
                   <Card className="bg-[#1e1e1e] border-[#2a2a2a] p-12 text-center">
                     <Target className="w-16 h-16 text-gray-600 mx-auto mb-4" />
@@ -405,85 +444,12 @@ export default function ContestDetailPage() {
         )}
 
         {activeTab === 'leaderboard' && (
-          <Card className="bg-[#1e1e1e] border-[#2a2a2a]">
-            {sortedParticipants.length > 0 ? (
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead className="bg-[#252525] border-b border-[#3a3a3a]">
-                    <tr>
-                      <th className="px-6 py-4 text-left text-sm font-bold text-gray-300 uppercase">Rank</th>
-                      <th className="px-6 py-4 text-left text-sm font-bold text-gray-300 uppercase">Participant</th>
-                      <th className="px-6 py-4 text-center text-sm font-bold text-gray-300 uppercase">Score</th>
-                      <th className="px-6 py-4 text-center text-sm font-bold text-gray-300 uppercase">Solved</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-[#2a2a2a]">
-                    {sortedParticipants.map((participant: any, index: number) => {
-                      const rank = index + 1;
-                      const isCurrentUser = user?._id === (participant.user?._id || participant.user);
-                      
-                      return (
-                        <tr 
-                          key={participant.user?._id || index}
-                          className={`transition-all hover:bg-[#252525] ${
-                            isCurrentUser ? 'bg-purple-500/10 border-l-4 border-purple-500' : ''
-                          }`}
-                        >
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="flex items-center gap-3">
-                              {rank === 1 && <Crown className="w-5 h-5 text-yellow-400" />}
-                              {rank === 2 && <Medal className="w-5 h-5 text-gray-300" />}
-                              {rank === 3 && <Medal className="w-5 h-5 text-amber-600" />}
-                              <span className={`text-lg font-bold ${
-                                rank <= 3 ? 'text-yellow-400' : 'text-gray-400'
-                              }`}>
-                                #{rank}
-                              </span>
-                            </div>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="flex items-center gap-3">
-                              <div className="w-10 h-10 rounded-full bg-[#2a2a2a] flex items-center justify-center">
-                                <span className="text-lg font-bold text-white">
-                                  {participant.user?.name?.[0]?.toUpperCase() || '?'}
-                                </span>
-                              </div>
-                              <div>
-                                <p className="text-white font-semibold flex items-center gap-2">
-                                  {participant.user?.name || 'Anonymous'}
-                                  {isCurrentUser && (
-                                    <span className="text-xs bg-purple-500 text-white px-2 py-1 rounded-full">
-                                      You
-                                    </span>
-                                  )}
-                                </p>
-                                <p className="text-gray-400 text-sm">@{participant.user?.username || 'unknown'}</p>
-                              </div>
-                            </div>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-center">
-                            <span className="text-2xl font-bold text-green-400">
-                              {participant.score || 0}
-                            </span>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-center">
-                            <span className="text-xl font-semibold text-blue-400">
-                              {participant.submissions?.length || 0}
-                            </span>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
-            ) : (
-              <div className="p-12 text-center">
-                <Users className="w-16 h-16 text-gray-600 mx-auto mb-4" />
-                <p className="text-gray-400">No participants yet</p>
-              </div>
-            )}
-          </Card>
+          <ContestLeaderboard
+            participants={sortedParticipants}
+            problems={contest?.problems || []}
+            currentUserId={user?._id}
+            isFrozen={contest?.isFrozen || false}
+          />
         )}
       </div>
     </div>

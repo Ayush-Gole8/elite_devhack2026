@@ -179,11 +179,14 @@ const submitSolution = async (req, res) => {
         await user.save();
       }
 
-     // Update contest score if this is a contest submission
+     // Update contest score if this is a contest submission (ACM-ICPC style)
       if (contestId) {
         const contest = await Contest.findById(contestId);
         
         if (contest) {
+          // Calculate time from contest start in minutes
+          const timeFromStart = Math.floor((Date.now() - new Date(contest.startTime).getTime()) / (1000 * 60));
+          
           // Find participant
           const participantIndex = contest.participants.findIndex(
             p => p.user.toString() === req.user
@@ -192,14 +195,50 @@ const submitSolution = async (req, res) => {
           if (participantIndex !== -1) {
             const participant = contest.participants[participantIndex];
             
-            // Check if this problem was already solved by this user in this contest
-            const alreadySolved = participant.submissions?.some(
-              sub => sub.toString() === problemId
+            // Initialize problemStatus array if not exists
+            if (!participant.problemStatus) {
+              participant.problemStatus = [];
+            }
+            
+            // Find or create problemStatus entry for this problem
+            let problemStatusIndex = participant.problemStatus.findIndex(
+              ps => ps.problem.toString() === problemId
             );
             
-            if (!alreadySolved) {
-              // Add 100 points for solving a new problem
-              participant.score = (participant.score || 0) + 100;
+            if (problemStatusIndex === -1) {
+              // Create new problem status entry
+              participant.problemStatus.push({
+                problem: problemId,
+                solved: false,
+                attempts: 0,
+                wrongAttempts: 0,
+                solveTime: 0,
+                penalty: 0,
+              });
+              problemStatusIndex = participant.problemStatus.length - 1;
+            }
+            
+            const problemStatus = participant.problemStatus[problemStatusIndex];
+            
+            // Increment total attempts
+            problemStatus.attempts = (problemStatus.attempts || 0) + 1;
+            
+            // Process based on submission status
+            if (status === 'Accepted' && !problemStatus.solved) {
+              // First AC for this problem
+              problemStatus.solved = true;
+              problemStatus.solveTime = timeFromStart;
+              
+              // Calculate penalty for this problem (wrongAttempts * penaltyPerWrongAttempt)
+              const penaltyMinutes = (problemStatus.wrongAttempts || 0) * (contest.penaltyPerWrongAttempt || 5);
+              problemStatus.penalty = penaltyMinutes;
+              
+              // Update participant score (count of problems solved)
+              participant.score = (participant.score || 0) + 1;
+              
+              // Update total penalty and total time
+              participant.penalty = (participant.penalty || 0) + penaltyMinutes;
+              participant.totalTime = (participant.totalTime || 0) + timeFromStart + penaltyMinutes;
               
               // Add submission to participant's submissions array
               if (!participant.submissions) {
@@ -207,24 +246,41 @@ const submitSolution = async (req, res) => {
               }
               participant.submissions.push(submission._id);
               
-              // Recalculate ranks
-              contest.participants.sort((a, b) => (b.score || 0) - (a.score || 0));
-              contest.participants.forEach((p, idx) => {
-                p.rank = idx + 1;
-              });
+            } else if (status !== 'Accepted' && !problemStatus.solved) {
+              // Wrong submission (only count if problem not already solved)
+              problemStatus.wrongAttempts = (problemStatus.wrongAttempts || 0) + 1;
+            }
+            
+            // Recalculate ranks using ACM-ICPC logic
+            // Primary: problems solved (DESC), Tiebreaker: total time (ASC)
+            contest.participants.sort((a, b) => {
+              const scoreA = a.score || 0;
+              const scoreB = b.score || 0;
               
-              await contest.save();
-              
-              // Emit socket event for real-time leaderboard update
-              const io = req.app.get('io');
-              if (io) {
-                // Populate participants for the socket event
-                const populatedContest = await Contest.findById(contestId)
-                  .populate('participants.user', 'name username profilePhoto');
-                
-                io.to(`contest_${contestId}`).emit('leaderboardUpdate', populatedContest.participants);
-                console.log(`Emitted leaderboard update for contest: ${contestId}`);
+              if (scoreA !== scoreB) {
+                return scoreB - scoreA; // Higher score first
               }
+              
+              // If scores are equal, sort by total time (lower is better)
+              return (a.totalTime || 0) - (b.totalTime || 0);
+            });
+            
+            contest.participants.forEach((p, idx) => {
+              p.rank = idx + 1;
+            });
+            
+            await contest.save();
+            
+            // Emit socket event for real-time leaderboard update
+            const io = req.app.get('io');
+            if (io) {
+              // Populate participants for the socket event
+              const populatedContest = await Contest.findById(contestId)
+                .populate('participants.user', 'name username profilePhoto')
+                .populate('participants.problemStatus.problem', 'title slug');
+              
+              io.to(`contest_${contestId}`).emit('leaderboardUpdate', populatedContest.participants);
+              console.log(`Emitted leaderboard update for contest: ${contestId}`);
             }
           }
         }

@@ -1,6 +1,8 @@
-﻿'use client';
+'use client';
 
-import { useState, useEffect, useCallback } from 'react';import Image from "next/image";import { useAuth } from '@/context/AuthContext';
+import { useState, useEffect, useCallback } from 'react';
+import Image from "next/image";
+import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -155,7 +157,7 @@ export default function ProblemsPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* ── NAVBAR ── */}
+      {/* -- NAVBAR -- */}
       <nav className="sticky top-0 z-50 border-b bg-background/80 backdrop-blur-md supports-backdrop-filter:bg-background/60">
         <div className="container mx-auto px-6 h-16 flex items-center justify-between gap-4">
           <button
@@ -202,13 +204,13 @@ export default function ProblemsPage() {
       </nav>
 
       <div className="container mx-auto px-6 py-8 max-w-6xl">
-        {/* ── PAGE HEADER ── */}
+        {/* -- PAGE HEADER -- */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold tracking-tight mb-1">Problems</h1>
           <p className="text-muted-foreground text-sm">Train your problem-solving skills. Pick a challenge and start coding.</p>
         </div>
 
-        {/* ── STATS ROW ── */}
+        {/* -- STATS ROW -- */}
         <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 gap-4 mb-8">
           {[
             { label: 'Total',  value: problems.length, icon: BarChart3,    color: 'text-primary',      bg: 'bg-primary/10'      },
@@ -231,7 +233,7 @@ export default function ProblemsPage() {
           ))}
         </div>
 
-        {/* ── FILTER CARD ── */}
+        {/* -- FILTER CARD -- */}
         <Card className="rounded-2xl border shadow-sm mb-6">
           <CardHeader className="pb-3 pt-5 px-6">
             <CardTitle className="text-base flex items-center gap-2">
@@ -328,7 +330,7 @@ export default function ProblemsPage() {
           </CardContent>
         </Card>
 
-        {/* ── RESULTS COUNT ── */}
+        {/* -- RESULTS COUNT -- */}
         {!loading && (
           <div className="flex items-center justify-between mb-4">
             <p className="text-sm text-muted-foreground">
@@ -338,11 +340,11 @@ export default function ProblemsPage() {
           </div>
         )}
 
-        {/* ── PROBLEM LIST ── */}
+        {/* -- PROBLEM LIST -- */}
         {loading ? (
           <div className="flex flex-col items-center justify-center py-24 gap-3">
             <Loader2 className="h-10 w-10 text-primary animate-spin" />
-            <p className="text-sm text-muted-foreground font-medium">Loading problems…</p>
+            <p className="text-sm text-muted-foreground font-medium">Loading problems�</p>
           </div>
         ) : problems.length === 0 ? (
           <Card className="rounded-2xl border shadow-sm">

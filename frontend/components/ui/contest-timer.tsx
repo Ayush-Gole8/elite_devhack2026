@@ -7,9 +7,10 @@ interface ContestTimerProps {
   startTime: string | Date;
   endTime: string | Date;
   status?: 'upcoming' | 'ongoing' | 'completed';
+  variant?: 'default' | 'compact';
 }
 
-export const ContestTimer: React.FC<ContestTimerProps> = ({ startTime, endTime, status }) => {
+export const ContestTimer: React.FC<ContestTimerProps> = ({ startTime, endTime, status, variant = 'default' }) => {
   const [timeRemaining, setTimeRemaining] = useState<string>('');
   const [timerStatus, setTimerStatus] = useState<'upcoming' | 'ongoing' | 'completed'>(status || 'upcoming');
 
@@ -70,14 +71,25 @@ export const ContestTimer: React.FC<ContestTimerProps> = ({ startTime, endTime, 
     return <Clock className="w-5 h-5" />;
   };
 
-  if (timerStatus === 'completed' && status === 'completed') {
-    return null; // Don't show timer for completed contests
+  if (variant === 'compact') {
+    return (
+      <div className={`flex items-center gap-2 font-mono text-base font-bold ${getTimerColor()}`}>
+        <span>{timeRemaining || 'Loading...'}</span>
+      </div>
+    );
   }
 
   return (
-    <div className={`flex items-center gap-2 font-mono text-lg font-semibold ${getTimerColor()}`}>
-      {getTimerIcon()}
-      <span>{timeRemaining}</span>
+    <div className="flex flex-col gap-2">
+      <div className={`flex items-center gap-2 font-mono text-xl font-bold ${getTimerColor()}`}>
+        {getTimerIcon()}
+        <span>{timeRemaining}</span>
+      </div>
+      {timerStatus !== 'completed' && (
+        <div className="text-xs text-gray-400 uppercase tracking-wide">
+          {timerStatus === 'upcoming' ? 'Countdown to Start' : 'Time Remaining'}
+        </div>
+      )}
     </div>
   );
 };

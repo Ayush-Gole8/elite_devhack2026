@@ -86,11 +86,6 @@ export default function ContestsPage() {
       return;
     }
 
-    if (startTime <= now) {
-      toast.error('Cannot register for a contest that is already ongoing');
-      return;
-    }
-
     // Check if already registered
     if (isUserRegistered(contest)) {
       toast.info('You are already registered for this contest');
@@ -187,7 +182,7 @@ export default function ContestsPage() {
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8 relative">
-          <div className="absolute inset-0 bg-linear-to-r from-purple-600/10 via-pink-600/10 to-orange-600/10 blur-3xl -z-10"></div>
+          <div className="absolute inset-0 bg-gradient-to-r from-purple-600/10 via-pink-600/10 to-orange-600/10 blur-3xl -z-10"></div>
           
           <div className="text-center mb-8">
             <div className="flex items-center justify-center gap-3 mb-4">
@@ -201,7 +196,7 @@ export default function ContestsPage() {
             {user && (
               <Button
                 onClick={() => router.push('/admin/contests/create')}
-                className="bg-linear-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 text-white font-semibold px-6 py-3 shadow-lg hover:shadow-xl transition-all"
+                className="bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 text-white font-semibold px-6 py-3 shadow-lg hover:shadow-xl transition-all"
               >
                 <Plus className="w-5 h-5 mr-2" />
                 Create Contest
@@ -221,7 +216,7 @@ export default function ContestsPage() {
               {groupedContests.ongoing.map((contest) => (
                 <Card 
                   key={contest._id}
-                  className="bg-linear-to-br from-green-500/10 to-emerald-600/10 border-2 border-green-500/30 hover:border-green-500/60 transition-all shadow-2xl hover:scale-105 cursor-pointer"
+                  className="bg-gradient-to-br from-green-500/10 to-emerald-600/10 border-2 border-green-500/30 hover:border-green-500/60 transition-all shadow-2xl hover:scale-105 cursor-pointer"
                   onClick={() => router.push(`/contests/${contest._id}`)}
                 >
                   <CardHeader>
